@@ -140,10 +140,17 @@ Gaps to build (reuse-first, per `file_dependency_plan.md` / `bundle_dependency_p
 
 ## Next Tactics
 
-**DONE (iters 1–14):** decomposition (both papers) · kernel (all 13 components PROVEN; LC to
+**DONE (iters 1–23):** decomposition (both papers) · kernel (all 13 components PROVEN; LC to
 paper-parity) · blind discovery (CSS+PBB) → post-hoc validation (catalog matches both families) ·
 3-stage cascade (BP-OSD+trust+MILP) · BLISS dedup (exact) · escalation install (ldpc+igraph) ·
-README · all paper signature findings reproduced.
+all paper signature findings reproduced · Claude-as-LLM guided search rediscovered [[144,12,12]] +
+[[288,16,12]] (POLY_MATCH) · package professionalized (subpackages + public API + CLI + docs/).
+
+**Clean-room control (blind-zero branch):** a paper-naive agent discovering from zero reached only
+modest codes (best certified [[144,12,8]] d=8; [[72,12,6]] d=6) and did NOT find the d=12 flagships
+— honest evidence that the paper's LLM-guided structural search (or prior knowledge) is what reaches
+them, not brute/structural blind search. The bbc Claude-guided rediscoveries were best-effort-blind
+(orchestrator had read the paper); the clean room isolates that contamination.
 
 **Open (incremental):**
 1. `[SOLID]` (iter 15, DONE) gross [[144,12,12]] d=12 kernel-verified (BP-OSD=12 + MILP weight-12).
