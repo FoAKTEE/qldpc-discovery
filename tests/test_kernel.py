@@ -75,6 +75,21 @@ def test_crt_k_formula(l, m, expect):
     assert r["match"], f"k={r['k']} != 8l/3={expect}"
 
 
+# ----------------------------- univariate distance collapse (paper Sec VI.A) -----------------------------
+@pytest.mark.parametrize("l,m,A,B", [
+    (6, 6, "1+y+y^2", "1+x^2+x^4"),   # c=l/3=2 subfamily -> d=2 (Tillich-Zemor weight-2 quotient)
+    (6, 6, "1+y+y^2", "1+x+x^2"),     # general univariate -> d=4
+    (9, 3, "1+y+y^2", "1+x^3+x^6"),   # c=3 subfamily -> d=2
+    (9, 6, "1+y+y^2", "1+x+x^2"),     # general -> d=4
+])
+def test_univariate_distance_collapses_to_2_or_4(l, m, A, B):
+    # Reproduce arXiv:2606.02418 Sec VI.A: every univariate (separated-variable) BB code has d in {2,4}.
+    code = BBCode(l, m, A, B)
+    assert css_k(code.HX, code.HZ) > 0
+    d = css_distance_milp(code, time_limit=20.0)["d"]
+    assert d in (2, 4), f"univariate [[{code.n},?,{d}]] violated d in {{2,4}}"
+
+
 # ----------------------------- MILP <-> enumeration agreement -----------------------------
 def test_milp_enum_agree_small():
     # A small code where exhaustive enumeration is feasible; both methods must agree.

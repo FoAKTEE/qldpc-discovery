@@ -116,6 +116,22 @@ Post-hoc validation (held-out catalog): `[[144,24,4]]` → UB_CONSISTENT w/ cata
 `[[144,8,8]]` → UB_CONSISTENT w/ `[[144,8,12]]`; `[[72,12,6]]` → UB_CONSISTENT w/ Bravyi. k-values
 (exact via rank) match catalog entries at n=144.
 
+## Window 1 — 2026-06-02 — univariate distance collapse reproduced (iter 17)
+
+Reproduced arXiv:2606.02418 Sec VI.A: **every univariate (separated-variable) BB code has d∈{2,4}**.
+MILP-verified (`test_univariate_distance_collapses_to_2_or_4`):
+
+| (ℓ,m) | A(y) | B(x) | [[n,k,d]] | note |
+|---|---|---|---|---|
+| (6,6) | 1+y+y² | 1+x²+x⁴ | [[72,16,**2**]] | c=ℓ/3=2 subfamily → weight-2 quotient → d=2 (ties `lem:crt_k`) |
+| (6,6) | 1+y+y² | 1+x+x² | [[72,8,**4**]] | general univariate → d=4 |
+| (9,3) | 1+y+y² | 1+x³+x⁶ | [[54,24,**2**]] | c=3 subfamily → d=2 |
+| (9,6) | 1+y+y² | 1+x+x² | [[108,8,**4**]] | general → d=4 |
+
+Confirms the Tillich–Zémor distance-collapse mechanism (the high-k univariate codes are low-distance);
+the c=ℓ/3 subfamily lands on d=2 exactly as `lem:crt_k`'s k=8ℓ/3 codes. Fourth paper signature
+finding reproduced (after A=B trap, 12× BP-OSD overestimate, [[288,24,12]] direct-sum).
+
 ## Reference catalog (arXiv:2606.02418 headline codes — `LiteratureGrounded`, to re-verify)
 
 Full catalogs: `ref-paper/arxiv-2606.02418/src/{css,pbb}_catalog_tables.tex` (97 CSS + 368 PBB = 465 distinct).
