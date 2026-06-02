@@ -51,3 +51,14 @@ end
     @test r.d == 4 && r.exhausted
     @test fom(c.n, 4, r.d) == 4 * 4^2 / 18
 end
+
+@testset "Brouwer–Zimmermann exact distance (certified; replaces HiGHS)" begin
+    # certified exact distances, cross-validated against the Python HiGHS MILP
+    b = min_distance_bz(BBCode(3, 3, "1+x+y", "1+x^2+y^2"))
+    @test b.certified && b.d == 4 && b.dX == b.dZ == 4
+
+    c72 = BBCode(6, 6, "x^3+y+y^2", "y^3+x+x^2")          # Bravyi [[72,12,6]]
+    @test css_k(c72) == 12
+    g = min_distance_bz(c72; cap=20_000_000)
+    @test g.certified && g.d == 6                         # CERTIFIED d=6 in pure Julia
+end
