@@ -1,0 +1,68 @@
+[
+  {
+    "l": 12,
+    "m": 6,
+    "A": [
+      [
+        0,
+        0
+      ],
+      [
+        4,
+        3
+      ],
+      [
+        11,
+        3
+      ]
+    ],
+    "B": [
+      [
+        0,
+        0
+      ],
+      [
+        5,
+        5
+      ],
+      [
+        10,
+        1
+      ]
+    ],
+    "verdict": "d>=10 UNRESOLVED within bounded budget; d>=9 PROVEN stands"
+  },
+  {
+    "l": 6,
+    "m": 12,
+    "A": [
+      [
+        0,
+        0
+      ],
+      [
+        1,
+        8
+      ],
+      [
+        2,
+        1
+      ]
+    ],
+    "B": [
+      [
+        0,
+        0
+      ],
+      [
+        3,
+        10
+      ],
+      [
+        3,
+        11
+      ]
+    ],
+    "verdict": "d>=10 not attempted to completion; d>=9 PROVEN stands"
+  }
+]

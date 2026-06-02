@@ -1,0 +1,46 @@
+[
+  {
+    "l": 6,
+    "m": 12,
+    "n": 144,
+    "k": 12,
+    "css": true,
+    "A": [
+      [
+        0,
+        0
+      ],
+      [
+        1,
+        3
+      ],
+      [
+        2,
+        3
+      ]
+    ],
+    "B": [
+      [
+        0,
+        0
+      ],
+      [
+        1,
+        4
+      ],
+      [
+        2,
+        11
+      ]
+    ],
+    "T": 8,
+    "geq_X": "certified",
+    "geq_Z": "certified",
+    "geq_time": 98.7,
+    "witness_weight": 8,
+    "wit_X": "witness(w=8)",
+    "wit_Z": "witness(w=8)",
+    "wit_time": 1.8,
+    "verdict": "EXACT d=8"
+  }
+]
