@@ -144,6 +144,30 @@ def test_genuine_noncss_is_css_inequivalent():
     assert lc_css_classify(p)["verdict"] == "CSS_INEQUIVALENT_TESTED"
 
 
+def test_uniform_clifford_H_preserves_S_breaks_css():
+    # H swaps X<->Z (preserves CSS); S maps X->Y (breaks CSS) — symplectic-exact behavior.
+    from qcode_discovery.clifford_equiv import _clifford_symplectic_mats, _apply_block, _is_css
+    css = PBBCode(6, 6, "1+x+y", "1+x^2+y^2", "", "")
+    n = css.n
+    SX, SZ = css.S[:, :n], css.S[:, n:]
+    M = _clifford_symplectic_mats()
+    assert _is_css(*_apply_block(SX, SZ, M["H"]))          # H preserves CSS
+    assert not _is_css(*_apply_block(SX, SZ, M["S"]))      # S breaks CSS
+
+
+def test_uniform_clifford_detects_S_equivalence():
+    # A CSS code transformed by uniform-S is non-CSS but must be DETECTED as uniform-Clifford-CSS.
+    from types import SimpleNamespace
+    from qcode_discovery.clifford_equiv import (_clifford_symplectic_mats, _apply_block,
+                                                uniform_clifford_lc_css)
+    import numpy as np
+    css = PBBCode(6, 6, "1+x+y", "1+x^2+y^2", "", "")
+    n = css.n
+    xb, zb = _apply_block(css.S[:, :n], css.S[:, n:], _clifford_symplectic_mats()["S"])
+    mock = SimpleNamespace(S=np.hstack([xb, zb]), n=n, l=6, m=6)
+    assert uniform_clifford_lc_css(mock)["css"] is True    # uniform-S recovers CSS
+
+
 # ----------------------------- BP-OSD distance bound (component 7; needs ldpc) -----------------------------
 import pytest
 

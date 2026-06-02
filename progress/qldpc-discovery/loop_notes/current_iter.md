@@ -1,4 +1,18 @@
-# current_iter — window 1, iters 2-13 (blind discovery loop)
+# current_iter — window 1, iters 2-14 (blind discovery loop)
+
+## iter14 (latest): uniform per-block Clifford LC-CSS check (component 13 -> ~complete)
+- clifford_equiv: _clifford_symplectic_mats (6 reps as 2x2 F2 maps), _apply_block, _is_css,
+  uniform_clifford_lc_css (App.E Step 1: 36 uniform per-block assignments + rank condition).
+  lc_css_classify now: CSS_GROUP -> UNIFORM_CLIFFORD_CSS -> HADAMARD_CSS -> CSS_INEQUIVALENT_TESTED.
+- Verified symplectic-exact: H preserves CSS, S breaks CSS (X->Y); uniform-S-transformed CSS code
+  is DETECTED as uniform-Clifford-CSS. 40 tests pass; audit PASS.
+- Component 13 now matches the PAPER'S OWN coverage (rank cond + Hadamard {I,H} + uniform Clifford);
+  residual non-uniform {SH,HSH} on block-1 + cross-class patterns are the paper's ADMITTED gaps (a),(b).
+- ALL 13 components now PROVEN (component 13 to paper-parity). Remaining open: gross d=12 MILP re-run [HOLE].
+- Loop continues: gross d=12 verification (bounded); wider campaigns; periodic self-evolution window.
+
+---
+
 
 ## iter13 (latest): README + Bravyi (2308.07915) pipeline-0 decomposition (escalation)
 - iter13a: project README.md (front-door "final product" doc).

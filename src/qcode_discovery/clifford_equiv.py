@@ -67,6 +67,48 @@ def hadamard_two_coloring(SX: np.ndarray, SZ: np.ndarray) -> dict:
     return {"feasible": True, "y_obstruction": False, "H_pattern": pattern}
 
 
+def _clifford_symplectic_mats() -> dict:
+    """The 6 single-qubit-Clifford coset reps as 2x2 F(2) symplectic maps on (x,z)^T.
+
+    I, S:(x,z)->(x, x+z), H:(x,z)->(z,x), and the products HS, SH, HSH (App. E reduction to
+    6 reps mod the Pauli group). All over F(2).
+    """
+    I = np.array([[1, 0], [0, 1]], np.uint8)
+    S = np.array([[1, 0], [1, 1]], np.uint8)
+    H = np.array([[0, 1], [1, 0]], np.uint8)
+    mul = lambda P, Q: (P @ Q) & 1
+    return {"I": I, "S": S, "H": H, "HS": mul(H, S), "SH": mul(S, H), "HSH": mul(H, mul(S, H))}
+
+
+def _apply_block(Xb, Zb, M):
+    """Transform a qubit block's (X,Z) supports by a single 2x2 symplectic Clifford map M."""
+    Xn = (M[0, 0] * Xb + M[0, 1] * Zb) & 1
+    Zn = (M[1, 0] * Xb + M[1, 1] * Zb) & 1
+    return Xn, Zn
+
+
+def _is_css(SX, SZ) -> bool:
+    """Group-CSS rank condition (Lemma 7.4): rank[X|Z] == rank X + rank Z over GF(2)."""
+    return gf2.rank(np.hstack([SX, SZ])) == gf2.rank(SX) + gf2.rank(SZ)
+
+
+def uniform_clifford_lc_css(code) -> dict:
+    """App. E Step 1: does any of the 36 uniform per-block single-qubit Clifford assignments
+    render the stabilizer group CSS (by the rank condition)? Returns {css, pattern}."""
+    n, lm = code.n, code.l * code.m
+    SX, SZ = code.S[:, :n], code.S[:, n:]
+    X1, X2 = SX[:, :lm], SX[:, lm:]
+    Z1, Z2 = SZ[:, :lm], SZ[:, lm:]
+    mats = _clifford_symplectic_mats()
+    for n1, M1 in mats.items():
+        for n2, M2 in mats.items():
+            x1, z1 = _apply_block(X1, Z1, M1)
+            x2, z2 = _apply_block(X2, Z2, M2)
+            if _is_css(np.hstack([x1, x2]), np.hstack([z1, z2])):
+                return {"css": True, "pattern": (n1, n2)}
+    return {"css": False, "pattern": None}
+
+
 def lc_css_classify(code) -> dict:
     """Classify a PBBCode's CSS-equivalence under the tested single-qubit-Clifford families.
 
@@ -78,7 +120,10 @@ def lc_css_classify(code) -> dict:
     SX, SZ = code.S[:, :n], code.S[:, n:]
     if code.is_css_group():
         return {"verdict": "CSS_GROUP", "hadamard": None}
-    had = hadamard_two_coloring(SX, SZ)
+    uni = uniform_clifford_lc_css(code)                       # App. E Step 1 (36 uniform assignments)
+    if uni["css"]:
+        return {"verdict": "UNIFORM_CLIFFORD_CSS", "pattern": uni["pattern"], "hadamard": None}
+    had = hadamard_two_coloring(SX, SZ)                       # App. E non-uniform {I,H}
     if had["feasible"]:
         return {"verdict": "HADAMARD_CSS", "hadamard": had, "H_weight": int(had["H_pattern"].sum())}
     return {"verdict": "CSS_INEQUIVALENT_TESTED", "hadamard": had}
