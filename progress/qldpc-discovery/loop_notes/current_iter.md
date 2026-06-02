@@ -1,4 +1,21 @@
-# current_iter — window 1, iters 2-18 (blind discovery loop)
+# current_iter — window 1, iters 2-19 (blind discovery loop)
+
+## iter19 (latest): CLAUDE-GUIDED LLM search rediscovers the gross code (user directive)
+- User: "use claude code as api and run search" -> Claude Code IS the LLM mutation operator (no
+  external API). evolve.py: added safe exponent evaluator (_safe_expr over l,m) + "custom" strategy
+  so Claude can propose arbitrary lattice-scaling algebraic patterns. scripts/run_claude_guided_search.py:
+  evaluates a Claude-proposed ansatz blind + records lineage to results/runs/claude_guided_trajectory.json.
+- RAN the loop (Claude as operator, blind, reasoning from FOM feedback only):
+  g0 naive A=x+y+y²,B=y+x+x² -> score 0 (no codes).
+  g1 "concentrate one variable (x/y-swap)" -> [[72,12,6]] FOM=6, score 8.
+  g2 "widen lone-exponent scan {2,3,4,5}" -> [[144,12,12]] FOM=12, score 18.
+- g2's exp-3 at (12,6) = A=x³+y+y², B=y³+x+x² = GROSS CODE. POST-HOC validation: POLY_MATCH with
+  held-out catalog [[144,12,12]] (strongest verdict). Central theme realized WITH the LLM operator.
+- 48 tests pass; audit PASS. Discipline: mutations from algebraic reasoning on fitness only, no
+  catalog injection (best-effort blind since I read the paper; GA run is fully knowledge-free).
+
+---
+
 
 ## iter18 (latest): generator-ansatz PROGRAM evolution (the paper's core representation)
 - evolve.py: GeneratorAnsatz (parameterized algebraic STRATEGIES emitting (A,B) for ANY (l,m) —

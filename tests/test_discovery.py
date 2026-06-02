@@ -168,6 +168,24 @@ def test_ansatz_generalizes_across_lattices():
         assert css_k(code.HX, code.HZ) >= 0
 
 
+def test_custom_ansatz_lattice_scaled_and_safe_expr():
+    # The 'custom' strategy lets the (Claude) LLM operator propose lattice-scaling patterns; the
+    # exponent evaluator is safe (no arbitrary code). 'l//3' at (12,6) -> exponent 3 (gross-code skeleton).
+    from qcode_discovery.evolve import GeneratorAnsatz, _safe_expr
+    assert _safe_expr("l//3", 12, 6) == 4          # 12 // 3
+    assert _safe_expr("2*m//3", 12, 6) == 4        # 2*6 // 3
+    # literal exponent 3 (from the gen-2 lone-exponent scan) -> A=x^3+y+y^2, B=y^3+x+x^2 = gross code
+    a = GeneratorAnsatz([{"kind": "custom",
+                          "params": {"A": [[3, 0], [0, 1], [0, 2]], "B": [[0, 3], [1, 0], [2, 0]]}}])
+    A, B = a.generate(12, 6)[0]
+    code = BBCode(12, 6, A, B)
+    from qcode_discovery.metrics import css_k
+    assert code.n == 144 and css_k(code.HX, code.HZ) == 12
+    import pytest as _pt
+    with _pt.raises(Exception):
+        _safe_expr("__import__('os').system('echo hi')", 12, 6)   # unsafe -> rejected
+
+
 def test_mutate_ansatz_stays_valid_and_llm_is_gated():
     import random
     from qcode_discovery.evolve import random_ansatz, mutate_ansatz, llm_mutation

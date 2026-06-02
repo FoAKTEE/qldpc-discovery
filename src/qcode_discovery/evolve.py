@@ -9,10 +9,36 @@ edit the program (GA-G, the paper's non-LLM baseline, runnable now). The LLM mut
 """
 from __future__ import annotations
 
+import ast
+import operator as _op
 import random
 from dataclasses import dataclass, field
 
 from .evaluation import evaluate_css
+
+_SAFE_OPS = {ast.Add: _op.add, ast.Sub: _op.sub, ast.Mult: _op.mul,
+             ast.FloorDiv: _op.floordiv, ast.Mod: _op.mod, ast.USub: _op.neg}
+
+
+def _safe_expr(expr, l: int, m: int) -> int:
+    """Evaluate an exponent expression over {l, m, ints, + - * // %} safely (no arbitrary code).
+
+    Lets the LLM mutation operator propose lattice-scaling patterns like 'l//3', '2*m//3'."""
+    if isinstance(expr, int):
+        return expr
+    node = ast.parse(str(expr), mode="eval").body
+
+    def ev(n):
+        if isinstance(n, ast.Constant) and isinstance(n.value, int):
+            return n.value
+        if isinstance(n, ast.Name) and n.id in ("l", "m"):
+            return {"l": l, "m": m}[n.id]
+        if isinstance(n, ast.BinOp) and type(n.op) in _SAFE_OPS:
+            return _SAFE_OPS[type(n.op)](ev(n.left), ev(n.right))
+        if isinstance(n, ast.UnaryOp) and type(n.op) in _SAFE_OPS:
+            return _SAFE_OPS[type(n.op)](ev(n.operand))
+        raise ValueError(f"unsafe exponent expr: {ast.dump(n)}")
+    return ev(node)
 
 
 @dataclass
@@ -41,6 +67,9 @@ def _emit(strategy: dict, l: int, m: int):
         j = max(1, (p["j_num"] * l) // p["j_den"]) % l or 1
         A = [(0, 0), (0, 1 % m), (0, 2 % m)]
         B = [(0, 0), (j, 0), ((2 * j) % l, 0)]
+    elif k == "custom":                    # LLM-proposed: A,B as monomials with exponents expr(l,m)
+        A = [(_safe_expr(a, l, m) % l, _safe_expr(b, l, m) % m) for (a, b) in p["A"]]
+        B = [(_safe_expr(a, l, m) % l, _safe_expr(b, l, m) % m) for (a, b) in p["B"]]
     else:
         raise ValueError(f"unknown strategy {k}")
     return sorted(set(A)), sorted(set(B))

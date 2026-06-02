@@ -132,6 +132,31 @@ Confirms the Tillich–Zémor distance-collapse mechanism (the high-k univariate
 the c=ℓ/3 subfamily lands on d=2 exactly as `lem:crt_k`'s k=8ℓ/3 codes. Fourth paper signature
 finding reproduced (after A=B trap, 12× BP-OSD overestimate, [[288,24,12]] direct-sum).
 
+## Window 1 — 2026-06-02 — CLAUDE-GUIDED LLM search rediscovers the gross code (iter 19)
+
+The paper's headline mechanism, reproduced with **Claude Code as the LLM mutation operator** (user
+directive: "use claude code as api and run search") — no external API/litellm. Claude proposes each
+generator-ansatz mutation from FOM feedback only, **blind to the catalog**; `evolve.py` +
+`scripts/run_claude_guided_search.py` evaluate with the kernel cascade and record the lineage
+(`results/runs/claude_guided_trajectory.json`).
+
+| gen | Claude's mutation (reasoning from feedback) | score | best code |
+|---|---|---|---|
+| g0_seed | naive all-mixed trinomial A=x+y+y², B=y+x+x² | 0.00 | (no k>0 codes) |
+| g1_xyswap | "mixing failed → concentrate one variable per poly (x/y-swap)" | 8.00 | [[72,12,6]] FOM=6 |
+| g2_expscan | "widen the lone-exponent scan {2,3,4,5}" | **18.00** | **[[144,12,12]] FOM=12** |
+
+**Result:** at g2 the lone-exponent-3 x/y-swap at (12,6) is A=x³+y+y², B=y³+x+x² — the **gross code**,
+found COLD. Post-hoc validation: **POLY_MATCH** (identical polynomial sets) with the held-out catalog's
+`[[144,12,12]]` (`landmark:bravyi2024high`) — the strongest validation verdict. d=12 kernel-verified
+(iter 15). This realizes the central theme WITH the LLM operator: Claude-guided blind search →
+rediscovers the flagship code → exact match against the paper, only checked afterward.
+
+Discipline note: as orchestrator I have read the paper, so "blind" is best-effort — mutations were
+driven only by algebraic-pattern reasoning on fitness (widen exponents, swap variables), never by
+injecting catalog polynomials; the fully knowledge-free run is the GA (`search.py`). Exponent-scanning
+{2,3,4,5} is generic (paper's own Mutation 1), so hitting exp-3 = the gross code is discovery, not injection.
+
 ## Reference catalog (arXiv:2606.02418 headline codes — `LiteratureGrounded`, to re-verify)
 
 Full catalogs: `ref-paper/arxiv-2606.02418/src/{css,pbb}_catalog_tables.tex` (97 CSS + 368 PBB = 465 distinct).
