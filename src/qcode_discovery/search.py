@@ -79,6 +79,7 @@ def blind_search_css(lattices, *, n_random=400, generations=0, distance_budget=8
     rng = random.Random(seed)
     arch = Archive()
     n_eval = n_dist = 0
+    evaluated: list[dict] = []                          # every distance-evaluated representation
     say = log if log else (lambda *_: None)
 
     for (l, m) in lattices:
@@ -115,6 +116,8 @@ def blind_search_css(lattices, *, n_random=400, generations=0, distance_budget=8
         for (k, A, B) in selection:
             res = evaluate_css(l, m, A, B, time_limit=time_limit, max_logicals=max_logicals)
             n_dist += 1
+            if res.get("d"):
+                evaluated.append(res)
             if arch.consider(res):
                 say(f"  [{l},{m}] discovered [[{res['n']},{res['k']},{res['d']}]] "
                     f"FOM={res['fom']:.2f} exact={res['exact']}")
@@ -129,11 +132,14 @@ def blind_search_css(lattices, *, n_random=400, generations=0, distance_budget=8
                 continue
             res = evaluate_css(l, m, A, B, time_limit=time_limit, max_logicals=max_logicals)
             n_dist += 1
+            if res.get("d"):
+                evaluated.append(res)
             if arch.consider(res):
                 say(f"  gen{g+1} [{l},{m}] improved [[{res['n']},{res['k']},{res['d']}]] "
                     f"FOM={res['fom']:.2f} exact={res['exact']}")
 
-    return {"archive_elites": arch.elites(), "n_evaluated": n_eval, "n_distance_evals": n_dist}
+    return {"archive_elites": arch.elites(), "evaluated": evaluated,
+            "n_evaluated": n_eval, "n_distance_evals": n_dist}
 
 
 def random_commuting_pbb(l, m, rng, base_weight=3, pert_weights=(1, 2, 3), tries=40):

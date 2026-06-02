@@ -41,6 +41,19 @@ def main() -> int:
         time_limit=args.time_limit, max_logicals=args.max_logicals, seed=args.seed, log=print,
     )
     elites = out["archive_elites"]
+
+    # Deduplicate distance-evaluated CSS representations by lattice-symmetry equivalence
+    # (component 11) -> "N representations -> M distinct codes", mirroring the paper.
+    n_distinct = None
+    if args.type == "css" and out.get("evaluated"):
+        from qcode_discovery.bb_codes import BBCode          # noqa: E402
+        from qcode_discovery.dedup import dedup_bb            # noqa: E402
+        reps = [BBCode(r["l"], r["m"], r["A"], r["B"]) for r in out["evaluated"]]
+        dd = dedup_bb(reps)
+        n_distinct = dd["n_distinct"]
+        print(f"\ndedup (lattice-symmetry): {len(reps)} representations -> {n_distinct} distinct "
+              f"(conservative upper bound)")
+
     print(f"\n=== BLIND DISCOVERIES (k-screened={out['n_evaluated']}, distance-evals={out['n_distance_evals']}) ===")
     print(f"{'code':>18}  {'FOM':>6}  {'exact':>5}  pattern")
     for r in elites:
@@ -52,6 +65,7 @@ def main() -> int:
         "type": args.type, "seed": args.seed, "lattices": lattices,
         "n_k_screened": out["n_evaluated"], "n_distance_evals": out["n_distance_evals"],
         "n_commuting": out.get("n_commuting"),
+        "n_representations": len(out.get("evaluated", [])), "n_distinct": n_distinct,
         "discoveries": [
             {"n": r["n"], "k": r["k"], "d": r["d"], "fom": round(r["fom"], 3),
              "exact": r["exact"], "l": r["l"], "m": r["m"], "A": r["A"], "B": r["B"]}

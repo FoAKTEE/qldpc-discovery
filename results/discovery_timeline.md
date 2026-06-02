@@ -43,7 +43,16 @@ Run ONLY after the blind campaign (`scripts/validate_against_paper.py`; 227 refe
 2 landmarks + 225 parsed catalog reps):
 - `[[72,12,6]]` → **UB_CONSISTENT** with Bravyi's `[[72,12,6]]` MILP-validation code (k=12, d≤6 ⊆ d=6). ✓
 - Remaining n=36/72 discoveries → NOVEL_AT_N (the CSS catalog starts at n=144) — honest.
-- Next scale-up (loop): blind runs at n=144/288 to match the catalog directly (e.g. gross `[[144,12,12]]`).
+
+**Extension (iter 8, seed 11, lattices (12,6)+(6,6), dedup wired in):** blind search reached
+**n=144** (the catalog's block length). Found `[[144,16,d≤6]]`, `[[144,4,d≤18]]`, `[[144,8,d≤8]]`,
+and again `[[72,12,6]]` (gross-family, reproducible across seeds). Dedup (component 11): 13
+representations → 13 distinct. Post-hoc validation:
+- `[[144,16,6]]` → **UB_CONSISTENT** with catalog `[[144,16,6]]` (k=16 exact, d≤6 ⊆ 6) — a DIRECT
+  catalog match at n=144. ✓
+- `[[144,8,8]]`, `[[72,12,6]]` → UB_CONSISTENT (catalog [[144,8,12]] / Bravyi [[72,12,6]]).
+Honest caveat: n=144 d-values are MILP upper bounds (2 s/logical, 6-logical cap); the exact
+high-d gross [[144,12,12]] needs the paper's heavier compute (140 h + LLM), not a bounded random+GA run.
 
 ## Window 1 — 2026-06-02 — BLIND non-CSS PBB discovery (seed 5, catalog-blind)
 

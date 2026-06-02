@@ -39,6 +39,7 @@ def test_search_runs_blind_and_finds_codes():
     assert out["n_evaluated"] == 120
     assert len(elites) >= 1
     assert all(e["k"] > 0 and e["fom"] > 0 for e in elites)
+    assert "evaluated" in out and all(r.get("d") for r in out["evaluated"])  # reps retained for dedup
 
 
 def test_mutation_preserves_weight():
