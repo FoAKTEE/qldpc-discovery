@@ -133,6 +133,26 @@ def test_genuine_noncss_is_css_inequivalent():
     assert lc_css_classify(p)["verdict"] == "CSS_INEQUIVALENT_TESTED"
 
 
+# ----------------------------- BP-OSD distance bound (component 7; needs ldpc) -----------------------------
+import pytest
+
+
+def test_bposd_matches_milp_on_gross():
+    pytest.importorskip("ldpc")
+    from qcode_discovery.distance_bposd import bposd_distance
+    g = BBCode(6, 6, "y+y^2+x^3", "y^3+x+x^2")        # [[72,12,6]]
+    assert bposd_distance(g, trials=300, seed=0)["d_bound"] == 6   # matches MILP exact
+
+
+def test_bposd_overestimates_high_rate_ab_code():
+    # Reproduce the paper's headline finding: BP-OSD grossly overestimates d for high-rate codes.
+    pytest.importorskip("ldpc")
+    from qcode_discovery.distance_bposd import bposd_distance
+    ab = BBCode(12, 6, "x^4+1+y^2", "x^4+1+y^2")      # A=B [[144,32,2]], TRUE d=2 (thm:ab_d2)
+    bound = bposd_distance(ab, trials=100, seed=0)["d_bound"]
+    assert bound is not None and bound > 2             # overestimate vs the proven exact d=2
+
+
 # ----------------------------- dedup (lattice-symmetry equivalence) -----------------------------
 from qcode_discovery.dedup import canonical_poly_signature, dedup_bb
 

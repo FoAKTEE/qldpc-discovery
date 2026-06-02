@@ -78,6 +78,21 @@ filtered (~17% hit, matches paper's ~10%), symplectic-MILP distance, FOM fitness
 Net: the blind→validate loop is demonstrated for BOTH families — CSS (UB_CONSISTENT vs Bravyi
 `[[72,12,6]]`) and non-CSS (exact MATCH vs PBB `[[36,2,6]]`).
 
+## Window 1 — 2026-06-02 — BP-OSD overestimation reproduced (iter 9, escalation: ldpc installed)
+
+Component 7 (BP-OSD distance bound) now implemented via the `ldpc` library (escalation install).
+The paper's headline methodological finding is REPRODUCED:
+
+| code | BP-OSD bound | true d | note |
+|---|---|---|---|
+| `[[72,12,6]]` gross | 6 | 6 (MILP) | BP-OSD matches exact for low-rate codes |
+| `[[144,32,2]]` A=B | **24** | **2** (`thm:ab_d2` + MILP) | **12× overestimate** — high-rate failure mode |
+
+This ties three independent verifiers together: `thm:ab_d2` (proves d=2), MILP (d=2 exact), and
+BP-OSD (d≤24, grossly wrong) — exactly the paper's argument that high-rate distance claims need
+exact verification. BP-OSD is wired into the cascade as the fast Stage-2 estimator (`evaluate_css
+distance_method="bposd"`); MILP remains Stage-3 (exact). `igraph` also installed (true BLISS [next]).
+
 ## Reference catalog (arXiv:2606.02418 headline codes — `LiteratureGrounded`, to re-verify)
 
 Full catalogs: `ref-paper/arxiv-2606.02418/src/{css,pbb}_catalog_tables.tex` (97 CSS + 368 PBB = 465 distinct).

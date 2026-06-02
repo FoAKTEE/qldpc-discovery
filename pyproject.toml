@@ -5,6 +5,11 @@ description = "Reproduction of arXiv:2606.02418 — LLM-guided evolutionary disc
 requires-python = ">=3.10"
 dependencies = ["numpy>=1.24", "scipy>=1.11"]
 
+[project.optional-dependencies]
+# Unlock component 7 (BP-OSD distance) and exact BLISS dedup (component 11).
+# Install with: pip install --user ldpc python-igraph
+decoders = ["ldpc>=2.2", "python-igraph>=0.11"]
+
 [tool.pytest.ini_options]
 pythonpath = ["src"]
 testpaths = ["tests"]

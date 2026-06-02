@@ -44,6 +44,10 @@ def evaluate_css(l, m, A, B, distance_method: str = "milp", time_limit: float = 
     if distance_method == "enum":
         dres = css_distance_enum(code, max_weight=enum_max_weight)
         res["d"], res["exact"] = dres["d"], dres["exhausted"]
+    elif distance_method == "bposd":                  # fast Stage-2 estimator (UPPER bound, not exact)
+        from .distance_bposd import bposd_distance
+        dres = bposd_distance(code, trials=int(time_limit * 100) or 100)
+        res["d"], res["exact"] = dres["d_bound"], False
     else:
         dres = css_distance_milp(code, time_limit=time_limit, max_logicals=max_logicals)
         res["d"], res["exact"] = dres["d"], dres["exact"]

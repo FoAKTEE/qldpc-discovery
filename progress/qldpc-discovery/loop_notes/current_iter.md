@@ -1,4 +1,16 @@
-# current_iter — window 1, iters 2-7 (blind discovery loop)
+# current_iter — window 1, iters 2-9 (blind discovery loop)
+
+## iter9 (latest): ESCALATION install (ldpc+igraph) + BP-OSD (component 7) + overestimation reproduced
+- pip --user --break-system-packages installed ldpc 2.4.1 + igraph 1.0.0 (PEP668 workaround).
+- distance_bposd.py: H_eff=(check;L) decode random logical cosets -> upper bound (paper V.A/C).
+  Wired into cascade as Stage-2 (distance_method="bposd"); MILP stays Stage-3 exact.
+- REPRODUCED paper headline: [[72,12,6]] bposd=6 (=MILP); A=B [[144,32,2]] bposd=24 vs TRUE d=2
+  (thm:ab_d2+MILP) = 12x overestimate. 36 tests pass; audit PASS.
+- iter8: dedup wired in + blind CSS at n=144 -> [[144,16,6]] UB_CONSISTENT w/ catalog (direct match).
+- Next: iter10 true BLISS via igraph (component 11 -> exact, drop [FUTURE]); then larger campaigns.
+
+---
+
 
 ## iter7 (latest): Tanner dedup (component 11) — FULL APPARATUS COMPLETE
 - dedup.py: WL-histogram FAILED verification (bi-regular Tanner graphs -> trivial coloring,
