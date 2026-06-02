@@ -155,6 +155,35 @@ def test_uniform_clifford_H_preserves_S_breaks_css():
     assert not _is_css(*_apply_block(SX, SZ, M["S"]))      # S breaks CSS
 
 
+def test_ansatz_generalizes_across_lattices():
+    # The paper's key representation property: ONE generator ansatz emits valid codes at MANY lattices.
+    from qcode_discovery.evolve import GeneratorAnsatz
+    from qcode_discovery.metrics import css_k
+    a = GeneratorAnsatz([{"kind": "xyswap", "params": {"a": 3, "b": 1, "c": 2, "d": 3, "e": 1, "f": 2}}])
+    for (l, m) in [(6, 6), (12, 6), (15, 12)]:
+        gens = a.generate(l, m)
+        assert gens, f"ansatz produced nothing at ({l},{m})"
+        A, B = gens[0]
+        code = BBCode(l, m, A, B)                    # builds + CSS-validates
+        assert css_k(code.HX, code.HZ) >= 0
+
+
+def test_mutate_ansatz_stays_valid_and_llm_is_gated():
+    import random
+    from qcode_discovery.evolve import random_ansatz, mutate_ansatz, llm_mutation
+    rng = random.Random(0)
+    a = random_ansatz(rng)
+    for _ in range(15):
+        a = mutate_ansatz(a, rng)
+        assert a.generate(6, 6) is not None          # still a runnable program
+    # LLM mutation (the paper's headline) is credential-gated -> must refuse cleanly.
+    try:
+        llm_mutation(a, "feedback")
+        assert False, "llm_mutation should be blocked without credentials"
+    except NotImplementedError as e:
+        assert "credential" in str(e).lower() or "API key" in str(e)
+
+
 def test_uniform_clifford_detects_S_equivalence():
     # A CSS code transformed by uniform-S is non-CSS but must be DETECTED as uniform-Clifford-CSS.
     from types import SimpleNamespace

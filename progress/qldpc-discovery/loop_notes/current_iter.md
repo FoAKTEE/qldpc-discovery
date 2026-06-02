@@ -1,4 +1,23 @@
-# current_iter — window 1, iters 2-16 (blind discovery loop)
+# current_iter — window 1, iters 2-18 (blind discovery loop)
+
+## iter18 (latest): generator-ansatz PROGRAM evolution (the paper's core representation)
+- evolve.py: GeneratorAnsatz (parameterized algebraic STRATEGIES emitting (A,B) for ANY (l,m) —
+  exponents scaled to the lattice, so one ansatz generalizes across block lengths, the paper's key
+  property). GA-G program mutation (perturb params / add / remove strategy — paper's non-LLM baseline,
+  runnable). evolve_ansaetze (cross-lattice FOM fitness). llm_mutation = the paper's headline operator,
+  [FUTURE: needs litellm + funded API key + openevolve] — credential-gated, refuses cleanly.
+- FAITHFUL caveat reproduced: BP-OSD fitness inflates high-k FOM (a run posted [[144,32,d_BP=20]]
+  FOM=88.89 — a BP-OSD overestimate that slipped the trust filter). This IS the paper's Campaign-1-3
+  fitness-corruption; reported ansatz codes are UPPER BOUNDS needing Stage-3 MILP (verify_elites_milp).
+- 47 tests pass; audit PASS (audit caught my llm_mutation stub using [BLOCKING] not [FUTURE] -> fixed).
+- The ONE genuinely remaining framework piece is the LLM mutation operator, gated on user-provided
+  API credentials + budget (~$400 in paper). Everything else reproduced + verified.
+
+## iter17: univariate distance collapse d in {2,4} (paper Sec VI.A) — 4th signature finding reproduced.
+## iter16: self-evolution window (results/ by type + EXTENDING.md).
+
+---
+
 
 ## iter16 (latest): SELF-EVOLUTION window (explicit user directive)
 - Reorganized results/ by type (no mixed kinds): results/runs/*.json (raw runs),

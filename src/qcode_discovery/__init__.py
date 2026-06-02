@@ -10,6 +10,6 @@ from __future__ import annotations
 __all__ = [
     "gf2", "polynomials", "bb_codes", "pbb_codes", "metrics",
     "distance_milp", "distance_enum", "distance_bposd", "tanner", "theorems",
-    "evaluation", "search", "validation", "clifford_equiv", "dedup",
+    "evaluation", "search", "evolve", "validation", "clifford_equiv", "dedup",
 ]
 __version__ = "0.1.0"
