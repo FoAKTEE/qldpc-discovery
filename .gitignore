@@ -1,0 +1,25 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ipynb_checkpoints/
+*.so
+
+# --- Large / reproducible source artifacts (kept reproducible via PROVENANCE.md) ---
+# tex source under ref-paper/*/src/ IS committed (rule 8); the binaries are not.
+ref-paper/**/eprint.tar.gz
+ref-paper/**/*.pdf
+
+# --- ref-code: cloned reference repos are read-only mirrors, NOT committed. ---
+# Their extracted dependency analysis lives in reformulate/ and is committed.
+ref-code/*/
+
+# --- nested methodology repo (its own git remote FoAKTEE/phys-agentic-loop) ---
+# Tracked in its own repo on branch agentic-lean; NOT embedded in the parent.
+phys-agentic-loop/
+
+# --- scratch ---
+*.tmp
+*.log
+/tmp_*
