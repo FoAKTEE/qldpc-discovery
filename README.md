@@ -52,7 +52,13 @@ tests/                 test suite (kernel · discovery · CLI)
 docs/                  index, usage, architecture, REPORT, EXTENDING
 examples/              runnable quickstart
 results/               runtime output: runs/ (*.json) · validation/ (*.md)  [created on demand]
+julia/                 pure-Julia rewrite (in progress) — see julia/README.md
 ```
+
+> **Julia rewrite (in progress).** A pure-Julia port with no C/C++ dependencies is under way in
+> [`julia/`](julia/). The scientific kernel (GF(2) algebra, BB construction, k, FOM, the two theorem
+> witnesses, and a pure-Julia exact distance replacing the HiGHS MILP) is ported and cross-validated
+> against this Python package (24 tests pass). The scalable solver and BP-OSD decoder are staged.
 
 ## Results
 
