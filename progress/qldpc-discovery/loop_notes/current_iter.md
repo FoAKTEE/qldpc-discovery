@@ -1,4 +1,18 @@
-# current_iter — window 1, iters 2-9 (blind discovery loop)
+# current_iter — window 1, iters 2-10 (blind discovery loop)
+
+## iter10 (latest): exact BLISS dedup via igraph (component 11 -> PROVEN) + dedup_bb bugfix
+- dedup.bliss_canonical_hash / dedup_bliss: igraph color-respecting canonical labeling
+  (qubits/X-checks/Z-checks) — SOUND+COMPLETE for permutation equivalence. Wired into campaign
+  (BLISS when igraph present, lattice-symmetry fallback else).
+- Verified vs paper: [[288,24,12]] (12,12) and (24,6) -> SAME BLISS canonical (the direct-sum
+  claim); BLISS catches this cross-lattice iso that lattice-symmetry dedup_bb cannot.
+- BUGFIX: dedup_bb signature now includes (l,m) — identical polys at different lattices are
+  different codes; previously wrongly merged. 37 tests pass; audit PASS.
+- KERNEL STATUS: components 1-13 all PROVEN except 13 (LC) PARTIAL. BP-OSD(7) + BLISS(11) now exact.
+- Next: complete component 13 LC enumeration; larger consolidated blind campaigns w/ BP-OSD Stage-2.
+
+---
+
 
 ## iter9 (latest): ESCALATION install (ldpc+igraph) + BP-OSD (component 7) + overestimation reproduced
 - pip --user --break-system-packages installed ldpc 2.4.1 + igraph 1.0.0 (PEP668 workaround).

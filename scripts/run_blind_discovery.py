@@ -47,12 +47,15 @@ def main() -> int:
     n_distinct = None
     if args.type == "css" and out.get("evaluated"):
         from qcode_discovery.bb_codes import BBCode          # noqa: E402
-        from qcode_discovery.dedup import dedup_bb            # noqa: E402
+        from qcode_discovery.dedup import dedup_bb, dedup_bliss  # noqa: E402
         reps = [BBCode(r["l"], r["m"], r["A"], r["B"]) for r in out["evaluated"]]
-        dd = dedup_bb(reps)
+        try:
+            import igraph  # noqa: F401
+            dd, method = dedup_bliss(reps), "BLISS (exact)"
+        except Exception:
+            dd, method = dedup_bb(reps), "lattice-symmetry (upper bound)"
         n_distinct = dd["n_distinct"]
-        print(f"\ndedup (lattice-symmetry): {len(reps)} representations -> {n_distinct} distinct "
-              f"(conservative upper bound)")
+        print(f"\ndedup [{method}]: {len(reps)} representations -> {n_distinct} distinct")
 
     print(f"\n=== BLIND DISCOVERIES (k-screened={out['n_evaluated']}, distance-evals={out['n_distance_evals']}) ===")
     print(f"{'code':>18}  {'FOM':>6}  {'exact':>5}  pattern")

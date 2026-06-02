@@ -168,3 +168,21 @@ def test_dedup_merges_equivalent_separates_distinct():
     assert sg(gross) != sg(diff) and sg(gross) != sg(ab)
     res = dedup_bb([gross, relab, swapAB, diff, ab])
     assert res["n_distinct"] == 3
+
+
+def test_bliss_dedup_exact_and_cross_lattice():
+    # igraph/BLISS is the exact method; it also catches cross-lattice isomorphism that the
+    # lattice-symmetry canonicalization (within fixed (l,m)) cannot.
+    pytest.importorskip("igraph")
+    from qcode_discovery.dedup import dedup_bliss, bliss_canonical_hash
+    gross = BBCode(12, 6, "y+y^2+x^3", "y^3+x+x^2")
+    relab = BBCode(12, 6, "y+y^2+x^3", "y^3+x^5+x^10")
+    diff  = BBCode(12, 6, "y+y^2+x^4", "y^3+x+x^2")
+    assert bliss_canonical_hash(gross.HX, gross.HZ) == bliss_canonical_hash(relab.HX, relab.HZ)
+    assert bliss_canonical_hash(gross.HX, gross.HZ) != bliss_canonical_hash(diff.HX, diff.HZ)
+    # [[288,24,12]] = gross (+) gross, appearing at (12,12) and (24,6): BLISS merges (paper);
+    # lattice-symmetry dedup cannot (different lattices).
+    c1212 = BBCode(12, 12, "x^6+y+y^2", "y^3+x^2+x^4")
+    c246  = BBCode(24, 6, "x^6+y+y^2", "y^3+x^2+x^4")
+    assert dedup_bb([c1212, c246])["n_distinct"] == 2       # lattice-symmetry: distinct
+    assert dedup_bliss([c1212, c246])["n_distinct"] == 1    # BLISS: same Tanner graph
