@@ -49,7 +49,7 @@ def _min_weight_logical(check: np.ndarray, target: np.ndarray, time_limit: float
         integrality=np.ones(V),
         bounds=Bounds(lb, ub),
         constraints=[con],
-        options={"time_limit": time_limit, "mip_rel_gap": 0.0},
+        options={"time_limit": time_limit, "mip_rel_gap": 0.0, "disp": False},
     )
     if res.x is None:
         return None, False
@@ -131,7 +131,7 @@ def _min_weight_symplectic(SX, SZ, Lj, n, time_limit):
         integrality=np.ones(V),
         bounds=Bounds(lb, ub),
         constraints=[LinearConstraint(Aeq, rhs, rhs), LinearConstraint(Aor, 0, np.inf)],
-        options={"time_limit": time_limit, "mip_rel_gap": 0.0},
+        options={"time_limit": time_limit, "mip_rel_gap": 0.0, "disp": False},
     )
     if res.x is None:
         return None, False
