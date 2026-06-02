@@ -1,83 +1,78 @@
-# qldpc-discovery
+# qcode-discovery
 
-Reproduction of **arXiv:2606.02418** — *"Evolutionary Discovery of Bivariate Bicycle Codes
-with LLM-Guided Search"* (Cruz-Benito, Cross, Kremer, Faro; IBM) — as a runnable **codebase +
-pipeline + discovery timeline** for the autonomous discovery of bivariate-bicycle (BB) and
-perturbed-BB (PBB) quantum LDPC codes.
+> A verified, **catalog-blind** reproduction of *"Evolutionary Discovery of Bivariate Bicycle Codes
+> with LLM-Guided Search"* ([arXiv:2606.02418](https://arxiv.org/abs/2606.02418), Cruz-Benito, Cross,
+> Kremer, Faro; IBM) — built as a runnable Python package + discovery pipeline + results timeline.
 
-## Central principle — blind discovery, paper second
+`python · numpy · scipy` · optional `ldpc` + `python-igraph` · **49 tests passing** · code-quality audit: PASS
 
-The auto-discovery pipeline **rediscovers codes without using any answer extracted from the
-paper**: no catalog polynomials, no reported `[[n,k,d]]` as input. Only the *apparatus* (code
-construction, k via GF(2) rank, MILP/BP-OSD distance, FOM — the verifier) comes from the method.
-The search runs blind; the paper catalog is a **held-out test set** consulted only by a separate
-post-hoc validator. *The LLM/search proposes; the scientific kernel admits.*
+The LLM/search proposes generator ansätze; a **scientific kernel admits** them. Discovery runs
+**blind** to the paper; the catalog is consulted only *post-hoc*, as a held-out test set.
 
-## Pipeline architecture (matches the paper)
+## Install
 
+```bash
+pip install -e .                 # core: numpy, scipy
+pip install -e ".[decoders]"     # + ldpc (BP-OSD distance) + python-igraph (exact BLISS dedup)
 ```
-ansatz G(l,m) ─▶ Stage 1: k via GF(2) rank ─▶ Stage 2: BP-OSD distance + d/√n trust filter
-                                                          │ (fast, upper bounds)
-   MAP-Elites-lite archive (binned by k) ◀───────────────┘
-        │
-        ▼ Stage 3: MILP exact distance (certify; catches BP-OSD overestimates)
-   post-campaign: BLISS Tanner-graph dedup ─▶ decomposability ─▶ LC-CSS equivalence
-        │
-        ▼ results/discovery_timeline.md   ──(post-hoc)──▶  validation vs paper catalog
-```
-
-## Layout
-
-| Path | Contents |
-|---|---|
-| `src/qcode_discovery/` | the kernel + discovery + validation modules (pure numpy/scipy core) |
-| `tests/test_*.py` | verification suite (`python -m pytest -q`) |
-| `scripts/run_blind_discovery.py` | run a blind campaign (`--type css\|pbb`, `--distance-method bposd`, `--stage3-verify`) |
-| `scripts/validate_against_paper.py` | **post-hoc** validation vs the held-out catalog (`--type css\|pbb`) |
-| `scripts/code_quality_audit.py` | static code-quality diagnostic (R0–R4 policy) |
-| `results/` | `discovery_timeline.md`, blind-run JSON, validation reports |
-| `ref-paper/arxiv-2606.02418/` | paper tex mirror + `chunk_index` + digests (PROVENANCE recorded) |
-| `reformulate/qldpc-discovery/paper_2606.02418/` | decomposition: theorem + file logical-dependency DAGs |
-| `progress/qldpc-discovery/` | RESEARCH_NOTE, loop notes, typed ledger, external axioms |
-| `phys-agentic-loop/` | methodology infra (separate repo); ralph loop, code-quality policy, pipelines |
-
-## Modules (`src/qcode_discovery/`)
-
-`gf2` (F2 algebra) · `polynomials` (ring R=F2[x,y]/(xˡ−1,yᵐ−1)) · `bb_codes` (CSS) ·
-`pbb_codes` (non-CSS + commutativity) · `metrics` (k, FOM, logicals) ·
-`distance_milp` (CSS + symplectic, scipy/HiGHS) · `distance_enum` (exhaustive cross-check) ·
-`distance_bposd` (BP-OSD upper bound; needs `ldpc`) · `tanner` (decomposability) ·
-`dedup` (lattice-symmetry + exact BLISS; needs `igraph`) · `clifford_equiv` (LC-CSS Hadamard 2-coloring) ·
-`evaluation` (catalog-blind cascade) · `search` (blind GA/MAP-Elites) · `validation` (post-hoc, catalog) ·
-`theorems` (numeric witnesses for `thm:ab_d2`, `lem:crt_k`).
 
 ## Quickstart
 
+```python
+from qcode_discovery import BBCode, css_k, css_distance_milp, blind_search_css, validate
+
+gross = BBCode(12, 6, "y+y^2+x^3", "y^3+x+x^2")     # the gross code [[144,12,12]]
+print(gross.n, css_k(gross.HX, gross.HZ))            # 144 12
+```
 ```bash
-python -m pytest -q                                  # verify the kernel (landmarks below)
-PYTHONPATH=src python scripts/run_blind_discovery.py --type css --distance-method bposd --stage3-verify
-PYTHONPATH=src python scripts/validate_against_paper.py --type css
+qcode-discover --type css --distance-method bposd --stage3-verify --lattices 6x6,12x6
+qcode-validate --type css        # post-hoc, vs the held-out catalog
+qcode-audit                      # static code-quality audit
+```
+See **[examples/quickstart.py](examples/quickstart.py)** and **[docs/usage.md](docs/usage.md)**.
+
+## Features
+
+- **Verifier kernel** — BB (CSS) & PBB (non-CSS) construction; k via GF(2) rank; minimum distance by
+  CSS/symplectic MILP (HiGHS), exhaustive enumeration, and BP-OSD; FOM; Tanner decomposability;
+  exact BLISS dedup; local-Clifford CSS-equivalence; numeric witnesses for two paper theorems.
+- **Blind discovery** — a staged cascade (k → BP-OSD + trust filter → MILP) over GA / generator-ansatz
+  program evolution, importing only the kernel (never the catalog).
+- **Post-hoc validation** — compares blind discoveries to the paper catalog and landmark codes.
+
+## Repository layout
+
+```
+src/qcode_discovery/   library: algebra · codes · distance · structure · discovery (+ cli)
+tests/                 49-test verification suite
+scripts/               full-featured research drivers (run/validate/llm-search/audit)
+docs/                  index, usage, architecture, REPORT, EXTENDING
+examples/              runnable quickstart
+results/               discovery_timeline.md · runs/ · validation/
+ref-paper/ reformulate/ progress/   reproduction artifacts (acquisition, decomposition, typed ledger)
+phys-agentic-loop/     methodology infra (separate repo)
 ```
 
-Dependencies: `numpy`, `scipy` (required). Optional `decoders` extra: `ldpc` (BP-OSD, component 7)
-and `python-igraph` (exact BLISS dedup, component 11) — `pip install --user ldpc python-igraph`.
+## Results
 
-## Verified landmarks (closed-loop, in `tests/`)
+- **Reproduced** all 13 paper pipeline components and four signature findings: the A=B `d=2` trap
+  (proved + witnessed), the **12× BP-OSD distance overestimate** on high-rate codes, the
+  `[[288,24,12]] = gross ⊕ gross` direct sum, and the univariate `d ∈ {2,4}` collapse.
+- **Blind → validated** (held-out catalog): a Claude-as-LLM guided search rediscovered the gross
+  `[[144,12,12]]` and `[[288,16,12]]` (polynomial matches); the knowledge-free GA found
+  `[[72,12,6]]` and the non-CSS `[[36,2,6]]` (exact match).
+- **Honest clean-room result** (`blind-zero` branch): a *paper-naive* agent, discovering from zero,
+  reached only modest codes (best certified `[[144,12,8]]`, d=8) and did **not** find the d=12
+  flagships — evidence that the paper's LLM-guided structural search (or prior knowledge) is what
+  makes the flagship codes discoverable, not brute search. See [docs/REPORT.md](docs/REPORT.md).
 
-- gross `[[144,12,12]]` k=12; `[[72,12,6]]` k=12 (GF(2) rank).
-- **`thm:ab_d2`**: every A=B code has d=2 (constructive witness + MILP).
-- **`lem:crt_k`**: univariate A=1+y+y², B=A(xˡ́³) ⇒ k=8ℓ/3.
-- MILP ↔ exhaustive-enumeration distance agreement; symplectic-MILP ↔ CSS-MILP consistency.
-- `[[288,24,12]]` = gross ⊕ gross (Tanner decomposability + BLISS).
-- **BP-OSD 12× overestimate** on the A=B `[[144,32,2]]` (true d=2) — the paper's key methodological finding.
+## Citation
 
-## Blind-discovery results (vs held-out catalog)
+Reproduces Cruz-Benito, Cross, Kremer, Faro, *Evolutionary Discovery of Bivariate Bicycle Codes with
+LLM-Guided Search*, [arXiv:2606.02418](https://arxiv.org/abs/2606.02418). Foundational BB codes:
+Bravyi et al., *High-threshold and low-overhead fault-tolerant quantum memory*, Nature 627 (2024),
+[arXiv:2308.07915](https://arxiv.org/abs/2308.07915).
 
-The blind search rediscovers, *cold*, codes that match the paper: CSS `[[72,12,6]]` (UB_CONSISTENT
-w/ Bravyi, reproduced across seeds), `[[144,16,6]]` / `[[144,24,4]]` (UB_CONSISTENT w/ catalog at
-n=144), and non-CSS `[[36,2,6]]` (**exact MATCH** w/ the PBB catalog). See `results/discovery_timeline.md`.
+## License
 
-## Methodology
-
-Built under the phys-agentic-loop "Agentic Lean" discipline (typed ledger; the kernel admits, not
-the LLM) on the `bbc` branch via a ralph loop. Per-substage commits; code-quality policy enforced.
+See [LICENSE](LICENSE).
