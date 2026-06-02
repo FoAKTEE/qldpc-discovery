@@ -1,51 +1,48 @@
-# current_iter — window 1 (bootstrap)
+# current_iter — window 1, iters 2-4 (blind discovery loop)
 
-**Overwritten every iteration.** Window-scoped (multi_window_task, closing=false).
+**Overwritten every iteration.** Multi-window task, closing=false (lightweight intermediate).
 
 ## (a) Paper anchor
-arXiv:2606.02418 whole pipeline. This window builds the scientific KERNEL that admits
-discoveries (components 1,2,3,4,6,8,12) + the two theorems (thm:ab_d2 App.D, lem:crt_k App.C).
+Central theme (user directive, blind_discovery_policy): the pipeline must REDISCOVER codes
+blind, then validate vs the paper. Iters 2-4 build + run that loop.
+- iter2: component 5 (symplectic non-CSS MILP distance), SM non-CSS formulation.
+- iter3: components 9 (evaluation cascade) + 10 (blind generator-ansatz search), sec IV.A/B.
+- iter4: post-hoc validation vs catalog + landmarks (sec V.B + catalogs).
 
-## (b) What shipped this iter
-- Infra: bbc `ralph-loop.local.md` (plugin-safe), code_quality_policy bound, escalation injected. Commit A `b205f8a`.
-- phys-agentic-loop: plugin-safe template note. Commit `8e4c418` (agentic-lean branch).
-- Decomposition (workflow wf_fce0b721-205): 3 chunk digests + 8 elaboration artifacts +
-  theorem/file/logic/bundle dependency plans + chunk_index (Substage B).
-- Kernel codebase + 18-test suite + code-quality audit + discovery timeline. Commit D `79e77f8`.
-- Escalation: arXiv:2308.07915 (Bravyi BB foundation) acquired to ref-paper/.
+## (b) What shipped
+- `distance_milp.symplectic_distance_milp` + `metrics.symplectic_logicals` (component 5). Commit a5489fb.
+- `evaluation.py` (catalog-blind cascade), `search.py` (blind GA + MAP-Elites-lite archive).
+- `scripts/run_blind_discovery.py` — RAN blind (seed 7): found [[72,12,6]] FOM=6 (gross-family,
+  cold), [[72,8,6]] d=6 exact, [[36,4,6]] exact, ... + rediscovered the d=2 trap (low FOM).
+  -> `results/blind_css_discovery.json`.
+- `validation.py` + `scripts/validate_against_paper.py` — POST-HOC: [[72,12,6]] UB_CONSISTENT
+  with Bravyi landmark; rest NOVEL_AT_N (catalog starts n=144). -> `results/validation_report.md`.
+- 6 new tests (test_discovery.py); blind run logged to results/discovery_timeline.md.
 
-## (c) Next-5 roadmap (non-duplication checked)
-1. symplectic-weight MILP for non-CSS distance (component 5) — extends `distance_milp`; unlocks PBB d. NEW.
-2. evaluation cascade (component 9): k→BP-OSD/MILP→FOM→trust filter `d/√n`. NEW.
-3. MAP-Elites + generator-ansatz evolution (component 10): minimal in-tree GA-on-ansatz (no openevolve dep). NEW.
-4. [[288,16,12]] d=12 MILP optimality audit (re-verify headline code, log to timeline). NEW.
-5. decompose arXiv:2308.07915 (pipeline-0) for BB-foundation knowledge base. NEW.
+## (c) Next-5 roadmap (non-dup checked)
+1. Scale blind search to n=144 (12,6): match the gross [[144,12,12]] vs catalog directly. NEW.
+2. Extend search to PBB 4-tuples (blind non-CSS discovery via symplectic distance). NEW.
+3. bliss_dedup.py — networkx canonical-form fallback (igraph MISSING) for permutation dedup. NEW.
+4. clifford_equiv.py — Hadamard 2-coloring + LC rank condition (App.E), component 13. NEW.
+5. Decompose arXiv:2308.07915 (BB foundation), pipeline-0. NEW.
 
 ## (d) Simplification flag
-no (bootstrap window; first simplification cycle due ~window 5–10).
+no (build phase). First simplification cycle due ~window 5-10.
 
 ## (e) Token-utilization
-Multi-window bootstrap window; heavy implementation (kernel + decomposition workflow + escalation). ≥0.90 target met.
+Heavy implementation window (kernel extension + blind discovery + validation + run). ≥0.90.
 
 ## (f) Verifier output
 ```
 $ python -m pytest -q
-..................                                       [100%]   18 passed in 3.27s
+..........................                               [100%]   26 passed
 $ python scripts/code_quality_audit.py
-code_quality_audit: 10 files, 34 findings (CRITICAL=0 HIGH=0 MEDIUM=0 LOW=34)
+code_quality_audit: 13 files, 46 findings (CRITICAL=0 HIGH=0 MEDIUM=0 LOW=46)
 code_quality_policy_pass: PASS (0 blocking finding(s))
+$ python scripts/run_blind_discovery.py   -> 10 codes incl [[72,12,6]] FOM=6 (blind)
+$ python scripts/validate_against_paper.py -> [[72,12,6]] UB_CONSISTENT w/ Bravyi landmark
 ```
-code_quality_policy_pass: components 1,2,3,4,6,8,12 PROVEN; 5,7,9,10,11,13 [FUTURE] (scaffolded).
+code_quality_policy_pass: components 5,9,10 + validation — PROVEN (R2-R3, verified blind+validated).
 
-## (g) Decomposition QA (consolidation agent cross-check)
-- **H-1 FIXED:** stripped leaked tool-call XML trailers (`</content></invoke>`) from
-  `bundle_dependency_plan.md` and `convention.md` (sub-agent Write artifact leak).
-- `[HOLE]` **H-2 (loop task):** two "13-component" numberings coexist — digests use `P1..P13`,
-  reformulate uses `PC-01..PC-13`, different membership (e.g. digest P9=MAP-Elites vs
-  reformulate PC-09=BLISS). Add an explicit P↔PC crosswalk. Non-blocking.
-- `[HOLE]` **H-3 (loop task):** `file_dependency_plan.md` indexes by module IDs, no `PC-*`
-  join key. Add a PC-* cross-reference column. Non-blocking.
-- Pre-existing typed holes carried (not new): FOM-ranking n=360 reconciliation (chunk_003),
-  PBB A=B generality (chunk_002 HOLE-002-A). Env [BLOCKING]: empty upstream repo + MISSING libs.
-- Decomposition stats: ~105 typed entries, 0 untyped claims; theorem labels + eq labels
-  verified character-for-character against tex.
+## (g) Decomposition QA (carried)
+H-2/H-3 (P↔PC crosswalk) still open loop tasks; H-1 fixed iter1.

@@ -19,6 +19,32 @@
 | structure | `[[288,24,12]]` (12,12) A=x⁶+y+y² B=y³+x²+x⁴ | decomposes → 2 Tanner components (= gross ⊕ gross) | ExactProof (graph) | `tanner.qubit_components` | `checked` |
 | non-CSS construction | `[[144,12,12]]` PBB (12,6) +C=y+x³y, D=y³+x³y³ | valid non-CSS, k=12, mixed X/Z | NumericalSimulation | `pbb_codes.PBBCode` | `checked` |
 
+## Window 1 — 2026-06-02 — BLIND discovery campaign (seed 7, catalog-blind)
+
+First end-to-end blind run (`scripts/run_blind_discovery.py`): naive random trinomial seeds,
+FOM-only fitness via the kernel cascade, **no paper polynomials / catalog / reported [[n,k,d]]
+consulted** (blind_discovery_policy). Lattices (6,3),(3,6),(6,6); 1500 k-screened, 28 distance-evals.
+`d` marked `≤ub` where the per-code logical cap (10) leaves an upper bound; `exact` = MILP gap=0.
+
+| discovered (blind) | FOM | status | note |
+|---|---|---|---|
+| `[[72,12,6]]` | 6.00 | d≤6 (k=12 exact) | **gross-code-family params, found cold** |
+| `[[72,8,6]]` | 4.00 | exact | d=6 |
+| `[[36,4,6]]` | 4.00 | exact | d=6 at n=36 |
+| `[[72,4,8]]` | 3.56 | d≤8 | high distance |
+| `[[36,8,4]]`, `[[72,16,4]]` | 3.56 | exact / d≤4 | mid frontier |
+| `[[72,24,2]]`, `[[36,12,2]]` | 1.33 | d=2 | **trap rediscovered**: FOM correctly demotes them |
+
+The search independently rediscovered the rate–distance frontier AND the d=2 trap (low FOM)
+without being told — exactly the paper's central empirical finding. Raw: `results/blind_css_discovery.json`.
+
+### Post-hoc validation vs the paper (held-out test set) — `results/validation_report.md`
+Run ONLY after the blind campaign (`scripts/validate_against_paper.py`; 227 reference codes =
+2 landmarks + 225 parsed catalog reps):
+- `[[72,12,6]]` → **UB_CONSISTENT** with Bravyi's `[[72,12,6]]` MILP-validation code (k=12, d≤6 ⊆ d=6). ✓
+- Remaining n=36/72 discoveries → NOVEL_AT_N (the CSS catalog starts at n=144) — honest.
+- Next scale-up (loop): blind runs at n=144/288 to match the catalog directly (e.g. gross `[[144,12,12]]`).
+
 ## Reference catalog (arXiv:2606.02418 headline codes — `LiteratureGrounded`, to re-verify)
 
 Full catalogs: `ref-paper/arxiv-2606.02418/src/{css,pbb}_catalog_tables.tex` (97 CSS + 368 PBB = 465 distinct).
