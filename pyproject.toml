@@ -1,0 +1,11 @@
+[project]
+name = "qcode-discovery"
+version = "0.1.0"
+description = "Reproduction of arXiv:2606.02418 — LLM-guided evolutionary discovery of bivariate bicycle quantum LDPC codes"
+requires-python = ">=3.10"
+dependencies = ["numpy>=1.24", "scipy>=1.11"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+addopts = "-q"
