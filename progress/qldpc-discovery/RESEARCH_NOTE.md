@@ -48,42 +48,42 @@ markers, code-quality policy). Post-decomposition reusable-script audit → see
 | ID | Source | Type | Status | Notes |
 |---|---|---|---|---|
 | `paper:2606.02418` | `ref-paper/arxiv-2606.02418/src/{paper,supplemental}.tex` | paper | `LiteratureGrounded` | holy-grail; 42pp; decomposed in `reformulate/qldpc-discovery/paper_2606.02418/` |
-| `code:qcode-discovery` | github qiskit-community/qcode-discovery | code | `[HOLE] clone` | reference impl; clone → `ref-code/`, extract file-dep graph |
-| `paper:2308.07915` | Bravyi et al. "High-threshold low-overhead FT memory" | paper | `[HOLE] escalate` | **foundational** BB-code definition + MILP-distance baseline |
+| `code:qcode-discovery` | github qiskit-community/qcode-discovery | code | `refuted-as-source` | cloned (sha 4a9520e) — EMPTY (README only); reproduce from paper text |
+| `paper:2308.07915` | Bravyi et al. "High-threshold low-overhead FT memory" | paper | `LiteratureGrounded` | **foundational**; acquired + decomposed (`reformulate/.../paper_2308.07915/`) |
 | `lib:scipy.optimize.milp` | HiGHS via scipy 1.17.1 | code | `SOLID` | available locally; MILP distance backend (matches paper) |
 | `lib:numpy` | numpy 1.26.4 | code | `SOLID` | GF(2) linear algebra backend |
 
-Absent locally (escalation/[FUTURE]): `qldpc` v1.0.1, `ldpc` v2.2.0 (BP-OSD),
-`python-igraph`+BLISS, `litellm`, `openevolve`. The kernel layer is implemented
-in pure numpy/scipy to avoid heavy deps for the load-bearing verifiers (KISS).
+Installed via escalation (iter 9): `ldpc` 2.4.1 (BP-OSD), `python-igraph` 1.0.0 (BLISS).
+Still absent (not needed): `qldpc`, `litellm`, `openevolve` — external-LLM-at-scale is `[FUTURE]`
+(resource-gated; Claude Code served as the LLM mutation operator). Kernel is pure numpy/scipy (KISS).
 
 ## Pipeline component map (the codebase to build — typed ledger of claims)
 
 | # | Component | Paper anchor | Modality target | Risk | Status |
 |---|---|---|---|---|---|
-| 1 | BB CSS construction `H_X=(A\|B), H_Z=(B^T\|A^T)` | §II.A | ExactProof (algebra) | R2 | `[HOLE]` |
-| 2 | PBB non-CSS construction + commutativity `AC^T+BD^T` symmetric | §III.B | ExactProof | R3 | `[HOLE]` |
-| 3 | k via GF(2) rank `k=2ℓm-2 rank(H_X)` | §II.A | NumericalSimulation | R2 | `[HOLE]` |
-| 4 | CSS MILP distance (scipy/HiGHS) | §V.B, SM MILP | NumericalSimulation/ExactProof(gap=0) | R3 | `[HOLE]` |
-| 5 | non-CSS symplectic MILP distance | SM MILP | NumericalSimulation | R3 | `[FUTURE]` |
-| 6 | exhaustive weight-w enumeration (Tier 1) | §V.C | ExactProof(small) | R2 | `[FUTURE]` |
-| 7 | BP-OSD distance bound + achievable-syndrome sampling | §V.A/C | StatisticalInference | R3 | `[FUTURE]` (needs `ldpc`) |
-| 8 | FOM = kd²/n | §II.C | DimensionalConsistency | R0 | `[HOLE]` |
-| 9 | evaluation cascade (Stage1 k → Stage2 BP-OSD → Stage3 MILP) | §IV.B | — | R2 | `[FUTURE]` |
-| 10 | MAP-Elites generator-ansatz evolution loop | §IV.A | — | R2 | `[FUTURE]` |
-| 11 | BLISS colored-Tanner-graph dedup | §VI.A | ExactProof(graph iso) | R2 | `[FUTURE]` (needs igraph/BLISS) |
-| 12 | decomposability (Tanner connectivity → direct sum) | §VI.A | ExactProof | R2 | `[FUTURE]` |
-| 13 | LC-CSS equivalence (Hadamard 2-coloring + rank cond.) | App.E | ExactProof | R3 | `[FUTURE]` |
+| 1 | BB CSS construction `H_X=(A\|B), H_Z=(B^T\|A^T)` | §II.A | ExactProof (algebra) | R2 | `[SOLID]` `bb_codes` |
+| 2 | PBB non-CSS construction + commutativity `AC^T+BD^T` symmetric | §III.B | ExactProof | R3 | `[SOLID]` `pbb_codes` |
+| 3 | k via GF(2) rank `k=2ℓm-2 rank(H_X)` | §II.A | NumericalSimulation | R2 | `[SOLID]` `metrics` |
+| 4 | CSS MILP distance (scipy/HiGHS) | §V.B, SM MILP | NumericalSimulation/ExactProof(gap=0) | R3 | `[SOLID]` `distance_milp` |
+| 5 | non-CSS symplectic MILP distance | SM MILP | NumericalSimulation | R3 | `[SOLID]` (iter 2) |
+| 6 | exhaustive weight-w enumeration (Tier 1) | §V.C | ExactProof(small) | R2 | `[SOLID]` `distance_enum` |
+| 7 | BP-OSD distance bound + achievable-syndrome sampling | §V.A/C | StatisticalInference | R3 | `[SOLID]` `distance_bposd` (ldpc installed; coset bug fixed iter 15) |
+| 8 | FOM = kd²/n | §II.C | DimensionalConsistency | R0 | `[SOLID]` `metrics.fom` |
+| 9 | evaluation cascade (Stage1 k → Stage2 BP-OSD → Stage3 MILP) | §IV.B | — | R2 | `[SOLID]` `evaluation`+`search` |
+| 10 | generator-ansatz program evolution (GA-G + Claude-LLM operator) | §IV.A | — | R2 | `[SOLID]` `evolve`/`search` (ext-LLM-at-scale `[FUTURE]`, resource-gated) |
+| 11 | BLISS colored-Tanner-graph dedup | §VI.A | ExactProof(graph iso) | R2 | `[SOLID]` `dedup` (igraph installed) |
+| 12 | decomposability (Tanner connectivity → direct sum) | §VI.A | ExactProof | R2 | `[SOLID]` `tanner` |
+| 13 | LC-CSS equivalence (Hadamard 2-coloring + rank cond.) | App.E | ExactProof | R3 | `[SOLID]` `clifford_equiv` (to paper-parity; gaps (a),(b) are the paper's own) |
 
 ## Proof targets (theorem ledger — from the paper)
 
 | Label | Claim | Modality | Evidence target | Status |
 |---|---|---|---|---|
-| `thm:ab_d2` (App.D) | every BB code with A=B, k>0 has d=2 exactly | ExactProof | proof in paper + `tests/` numeric witness | `[HOLE]` |
-| `lem:crt_k` (App.C) | univariate A=1+y+y², B=A(x^{ℓ/3}) ⇒ k=8ℓ/3 (HGP) | ExactProof | proof + `tests/` rank witness over ℓ,m | `[HOLE]` |
-| `tillich-zemor` | HGP distance d=min(d1,d2,d1^T,d2^T); dim k=k1k2+k1^Tk2^T | LiteratureGrounded | cite tillich2014quantum (escalate) | `[AXIOM]` |
-| `css-commute` | H_X H_Z^T = AB+BA = 0 over F2 (R commutative) | ExactProof | algebra + numeric | `[HOLE]` |
-| `pbb-commute` | PBB rows commute iff AC^T+BD^T symmetric over F2 | ExactProof | algebra + numeric | `[HOLE]` |
+| `thm:ab_d2` (App.D) | every BB code with A=B, k>0 has d=2 exactly | ExactProof | `theorems.verify_ab_d2` + MILP | `[SOLID]` |
+| `lem:crt_k` (App.C) | univariate A=1+y+y², B=A(x^{ℓ/3}) ⇒ k=8ℓ/3 (HGP) | ExactProof | `theorems.verify_crt_k` (ℓ=3,6,9,12) | `[SOLID]` |
+| `tillich-zemor` | HGP distance d=min(d1,d2,d1^T,d2^T); dim k=k1k2+k1^Tk2^T | LiteratureGrounded | cite tillich2014quantum | `[AXIOM]` (imported; permanent) |
+| `css-commute` | H_X H_Z^T = AB+BA = 0 over F2 (R commutative) | ExactProof | `bb_codes._validate_css` (numeric, all codes) | `[SOLID]` |
+| `pbb-commute` | PBB rows commute iff AC^T+BD^T symmetric over F2 | ExactProof | `pbb_codes` Gram + reduced check | `[SOLID]` |
 
 ## Paper formalization progress (live snapshot — refresh ~every 5 iters)
 
@@ -146,8 +146,7 @@ paper-parity) · blind discovery (CSS+PBB) → post-hoc validation (catalog matc
 README · all paper signature findings reproduced.
 
 **Open (incremental):**
-1. `[HOLE]` (iter 15, in progress) re-verify gross [[144,12,12]] d=12 (BP-OSD bound + partial MILP)
-   → upgrade timeline entry from `LiteratureGrounded` to kernel-verified/trusted.
+1. `[SOLID]` (iter 15, DONE) gross [[144,12,12]] d=12 kernel-verified (BP-OSD=12 + MILP weight-12).
 2. `[FUTURE]` component 13 non-uniform `{SH,HSH}` / cross-class LC patterns — the paper's OWN
    admitted coverage gaps (a),(b); not a reproduction shortfall.
 3. `[FUTURE]` wider blind campaigns → larger consolidated BLISS-deduped catalog at n=144–360.
