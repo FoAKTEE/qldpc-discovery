@@ -1,0 +1,40 @@
+name: ci
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "${{ matrix.python-version }}" }
+      - name: Install (editable, with dev + decoders extras)
+        run: pip install -e ".[dev,decoders]"
+      - name: Tests
+        run: python -m pytest -q
+      - name: Code-quality audit
+        run: qcode-audit
+
+  install:
+    # Verifies the package is pip-installable from a clean build (sdist + wheel),
+    # and that the console scripts work outside the source tree.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - name: Build sdist + wheel
+        run: |
+          python -m pip install --upgrade pip build
+          python -m build
+      - name: Install the built wheel
+        run: pip install dist/*.whl
+      - name: Smoke-test the installed package (outside the repo)
+        run: |
+          cd /tmp
+          python -c "import qcode_discovery as q; print('installed', q.__version__)"
+          python -c "from qcode_discovery import BBCode, css_k; g=BBCode(12,6,'y+y^2+x^3','y^3+x+x^2'); assert (g.n, css_k(g.HX,g.HZ)) == (144, 12)"
+          qcode-audit
