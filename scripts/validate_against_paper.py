@@ -11,7 +11,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
-from qcode_discovery.validation import validate   # noqa: E402
+from qcode_discovery.discovery.validation import validate   # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 

@@ -4,13 +4,13 @@ These exercise the apparatus (cascade wiring, search runs blind and finds k>0 co
 validator classifies correctly). The search seeds are naive random polynomials — no paper
 data — per the blind_discovery_policy.
 """
-from qcode_discovery.bb_codes import BBCode
-from qcode_discovery.metrics import css_k
-from qcode_discovery.distance_milp import css_distance_milp
-from qcode_discovery.evaluation import evaluate_css, screen_k_css
-from qcode_discovery.search import (blind_search_css, blind_search_pbb,
+from qcode_discovery.codes.bb_codes import BBCode
+from qcode_discovery.codes.metrics import css_k
+from qcode_discovery.distance.distance_milp import css_distance_milp
+from qcode_discovery.discovery.evaluation import evaluate_css, screen_k_css
+from qcode_discovery.discovery.search import (blind_search_css, blind_search_pbb,
                                      random_polynomial, mutate_polynomial)
-from qcode_discovery.validation import validate, landmark_codes, parse_pbb_catalog
+from qcode_discovery.discovery.validation import validate, landmark_codes, parse_pbb_catalog
 from pathlib import Path
 import random
 
@@ -33,8 +33,8 @@ def test_screen_k_rejects_zero():
 
 def test_stage3_milp_verification():
     # Stage-3 must recompute exact MILP distance for an elite (here a small (3,3) code).
-    from qcode_discovery.search import verify_elites_milp
-    from qcode_discovery.distance_milp import css_distance_milp
+    from qcode_discovery.discovery.search import verify_elites_milp
+    from qcode_discovery.distance.distance_milp import css_distance_milp
     elite = {"l": 3, "m": 3, "A": "1+x+y", "B": "1+x^2+y^2", "k": 4, "n": 18, "d": 99,
              "exact": False, "fom": 0.0}
     out = verify_elites_milp([elite], time_limit=30.0)
@@ -113,8 +113,8 @@ def test_blind_pbb_runs_and_is_noncss():
 
 # ----------------------------- LC-CSS equivalence (Hadamard 2-coloring) -----------------------------
 import numpy as np
-from qcode_discovery.pbb_codes import PBBCode
-from qcode_discovery.clifford_equiv import hadamard_two_coloring, lc_css_classify, _ParityUF
+from qcode_discovery.codes.pbb_codes import PBBCode
+from qcode_discovery.structure.clifford_equiv import hadamard_two_coloring, lc_css_classify, _ParityUF
 
 
 def _H_makes_css(SX, SZ, patt):
@@ -155,7 +155,7 @@ def test_genuine_noncss_is_css_inequivalent():
 
 def test_uniform_clifford_H_preserves_S_breaks_css():
     # H swaps X<->Z (preserves CSS); S maps X->Y (breaks CSS) — symplectic-exact behavior.
-    from qcode_discovery.clifford_equiv import _clifford_symplectic_mats, _apply_block, _is_css
+    from qcode_discovery.structure.clifford_equiv import _clifford_symplectic_mats, _apply_block, _is_css
     css = PBBCode(6, 6, "1+x+y", "1+x^2+y^2", "", "")
     n = css.n
     SX, SZ = css.S[:, :n], css.S[:, n:]
@@ -166,8 +166,8 @@ def test_uniform_clifford_H_preserves_S_breaks_css():
 
 def test_ansatz_generalizes_across_lattices():
     # The paper's key representation property: ONE generator ansatz emits valid codes at MANY lattices.
-    from qcode_discovery.evolve import GeneratorAnsatz
-    from qcode_discovery.metrics import css_k
+    from qcode_discovery.discovery.evolve import GeneratorAnsatz
+    from qcode_discovery.codes.metrics import css_k
     a = GeneratorAnsatz([{"kind": "xyswap", "params": {"a": 3, "b": 1, "c": 2, "d": 3, "e": 1, "f": 2}}])
     for (l, m) in [(6, 6), (12, 6), (15, 12)]:
         gens = a.generate(l, m)
@@ -180,7 +180,7 @@ def test_ansatz_generalizes_across_lattices():
 def test_custom_ansatz_lattice_scaled_and_safe_expr():
     # The 'custom' strategy lets the (Claude) LLM operator propose lattice-scaling patterns; the
     # exponent evaluator is safe (no arbitrary code). 'l//3' at (12,6) -> exponent 3 (gross-code skeleton).
-    from qcode_discovery.evolve import GeneratorAnsatz, _safe_expr
+    from qcode_discovery.discovery.evolve import GeneratorAnsatz, _safe_expr
     assert _safe_expr("l//3", 12, 6) == 4          # 12 // 3
     assert _safe_expr("2*m//3", 12, 6) == 4        # 2*6 // 3
     # literal exponent 3 (from the gen-2 lone-exponent scan) -> A=x^3+y+y^2, B=y^3+x+x^2 = gross code
@@ -188,7 +188,7 @@ def test_custom_ansatz_lattice_scaled_and_safe_expr():
                           "params": {"A": [[3, 0], [0, 1], [0, 2]], "B": [[0, 3], [1, 0], [2, 0]]}}])
     A, B = a.generate(12, 6)[0]
     code = BBCode(12, 6, A, B)
-    from qcode_discovery.metrics import css_k
+    from qcode_discovery.codes.metrics import css_k
     assert code.n == 144 and css_k(code.HX, code.HZ) == 12
     import pytest as _pt
     with _pt.raises(Exception):
@@ -197,7 +197,7 @@ def test_custom_ansatz_lattice_scaled_and_safe_expr():
 
 def test_mutate_ansatz_stays_valid_and_llm_is_gated():
     import random
-    from qcode_discovery.evolve import random_ansatz, mutate_ansatz, llm_mutation
+    from qcode_discovery.discovery.evolve import random_ansatz, mutate_ansatz, llm_mutation
     rng = random.Random(0)
     a = random_ansatz(rng)
     for _ in range(15):
@@ -214,7 +214,7 @@ def test_mutate_ansatz_stays_valid_and_llm_is_gated():
 def test_uniform_clifford_detects_S_equivalence():
     # A CSS code transformed by uniform-S is non-CSS but must be DETECTED as uniform-Clifford-CSS.
     from types import SimpleNamespace
-    from qcode_discovery.clifford_equiv import (_clifford_symplectic_mats, _apply_block,
+    from qcode_discovery.structure.clifford_equiv import (_clifford_symplectic_mats, _apply_block,
                                                 uniform_clifford_lc_css)
     import numpy as np
     css = PBBCode(6, 6, "1+x+y", "1+x^2+y^2", "", "")
@@ -230,7 +230,7 @@ import pytest
 
 def test_bposd_matches_milp_on_gross():
     pytest.importorskip("ldpc")
-    from qcode_discovery.distance_bposd import bposd_distance
+    from qcode_discovery.distance.distance_bposd import bposd_distance
     g = BBCode(6, 6, "y+y^2+x^3", "y^3+x+x^2")        # [[72,12,6]]
     assert bposd_distance(g, trials=300, seed=0)["d_bound"] == 6   # matches MILP exact
 
@@ -239,7 +239,7 @@ def test_bposd_gross_144_d12():
     # Regression for the coset-logical bug: the gross [[144,12,12]] (d=12, low-rate) must give
     # BP-OSD bound 12, NOT 6. (Stacking same-type logicals in H_eff wrongly returned 6.)
     pytest.importorskip("ldpc")
-    from qcode_discovery.distance_bposd import bposd_distance
+    from qcode_discovery.distance.distance_bposd import bposd_distance
     g = BBCode(12, 6, "y+y^2+x^3", "y^3+x+x^2")
     assert bposd_distance(g, trials=400, seed=0)["d_bound"] == 12
 
@@ -247,14 +247,14 @@ def test_bposd_gross_144_d12():
 def test_bposd_overestimates_high_rate_ab_code():
     # Reproduce the paper's headline finding: BP-OSD grossly overestimates d for high-rate codes.
     pytest.importorskip("ldpc")
-    from qcode_discovery.distance_bposd import bposd_distance
+    from qcode_discovery.distance.distance_bposd import bposd_distance
     ab = BBCode(12, 6, "x^4+1+y^2", "x^4+1+y^2")      # A=B [[144,32,2]], TRUE d=2 (thm:ab_d2)
     bound = bposd_distance(ab, trials=100, seed=0)["d_bound"]
     assert bound is not None and bound > 2             # overestimate vs the proven exact d=2
 
 
 # ----------------------------- dedup (lattice-symmetry equivalence) -----------------------------
-from qcode_discovery.dedup import canonical_poly_signature, dedup_bb
+from qcode_discovery.structure.dedup import canonical_poly_signature, dedup_bb
 
 
 def test_dedup_merges_equivalent_separates_distinct():
@@ -274,7 +274,7 @@ def test_bliss_dedup_exact_and_cross_lattice():
     # igraph/BLISS is the exact method; it also catches cross-lattice isomorphism that the
     # lattice-symmetry canonicalization (within fixed (l,m)) cannot.
     pytest.importorskip("igraph")
-    from qcode_discovery.dedup import dedup_bliss, bliss_canonical_hash
+    from qcode_discovery.structure.dedup import dedup_bliss, bliss_canonical_hash
     gross = BBCode(12, 6, "y+y^2+x^3", "y^3+x+x^2")
     relab = BBCode(12, 6, "y+y^2+x^3", "y^3+x^5+x^10")
     diff  = BBCode(12, 6, "y+y^2+x^4", "y^3+x+x^2")

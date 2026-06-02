@@ -11,7 +11,7 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
-from .polynomials import parse_poly, normalize_terms
+from ..algebra.polynomials import parse_poly, normalize_terms
 
 
 def _num(tok: str):

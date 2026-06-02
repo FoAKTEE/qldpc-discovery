@@ -11,7 +11,7 @@ from itertools import combinations
 
 import numpy as np
 
-from . import gf2
+from ..algebra import gf2
 
 
 def _min_weight_one_type(check: np.ndarray, stab_rows: np.ndarray, n: int, max_weight: int):

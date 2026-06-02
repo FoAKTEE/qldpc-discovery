@@ -20,7 +20,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
-from qcode_discovery.evolve import GeneratorAnsatz, ansatz_fitness   # noqa: E402
+from qcode_discovery.discovery.evolve import GeneratorAnsatz, ansatz_fitness   # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 TRAJ = ROOT / "results" / "runs" / "claude_guided_trajectory.json"
@@ -47,7 +47,7 @@ def main() -> int:
         print(f"   [[{c['n']},{c['k']},{c['d']}]] FOM={c['fom']:.2f} d/sqrtn={c['d_over_sqrt_n']:.2f}")
 
     if args.stage3 and codes:
-        from qcode_discovery.search import verify_elites_milp
+        from qcode_discovery.discovery.search import verify_elites_milp
         print(f"[{args.gen}] Stage-3 MILP certification:")
         certified = verify_elites_milp(codes, time_limit=max(5.0, args.time_limit * 3),
                                        max_logicals=args.max_logicals, log=print)

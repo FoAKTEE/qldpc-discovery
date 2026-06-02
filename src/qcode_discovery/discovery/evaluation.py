@@ -13,11 +13,11 @@ from __future__ import annotations
 
 import math
 
-from .bb_codes import BBCode
-from .pbb_codes import PBBCode
-from .metrics import css_k, fom
-from .distance_milp import css_distance_milp, symplectic_distance_milp
-from .distance_enum import css_distance_enum
+from ..codes.bb_codes import BBCode
+from ..codes.pbb_codes import PBBCode
+from ..codes.metrics import css_k, fom
+from ..distance.distance_milp import css_distance_milp, symplectic_distance_milp
+from ..distance.distance_enum import css_distance_enum
 
 
 def screen_k_css(l: int, m: int, A, B) -> int:
@@ -45,7 +45,7 @@ def evaluate_css(l, m, A, B, distance_method: str = "milp", time_limit: float = 
         dres = css_distance_enum(code, max_weight=enum_max_weight)
         res["d"], res["exact"] = dres["d"], dres["exhausted"]
     elif distance_method == "bposd":                  # fast Stage-2 estimator (UPPER bound, not exact)
-        from .distance_bposd import bposd_distance
+        from ..distance.distance_bposd import bposd_distance
         dres = bposd_distance(code, trials=int(time_limit * 100) or 100)
         res["d"], res["exact"] = dres["d_bound"], False
     else:

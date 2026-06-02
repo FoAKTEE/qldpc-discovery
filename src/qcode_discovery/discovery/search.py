@@ -14,7 +14,7 @@ import random
 from dataclasses import dataclass, field
 
 from .evaluation import screen_k_css, evaluate_css, evaluate_pbb
-from .pbb_codes import PBBCode
+from ..codes.pbb_codes import PBBCode
 
 
 def random_polynomial(l: int, m: int, weight: int, rng: random.Random) -> list[tuple[int, int]]:
@@ -73,9 +73,9 @@ def verify_elites_milp(elites, time_limit=10.0, max_logicals=None, log=None):
     Returns the elites with d/exact/fom updated from MILP. Mirrors the paper's post-hoc MILP
     verification of the codes that survive the BP-OSD-driven evolutionary loop.
     """
-    from .bb_codes import BBCode
-    from .distance_milp import css_distance_milp
-    from .metrics import fom
+    from ..codes.bb_codes import BBCode
+    from ..distance.distance_milp import css_distance_milp
+    from ..codes.metrics import fom
     say = log if log else (lambda *_: None)
     out = []
     for e in elites:

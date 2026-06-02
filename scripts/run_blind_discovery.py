@@ -14,7 +14,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
-from qcode_discovery.search import blind_search_css, blind_search_pbb   # noqa: E402
+from qcode_discovery.discovery.search import blind_search_css, blind_search_pbb   # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -48,7 +48,7 @@ def main() -> int:
     elites = out["archive_elites"]
 
     if args.stage3_verify and args.type == "css" and elites:
-        from qcode_discovery.search import verify_elites_milp   # noqa: E402
+        from qcode_discovery.discovery.search import verify_elites_milp   # noqa: E402
         print("\n=== Stage 3: MILP verification of elites (logical cap keeps n=144 tractable) ===")
         elites = verify_elites_milp(elites, time_limit=max(5.0, args.time_limit * 3),
                                     max_logicals=args.max_logicals, log=print)
@@ -57,8 +57,8 @@ def main() -> int:
     # (component 11) -> "N representations -> M distinct codes", mirroring the paper.
     n_distinct = None
     if args.type == "css" and out.get("evaluated"):
-        from qcode_discovery.bb_codes import BBCode          # noqa: E402
-        from qcode_discovery.dedup import dedup_bb, dedup_bliss  # noqa: E402
+        from qcode_discovery.codes.bb_codes import BBCode          # noqa: E402
+        from qcode_discovery.structure.dedup import dedup_bb, dedup_bliss  # noqa: E402
         reps = [BBCode(r["l"], r["m"], r["A"], r["B"]) for r in out["evaluated"]]
         try:
             import igraph  # noqa: F401

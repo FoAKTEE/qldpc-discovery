@@ -13,7 +13,7 @@ from __future__ import annotations
 
 import numpy as np
 
-from . import gf2
+from ..algebra import gf2
 
 
 class _ParityUF:

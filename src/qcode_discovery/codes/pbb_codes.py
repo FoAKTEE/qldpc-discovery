@@ -12,8 +12,8 @@ from __future__ import annotations
 
 import numpy as np
 
-from . import gf2
-from .polynomials import Poly, parse_poly, poly_matrix
+from ..algebra import gf2
+from ..algebra.polynomials import Poly, parse_poly, poly_matrix
 
 
 class PBBCode:

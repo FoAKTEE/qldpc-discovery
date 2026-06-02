@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import numpy as np
 
-from . import gf2
+from ..algebra import gf2
 from .bb_codes import BBCode
 from .metrics import css_k
 

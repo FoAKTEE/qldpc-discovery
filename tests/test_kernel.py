@@ -9,13 +9,13 @@ import numpy as np
 import pytest
 
 from qcode_discovery import gf2
-from qcode_discovery.bb_codes import BBCode
-from qcode_discovery.pbb_codes import PBBCode
-from qcode_discovery.metrics import css_k, css_logicals, fom
-from qcode_discovery.distance_milp import css_distance_milp, symplectic_distance_milp
-from qcode_discovery.distance_enum import css_distance_enum
-from qcode_discovery.tanner import is_decomposable, qubit_components
-from qcode_discovery.theorems import verify_ab_d2, verify_crt_k
+from qcode_discovery.codes.bb_codes import BBCode
+from qcode_discovery.codes.pbb_codes import PBBCode
+from qcode_discovery.codes.metrics import css_k, css_logicals, fom
+from qcode_discovery.distance.distance_milp import css_distance_milp, symplectic_distance_milp
+from qcode_discovery.distance.distance_enum import css_distance_enum
+from qcode_discovery.structure.tanner import is_decomposable, qubit_components
+from qcode_discovery.codes.theorems import verify_ab_d2, verify_crt_k
 
 
 # ----------------------------- GF(2) algebra -----------------------------

@@ -12,7 +12,7 @@ import random
 
 import numpy as np
 
-from .metrics import css_logicals
+from ..codes.metrics import css_logicals
 
 # (bp_method, osd_method, osd_order) — the paper's multi-decoder protocol.
 _DEFAULT_CONFIGS = (("product_sum", "osd_cs", 10), ("minimum_sum", "osd_cs", 10))

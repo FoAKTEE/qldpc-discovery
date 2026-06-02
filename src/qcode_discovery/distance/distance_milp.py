@@ -17,7 +17,7 @@ from __future__ import annotations
 import numpy as np
 from scipy.optimize import Bounds, LinearConstraint, milp
 
-from .metrics import css_logicals, symplectic_logicals
+from ..codes.metrics import css_logicals, symplectic_logicals
 
 
 def _min_weight_logical(check: np.ndarray, target: np.ndarray, time_limit: float):

@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import numpy as np
 
-from . import gf2
+from ..algebra import gf2
 
 
 def css_k(HX: np.ndarray, HZ: np.ndarray) -> int:
