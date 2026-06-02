@@ -21,7 +21,7 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--type", choices=("css", "pbb"), default="css")
     args = ap.parse_args()
-    disc_path = ROOT / "results" / f"blind_{args.type}_discovery.json"
+    disc_path = ROOT / "results" / "runs" / f"blind_{args.type}_discovery.json"
     if not disc_path.exists():
         print(f"no blind results at {disc_path}; run scripts/run_blind_discovery.py --type {args.type} first",
               file=sys.stderr)
@@ -47,7 +47,8 @@ def main() -> int:
               "POLY_MATCH = identical (A,B) polynomial sets; UB_CONSISTENT = same (n,k), our d "
               "(upper bound) consistent with the reference d; NOVEL_AT_N = no reference code at "
               "this block length (the CSS catalog starts at n=144)."]
-    out = ROOT / "results" / f"validation_report_{args.type}.md"
+    out = ROOT / "results" / "validation" / f"validation_report_{args.type}.md"
+    out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text("\n".join(lines) + "\n")
 
     print("\n".join(lines))

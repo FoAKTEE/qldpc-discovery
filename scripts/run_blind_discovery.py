@@ -86,7 +86,8 @@ def main() -> int:
             for r in elites
         ],
     }
-    out_path = ROOT / "results" / f"blind_{args.type}_discovery.json"
+    out_path = ROOT / "results" / "runs" / f"blind_{args.type}_discovery.json"
+    out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(json.dumps(payload, indent=2))
     print(f"\nwrote {out_path}  ({len(elites)} codes)")
     return 0

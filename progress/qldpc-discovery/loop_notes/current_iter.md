@@ -1,4 +1,16 @@
-# current_iter — window 1, iters 2-15 (blind discovery loop)
+# current_iter — window 1, iters 2-16 (blind discovery loop)
+
+## iter16 (latest): SELF-EVOLUTION window (explicit user directive)
+- Reorganized results/ by type (no mixed kinds): results/runs/*.json (raw runs),
+  results/validation/*.md (reports), results/discovery_timeline.md (canonical) at root.
+  Updated the 2 scripts' paths + timeline/README refs; re-validated both types (matches hold).
+- Added EXTENDING.md: knowledge-base expansion guide (add a paper / add a component / run+validate /
+  tracking cadence) — directly serves "easy for knowledge base expansion".
+- 41 tests pass; audit PASS. (Self-evolution cadence: ~every 5-10 windows per policy; this is the first.)
+- Loop: wider campaigns; (a)/(b) LC gaps are paper's own; mission substantively complete.
+
+---
+
 
 ## iter15 (latest): gross d=12 [HOLE] closed + REAL BP-OSD BUG found & fixed
 - Verifying gross [[144,12,12]] d=12 exposed a bug: BP-OSD returned 6 (impossible upper bound for d=12).

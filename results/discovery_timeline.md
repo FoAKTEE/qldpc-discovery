@@ -36,9 +36,9 @@ consulted** (blind_discovery_policy). Lattices (6,3),(3,6),(6,6); 1500 k-screene
 | `[[72,24,2]]`, `[[36,12,2]]` | 1.33 | d=2 | **trap rediscovered**: FOM correctly demotes them |
 
 The search independently rediscovered the rate–distance frontier AND the d=2 trap (low FOM)
-without being told — exactly the paper's central empirical finding. Raw: `results/blind_css_discovery.json`.
+without being told — exactly the paper's central empirical finding. Raw: `results/runs/blind_css_discovery.json`.
 
-### Post-hoc validation vs the paper (held-out test set) — `results/validation_report_css.md`
+### Post-hoc validation vs the paper (held-out test set) — `results/validation/validation_report_css.md`
 Run ONLY after the blind campaign (`scripts/validate_against_paper.py`; 227 reference codes =
 2 landmarks + 225 parsed catalog reps):
 - `[[72,12,6]]` → **UB_CONSISTENT** with Bravyi's `[[72,12,6]]` MILP-validation code (k=12, d≤6 ⊆ d=6). ✓
@@ -68,7 +68,7 @@ filtered (~17% hit, matches paper's ~10%), symplectic-MILP distance, FOM fitness
 | `[[36,2,6]]` | 2.00 | **d=6 exact** |
 | `[[36,4,4]]` | 1.78 | d=4 exact |
 
-### Post-hoc validation vs the PBB catalog (held-out) — `results/validation_report_pbb.md`
+### Post-hoc validation vs the PBB catalog (held-out) — `results/validation/validation_report_pbb.md`
 368-code PBB catalog parsed (n=36 reference triples: (k=2,d=6), (k=4,d=6)):
 - `[[36,2,6]]` → **MATCH** (exact (n,k,d) hit) with PBB catalog `[[36,2,6]]`. ✓✓ — a blind
   **non-CSS** rediscovery confirmed exactly against the held-out catalog.
