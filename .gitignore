@@ -1,0 +1,30 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.pytest_cache/
+.ipynb_checkpoints/
+*.so
+
+# --- Virtual environments ---
+.venv/
+venv/
+env/
+
+# --- Runtime output (created by qcode-discover / qcode-validate) ---
+results/
+
+# --- Editor / OS ---
+.DS_Store
+*.swp
+
+# --- Scratch ---
+*.tmp
+*.log
+/tmp_*
+
+# --- Local methodology repo (not part of this package; tracked in its own repo) ---
+phys-agentic-loop/
