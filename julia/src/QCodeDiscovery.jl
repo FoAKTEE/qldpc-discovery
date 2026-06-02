@@ -22,6 +22,13 @@ include("dedup.jl")        # BLISS dedup -> pure-Julia individualization-refinem
 include("clifford.jl")     # LC-CSS equivalence (Hadamard 2-coloring + rank condition)
 include("bposd.jl")        # ldpc BP-OSD -> pure-Julia belief propagation + OSD
 include("gpu.jl")          # data-parallel GF(2) (threads + CUDA.jl path, CPU fallback)
+include("gpu_cuda.jl")     # GPU batched GF(2) rank (real CUDA kernel via ext/, A100-tested)
+# wave 2 — discovery pipeline + validation + PBB symplectic distance (pure Julia, no C/C++)
+include("evaluation.jl")   # staged evaluation cascade (k -> distance -> FOM)
+include("search.jl")       # blind search + MAP-Elites archive + GA
+include("evolve.jl")       # generator-ansatz program evolution
+include("validation.jl")   # post-hoc validation vs built-in landmark codes
+include("pbb_distance.jl") # PBB (non-CSS) exact symplectic distance (BZ; replaces HiGHS)
 
 # GF(2) algebra
 export as_f2, rref, gf2_rank, nullspace_gf2, in_rowspace
@@ -41,6 +48,13 @@ export hadamard_two_coloring, is_css_group, uniform_clifford_lc_css, lc_css_clas
 # BP-OSD (pure-Julia decoder) + logicals
 export bposd_distance, css_logicals
 # data-parallel GF(2) (threads / GPU)
-export batched_rank, batched_css_k, cuda_available
+export batched_rank, batched_css_k, cuda_available, cuda_batched_rank, cuda_ext_loaded
+# discovery pipeline
+export screen_k_css, evaluate_css, bbcode_from_terms, random_polynomial, mutate_polynomial,
+       blind_search_css, GeneratorAnsatz, random_ansatz, mutate_ansatz, ansatz_fitness, evolve_ansaetze
+# post-hoc validation
+export landmark_codes, validate
+# PBB exact symplectic distance
+export symplectic_distance
 
 end # module

@@ -4,7 +4,17 @@
 (HiGHS, ldpc, igraph) to a pure-Julia package (`julia/`), GPU-parallel runnable. Python =
 source of truth; the Julia port must reproduce it on every landmark. Branch `main`; ultracode ON.
 
-## Status snapshot (after wave-1 workflow, iter 2)
+## Status snapshot (after wave-2 + packaging, iter 3) — FUNCTIONALLY COMPLETE
+- **Full pure-Julia package, no C/C++, releasable.** All 16 subsystems ported + cross-validated vs
+  Python; the package runs blind discovery END-TO-END in Julia. All 3 C/C++ deps reimplemented
+  natively (HiGHS→BZ; ldpc→BP-OSD; igraph→IR canonical form). GPU kernel **verified on the A100**
+  (CUDA extension; bit-identical to CPU, 2–21×). 55 Julia tests pass. Professional packaging done:
+  README, examples/quickstart.jl, bin/qcode-discover.jl CLI, julia-ci.yml, LICENSE, [weakdeps] CUDA ext.
+- **Remaining (staged, honest):** certifying the gross code's d=12 *exactly* in Julia (BZ certifies
+  moderate d; large-d needs the overlapping-info-set extension — BP-OSD already gives d_bound=12) and
+  `.tex` catalog parsing (built-in landmark codes used instead). Python kept as reference until these close.
+
+## (prior) Status snapshot (after wave-1 workflow, iter 2)
 - **Ported + cross-validated (✅):** GF(2) algebra, ring/circulants, BB construction + k + FOM,
   theorems, enumeration distance, **Brouwer–Zimmermann certified exact distance** (HiGHS replacement;
   [[72,12,6]] d=6 in 0.22 s) · **PBB construction + k** · **Tanner decomposability** · **BLISS dedup →

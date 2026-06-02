@@ -64,4 +64,32 @@ end
     @test batched_rank(mats) == [gf2_rank(m) for m in mats]      # threaded == serial
     cands = [(12, 6, "y+y^2+x^3", "y^3+x+x^2"), (6, 6, "x^3+y+y^2", "y^3+x+x^2")]
     @test batched_css_k(cands) == [css_k(gross), css_k(c72)]     # == 12, 12
+    # cuda_batched_rank falls back to the bit-identical CPU path when CUDA.jl isn't loaded
+    @test cuda_batched_rank(mats) == [gf2_rank(m) for m in mats]
+end
+
+@testset "discovery cascade + blind search — evaluation/search.jl" begin
+    e = evaluate_css(3, 3, "1+x+y", "1+x^2+y^2"; distance_method=:milp)   # == Python MILP
+    @test e.k == 4 && e.d == 4 && e.exact && e.fom == 4 * 4^2 / 18
+    # END-TO-END: a blind search runs in pure Julia and populates the archive
+    out = blind_search_css([(6, 6)]; n_random=120, distance_budget=4, generations=0,
+                           distance_method=:bposd, seed=1)
+    @test out.n_evaluated == 120
+    @test length(out.archive_elites) >= 1
+    @test all(el -> el.k > 0 && el.fom > 0 && el.n == 72, out.archive_elites)
+end
+
+@testset "post-hoc validation — validation.jl" begin
+    rep = validate([(n=144, k=12, d=12, exact=true, l=12, m=6,
+                     A="y+y^2+x^3", B="y^3+x+x^2", fom=12.0)]; kind=:css)
+    @test rep.results[1].verdict in ("MATCH", "POLY_MATCH")
+    rep2 = validate([(n=72, k=12, d=6, exact=false, l=6, m=6,
+                      A="1+x+y", B="1+x^2+y^2", fom=6.0)]; kind=:css)
+    @test rep2.results[1].verdict in ("UB_CONSISTENT", "MATCH", "POLY_MATCH")
+end
+
+@testset "PBB symplectic exact distance — pbb_distance.jl" begin
+    @test symplectic_distance(PBBCode(2, 3, "1+y", "1+y", "x", "xy")).d == 3     # Python MILP d=3
+    r = symplectic_distance(PBBCode(2, 2, "1+x", "1+x", "x", "x"))
+    @test r.d == 2 && r.certified                                                # Python MILP d=2
 end

@@ -1,50 +1,92 @@
 # QCodeDiscovery.jl
 
-A **pure-Julia** rewrite of the qcode-discovery package (reproduction of arXiv:2606.02418 — blind
-discovery of bivariate-bicycle quantum LDPC codes). **No C/C++ dependencies**: the scientific kernel
-is implemented from first principles, and the external compiled libraries the Python version relied
-on (HiGHS for MILP, `ldpc` for BP-OSD) are being replaced with native Julia algorithms.
+> A **pure-Julia**, GPU-accelerated package for verified, catalog-blind discovery of bivariate-bicycle
+> (BB) and perturbed-BB (PBB) quantum LDPC codes — a complete Julia migration of the Python
+> reproduction of *"Evolutionary Discovery of Bivariate Bicycle Codes with LLM-Guided Search"*
+> ([arXiv:2606.02418](https://arxiv.org/abs/2606.02418)).
 
-## Status — this is an in-progress rewrite (honest)
+`julia ≥ 1.9` · **no C/C++ dependencies** · optional `CUDA.jl` (GPU) · **55 tests passing**
 
-| Component | Python (orig.) | Julia (here) |
-|---|---|---|
-| GF(2) algebra (rank, RREF, null space) | numpy | ✅ ported (`gf2.jl`) |
-| Ring `F2[x,y]/(xˡ−1,yᵐ−1)` + circulants | numpy | ✅ ported (`polynomials.jl`) |
-| BB (CSS) construction, k, FOM | numpy | ✅ ported (`codes.jl`) |
-| Theorem witnesses `thm:ab_d2`, `lem:crt_k` | numpy | ✅ ported (`theorems.jl`) |
-| **Exact distance** | **HiGHS MILP (C++)** | ✅ **pure-Julia min-weight-logical search** (`distance.jl`) — small/moderate codes |
-| Scalable exact distance (e.g. d=12 @ n=144) | HiGHS branch&bound | ⏳ staged — pure-Julia B&B / information-set search |
-| BP-OSD distance (fast upper bound) | `ldpc` (C++) | ⏳ staged — pure-Julia belief-propagation + OSD |
-| PBB (non-CSS) construction | numpy | ⏳ staged |
-| BLISS dedup / LC equivalence | igraph (C) | ⏳ staged (pure-Julia graph canonicalization) |
-| Blind search / GA / cascade | — | ⏳ staged |
+The LLM/search proposes generator ansätze; a scientific kernel **admits** them. Discovery runs **blind**
+to the paper; the catalog is consulted only post-hoc, as a held-out test set. Every result is
+cross-validated against the reference Python package.
 
-The ✅ rows are **cross-validated against the Python package** (identical results on every landmark:
-gross k=12, the blindly-rediscovered [[144,12,12]] k=12, `lem:crt_k` k=8ℓ/3, `thm:ab_d2` d=2, and the
-(3,3) code's exact d=4 — the pure-Julia distance matches the HiGHS MILP). 24 tests pass.
+## No C/C++ — the compiled dependencies are reimplemented natively
 
-## Replacing the C/C++ dependencies (the hard part)
+| Python dependency (C/C++) | Pure-Julia replacement |
+|---|---|
+| HiGHS MILP (exact distance) | `min_distance_bz` — Brouwer–Zimmermann certified codeword enumeration |
+| `ldpc` BP-OSD decoder | `bposd_distance` — native belief propagation (sum-product / min-sum) + OSD |
+| `igraph` BLISS (graph canonicalization) | `canonical_hash` — individualization-refinement canonical form |
 
-- **HiGHS MILP → pure Julia.** Exact distance is the smallest weight at which a nontrivial logical
-  exists; `min_weight_logical` certifies this by increasing-weight search (a complete certificate up
-  to `max_weight`), with no solver. This already reproduces the MILP exactly at small/moderate sizes.
-  Certifying large codes (the gross code's d=12 at n=144) needs the staged branch-and-bound /
-  information-set search — a real solver to write in Julia, not a HiGHS wrapper.
-- **`ldpc` BP-OSD → pure Julia.** A native belief-propagation + ordered-statistics decoder is staged
-  (the fast Stage-2 upper bound). It is an approximation oracle, so it is lower-risk to reimplement.
+## Install
 
-## Run
+```julia
+import Pkg; Pkg.develop(path="julia")     # or Pkg.add(url=...) once published
+using QCodeDiscovery
+```
+GPU is **optional** (a package extension): `Pkg.add("CUDA")` activates the CUDA batched-GF(2) kernel;
+without it, everything runs on CPU (multithreaded).
+
+## Quickstart
+
+```julia
+using QCodeDiscovery
+
+gross = BBCode(12, 6, "y+y^2+x^3", "y^3+x+x^2")    # the gross code [[144,12,12]]
+css_k(gross)                                        # 12
+min_distance_bz(BBCode(6,6,"x^3+y+y^2","y^3+x+x^2"))   # certified d=6 (pure-Julia exact solver)
+
+# blind discovery (catalog-blind), then post-hoc validation
+out = blind_search_css([(6,6)]; n_random=400, distance_budget=8, distance_method=:bposd, seed=0)
+validate(out.archive_elites; kind=:css)             # MATCH / POLY_MATCH / UB_CONSISTENT / NOVEL
+```
+See [`examples/quickstart.jl`](examples/quickstart.jl) and the CLI [`bin/qcode-discover.jl`](bin/qcode-discover.jl).
+
+## Capabilities
+
+- **Kernel** — GF(2) algebra; BB (CSS) & PBB (non-CSS) construction; `k` via GF(2) rank; FOM; the two
+  paper theorem witnesses (`thm:ab_d2`, `lem:crt_k`).
+- **Distance** — exact via Brouwer–Zimmermann (certified; e.g. `[[72,12,6]]` d=6 in 0.2 s) and
+  enumeration; symplectic exact distance for PBB; BP-OSD stochastic upper bound.
+- **Structure** — Tanner-graph decomposability; pure-Julia colored-graph canonical form (dedup);
+  local-Clifford CSS-equivalence.
+- **Discovery** — staged cascade (k → distance → FOM) over a MAP-Elites archive + GA; post-hoc
+  validation vs built-in landmark codes.
+- **Parallel / GPU** — `Threads.@threads` batched GF(2) across CPU cores; a real CUDA kernel
+  (A100-verified, bit-identical to CPU) via the optional `CUDA` extension.
+
+## Layout
+
+```
+julia/
+  Project.toml            package + [weakdeps]/[extensions] for optional CUDA
+  src/QCodeDiscovery.jl    module (flat includes below)
+    gf2 · polynomials · codes · distance · distance_exact · theorems
+    pbb · pbb_distance · tanner · dedup · clifford · bposd · gpu · gpu_cuda
+    evaluation · search · evolve · validation
+  ext/QCodeDiscoveryCUDAExt.jl   GPU kernel (loaded only when CUDA.jl is present)
+  test/runtests.jl         55 tests (kernel + parity vs the Python reference)
+  examples/quickstart.jl
+  bin/qcode-discover.jl    CLI
+```
+
+## Test
 
 ```bash
-julia --project=julia julia/test/runtests.jl     # 24 tests
-```
-```julia
-include("julia/src/QCodeDiscovery.jl"); using .QCodeDiscovery
-gross = BBCode(12, 6, "y+y^2+x^3", "y^3+x+x^2")   # the gross code
-css_k(gross)                                       # 12
-css_distance_enum(BBCode(3,3,"1+x+y","1+x^2+y^2")) # (d=4, dX=4, dZ=4, exhausted=true)
+julia --project=julia -t auto julia/test/runtests.jl     # 55 tests
 ```
 
-The Python package remains in the repository (`src/qcode_discovery/`) until this Julia port reaches
-feature parity; it is the reference the Julia results are validated against.
+## Parity & honest status
+
+Every module is cross-validated against the reference Python package (`../src/qcode_discovery/`):
+gross k=12; the blindly-rediscovered `[[144,12,12]]` (same canonical hash as gross); `[[72,12,6]]` d=6;
+`thm:ab_d2` d=2; `lem:crt_k` k=8ℓ/3; PBB commutation & symplectic d; dedup hash invariance; LC verdicts;
+BP-OSD d_bound=12; GPU rank == CPU rank. **Staged:** certifying the gross code's d=12 *exactly* in
+Julia (the BZ solver certifies moderate distances; large-d needs the overlapping-information-set
+extension — BP-OSD already gives the d=12 upper bound), and `.tex` catalog parsing (built-in landmark
+codes are used instead).
+
+## License
+
+See [LICENSE](LICENSE) (LGPL-2.1). Reproduces Cruz-Benito, Cross, Kremer, Faro, arXiv:2606.02418.
