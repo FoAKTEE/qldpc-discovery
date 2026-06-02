@@ -1,4 +1,18 @@
-# current_iter — window 1, iters 2-14 (blind discovery loop)
+# current_iter — window 1, iters 2-15 (blind discovery loop)
+
+## iter15 (latest): gross d=12 [HOLE] closed + REAL BP-OSD BUG found & fixed
+- Verifying gross [[144,12,12]] d=12 exposed a bug: BP-OSD returned 6 (impossible upper bound for d=12).
+  ROOT CAUSE: coset method must stack DUAL (Z) logicals in H_eff for X-distance (same-type logicals
+  commute); calls had X/Z swapped. FIXED. Now [[144,12,12]]->12, [[72,12,6]]->6, A=B->24 (all correct).
+- gross d=12 kernel-verified (BP-OSD=12 + MILP weight-12 8/12 logicals) -> upgraded LiteratureGrounded
+  -> NumericalSimulation(d<=12, trusted). [HOLE] CLOSED. Regression test test_bposd_gross_144_d12 added.
+- Impact: iter11-12 BP-OSD Stage-2 rankings were buggy, but reported discoveries were Stage-3-MILP-verified.
+- LESSON: the "low-value" d=12 re-verification caught a real correctness bug — multi-case verification matters.
+- 41 tests pass; audit PASS. RESEARCH_NOTE Next Tactics refreshed to current state.
+- Loop: wider campaigns; self-evolution window; (a)/(b) LC gaps are paper's own.
+
+---
+
 
 ## iter14 (latest): uniform per-block Clifford LC-CSS check (component 13 -> ~complete)
 - clifford_equiv: _clifford_symplectic_mats (6 reps as 2x2 F2 maps), _apply_block, _is_css,

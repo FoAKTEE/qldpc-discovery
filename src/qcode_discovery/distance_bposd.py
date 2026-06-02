@@ -49,8 +49,11 @@ def _bposd_one_type(check, logicals, n, trials, configs, seed):
 def bposd_distance(code, trials: int = 200, configs=_DEFAULT_CONFIGS, seed: int = 0) -> dict:
     """BP-OSD upper bound on the CSS distance d = min(d_X, d_Z). Stochastic; an UPPER bound only."""
     X, Z = css_logicals(code.HX, code.HZ)
-    dX = _bposd_one_type(code.HZ, X, code.n, trials, configs, seed)        # X-logicals: H_Z x = 0
-    dZ = _bposd_one_type(code.HX, Z, code.n, trials, configs, seed + 1)    # Z-logicals: H_X z = 0
+    # Coset method (paper V.C): the min-weight X-logical x satisfies H_Z x = 0 and must
+    # ANTICOMMUTE with a dual (Z) logical to be nontrivial -> H_eff = (H_Z ; L_Z). Symmetrically
+    # the Z-distance stacks L_X. (Stacking same-type logicals is wrong: same-type ops always commute.)
+    dX = _bposd_one_type(code.HZ, Z, code.n, trials, configs, seed)        # X-logicals via H_Z + Z-logicals
+    dZ = _bposd_one_type(code.HX, X, code.n, trials, configs, seed + 1)    # Z-logicals via H_X + X-logicals
     cand = [v for v in (dX, dZ) if v is not None]
     return {"d_bound": min(cand) if cand else None, "d_X": dX, "d_Z": dZ,
             "modality": "StatisticalInference(upper-bound)"}

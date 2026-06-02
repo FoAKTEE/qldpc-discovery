@@ -179,6 +179,15 @@ def test_bposd_matches_milp_on_gross():
     assert bposd_distance(g, trials=300, seed=0)["d_bound"] == 6   # matches MILP exact
 
 
+def test_bposd_gross_144_d12():
+    # Regression for the coset-logical bug: the gross [[144,12,12]] (d=12, low-rate) must give
+    # BP-OSD bound 12, NOT 6. (Stacking same-type logicals in H_eff wrongly returned 6.)
+    pytest.importorskip("ldpc")
+    from qcode_discovery.distance_bposd import bposd_distance
+    g = BBCode(12, 6, "y+y^2+x^3", "y^3+x+x^2")
+    assert bposd_distance(g, trials=400, seed=0)["d_bound"] == 12
+
+
 def test_bposd_overestimates_high_rate_ab_code():
     # Reproduce the paper's headline finding: BP-OSD grossly overestimates d for high-rate codes.
     pytest.importorskip("ldpc")

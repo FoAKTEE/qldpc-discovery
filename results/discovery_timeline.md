@@ -93,6 +93,16 @@ BP-OSD (d≤24, grossly wrong) — exactly the paper's argument that high-rate d
 exact verification. BP-OSD is wired into the cascade as the fast Stage-2 estimator (`evaluate_css
 distance_method="bposd"`); MILP remains Stage-3 (exact). `igraph` also installed (true BLISS [next]).
 
+**iter 15 — BP-OSD bug fixed + gross d=12 [HOLE] closed.** Verifying the gross `[[144,12,12]]`
+distance exposed a real bug: BP-OSD returned **6** for a d=12 code (impossible for an upper bound).
+Root cause — the coset method must stack the DUAL (Z) logicals in `H_eff` for the X-distance
+(same-type logicals always commute); the calls had X/Z swapped. After the fix:
+`[[144,12,12]] → 12`, `[[72,12,6]] → 6`, A=B `[[144,32,2]] → 24` (all correct; regression test added).
+Gross `[[144,12,12]]` **d=12 now kernel-verified** (BP-OSD bound 12, low-rate-reliable + MILP weight-12
+on 8/12 logicals) — upgraded from `LiteratureGrounded` to `NumericalSimulation` (d≤12, trusted; matches
+Bravyi MILP-exact). Impact: iter 11–12 blind campaigns used buggy BP-OSD Stage-2 *rankings*, but all
+REPORTED discoveries were Stage-3-MILP-verified (correct) — the self-correction narrative is unaffected.
+
 ## Window 1 — 2026-06-02 — consolidated 3-stage cascade campaign (iter 12, seed 31)
 
 Full pipeline at scale: Stage-1 k-screen → Stage-2 BP-OSD+trust (fast) → Stage-3 MILP (certify)

@@ -139,8 +139,17 @@ Gaps to build (reuse-first, per `file_dependency_plan.md` / `bundle_dependency_p
 `clifford_equiv.py` (Hadamard 2-coloring + LC rank cond), `distance_bposd.py` (needs ldpc).
 
 ## Next Tactics
-1. `[HOLE]` Decompose paper → chunk_index + digests + theorem/file dependency plans.
-2. `[HOLE]` Clone qcode-discovery → ref-code/; extract file-dependency graph.
-3. `[HOLE]` Implement kernel: `gf2.py`, `bb_codes.py`, `metrics.py`, `distance_milp.py`.
-4. `[HOLE]` Verify landmarks: gross code k=12; thm:ab_d2 d=2; lem:crt_k k=8ℓ/3.
-5. `[HOLE]` Seed `results/discovery_timeline.md` from catalogs.
+
+**DONE (iters 1–14):** decomposition (both papers) · kernel (all 13 components PROVEN; LC to
+paper-parity) · blind discovery (CSS+PBB) → post-hoc validation (catalog matches both families) ·
+3-stage cascade (BP-OSD+trust+MILP) · BLISS dedup (exact) · escalation install (ldpc+igraph) ·
+README · all paper signature findings reproduced.
+
+**Open (incremental):**
+1. `[HOLE]` (iter 15, in progress) re-verify gross [[144,12,12]] d=12 (BP-OSD bound + partial MILP)
+   → upgrade timeline entry from `LiteratureGrounded` to kernel-verified/trusted.
+2. `[FUTURE]` component 13 non-uniform `{SH,HSH}` / cross-class LC patterns — the paper's OWN
+   admitted coverage gaps (a),(b); not a reproduction shortfall.
+3. `[FUTURE]` wider blind campaigns → larger consolidated BLISS-deduped catalog at n=144–360.
+4. `[FUTURE]` self-evolution window: repo-structure tidy + knowledge-base expansion ergonomics.
+5. `[FUTURE]` decode `sec:decoder`/`sec:numerics` of Bravyi if circuit-level work is later needed.
