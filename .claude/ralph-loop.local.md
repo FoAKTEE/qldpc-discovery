@@ -1,6 +1,6 @@
 ---
 active: true
-iteration: 1
+iteration: 2
 session_id: ""
 max_iterations: 300
 completion_promise: "QLDPC_BBC_DISCOVERY_PIPELINE_COMPLETE"
@@ -47,6 +47,22 @@ escalation_policy:
     (pipelines/6-escalation) whenever an ingredient (construction, distance
     method, equivalence test, decoder) is missing or an external_axioms entry
     goes [ACTIVE]. Record the trigger in the iter loop note BEFORE acquiring.
+blind_discovery_policy:
+  policy: "user directive 2026-06-02 (CENTRAL THEME) — BINDING"
+  rule: |
+    Discovery must run BLIND: the auto-discovery pipeline rediscovers codes WITHOUT any
+    knowledge extracted from the paper. Run the blind search FIRST; only AFTER do we
+    double-check against the paper.
+    - KERNEL (construction, k via rank, MILP/enum distance, FOM, dedup, LC) = the verifier
+      apparatus; deriving it from the paper's METHOD is allowed.
+    - SEARCH (seed ansatz, evolution/GA/random) must NOT seed from the paper's discovered
+      polynomials, must NOT hardcode any reported [[n,k,d]], must NOT import the catalog
+      tables (css_catalog_tables.tex / pbb_catalog_tables.tex). Seeds are naive/generic.
+    - `src/qcode_discovery/evaluation.py` + `search.py`/`evolve.py` are catalog-blind.
+      A separate `validation.py` reads the catalog ONLY post-hoc to compare discovered vs
+      reported (overlap, novelty, did-we-find-the-gross-code).
+    - Every discovered [[n,k,d]] is logged to results/discovery_timeline.md with verifier
+      status BEFORE any paper comparison. The catalog is a HELD-OUT TEST SET.
 self_evolution_policy:
   policy: "user directive 2026-06-02 (bbc-initial.md SELF-EVOLUTION)"
   rule: |

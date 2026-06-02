@@ -43,6 +43,19 @@ def css_logicals(HX: np.ndarray, HZ: np.ndarray):
     return X, Z
 
 
+def symplectic_logicals(S: np.ndarray, n: int) -> np.ndarray:
+    """2k symplectic logical generators (a|b) of a stabilizer code with check matrix S=[X|Z].
+
+    A logical lies in N(S) (commutes with every stabilizer: the symplectic-flipped matrix
+    [Z|X] annihilates it) and is independent modulo the stabilizer group rowspace(S).
+    Returns rows (a|b) in F(2)^{2n}; row count = 2k. R3.
+    """
+    SX, SZ = S[:, :n], S[:, n:]
+    H_flip = np.hstack([SZ, SX]).astype(np.uint8)        # commutation: SZ a + SX b = 0
+    in_normalizer = gf2.nullspace(H_flip)                 # all (a|b) commuting with stabilizers
+    return _independent_mod(gf2.row_reduce_basis(S), in_normalizer)  # quotient by the stabilizer group
+
+
 def fom(n: int, k: int, d: int) -> float:
     """Figure of merit k d^2 / n (gross code [[144,12,12]] -> 12.0)."""
     return k * d * d / n

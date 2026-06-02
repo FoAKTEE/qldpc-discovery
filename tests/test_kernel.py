@@ -12,7 +12,7 @@ from qcode_discovery import gf2
 from qcode_discovery.bb_codes import BBCode
 from qcode_discovery.pbb_codes import PBBCode
 from qcode_discovery.metrics import css_k, css_logicals, fom
-from qcode_discovery.distance_milp import css_distance_milp
+from qcode_discovery.distance_milp import css_distance_milp, symplectic_distance_milp
 from qcode_discovery.distance_enum import css_distance_enum
 from qcode_discovery.tanner import is_decomposable, qubit_components
 from qcode_discovery.theorems import verify_ab_d2, verify_crt_k
@@ -117,3 +117,21 @@ def test_pbb_reduces_to_css_when_CD_zero():
     bb = BBCode(6, 6, "y+y^2+x^3", "y^3+x+x^2")
     assert pbb.is_pure_css()
     assert pbb.k == css_k(bb.HX, bb.HZ)
+
+
+# ----------------------------- symplectic (non-CSS) MILP distance -----------------------------
+def test_symplectic_milp_matches_css_when_CD_zero():
+    # A PBB with C=D=0 IS a CSS code; its symplectic distance must equal the CSS MILP distance.
+    bb = BBCode(3, 3, "1+x+y", "1+x^2+y^2")
+    pbb0 = PBBCode(3, 3, "1+x+y", "1+x^2+y^2", "", "")
+    css = css_distance_milp(bb, time_limit=30.0)
+    symp = symplectic_distance_milp(pbb0, time_limit=30.0)
+    assert symp["d"] == css["d"] and symp["exact"]
+
+
+def test_symplectic_milp_genuine_noncss_36_4_6():
+    # Genuine non-CSS [[36,4,6]] (6,3) from Table II — symplectic d must be 6 exact (paper).
+    code = PBBCode(6, 3, "y+x^3*y^2+x^4*y", "x^3*y+x^4+x^4*y", "y", "x*y")
+    assert code.has_mixed_generator()
+    res = symplectic_distance_milp(code, time_limit=60.0)
+    assert res["d"] == 6 and res["exact"]
