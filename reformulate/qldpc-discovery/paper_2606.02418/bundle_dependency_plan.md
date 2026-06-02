@@ -329,5 +329,3 @@ B5 LC coverage gaps (a),(b) (`OBL-LC-1`) + BLISS faithfulness proof (`OBL-BLISS-
 refuted-as-reliable (`PC-08` counterexample); B8 rate-distance tradeoff structural-vs-artifact
 (`OBL-TRADEOFF-1`, Conjectural). `[AXIOM]`s: `tillich2014quantum`, `cross2025small` Lemma 7.4,
 `macwilliams1977theory`, `bravyi2024high`.
-</content>
-</invoke>

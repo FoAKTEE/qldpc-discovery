@@ -36,3 +36,16 @@ code_quality_audit: 10 files, 34 findings (CRITICAL=0 HIGH=0 MEDIUM=0 LOW=34)
 code_quality_policy_pass: PASS (0 blocking finding(s))
 ```
 code_quality_policy_pass: components 1,2,3,4,6,8,12 PROVEN; 5,7,9,10,11,13 [FUTURE] (scaffolded).
+
+## (g) Decomposition QA (consolidation agent cross-check)
+- **H-1 FIXED:** stripped leaked tool-call XML trailers (`</content></invoke>`) from
+  `bundle_dependency_plan.md` and `convention.md` (sub-agent Write artifact leak).
+- `[HOLE]` **H-2 (loop task):** two "13-component" numberings coexist — digests use `P1..P13`,
+  reformulate uses `PC-01..PC-13`, different membership (e.g. digest P9=MAP-Elites vs
+  reformulate PC-09=BLISS). Add an explicit P↔PC crosswalk. Non-blocking.
+- `[HOLE]` **H-3 (loop task):** `file_dependency_plan.md` indexes by module IDs, no `PC-*`
+  join key. Add a PC-* cross-reference column. Non-blocking.
+- Pre-existing typed holes carried (not new): FOM-ranking n=360 reconciliation (chunk_003),
+  PBB A=B generality (chunk_002 HOLE-002-A). Env [BLOCKING]: empty upstream repo + MISSING libs.
+- Decomposition stats: ~105 typed entries, 0 untyped claims; theorem labels + eq labels
+  verified character-for-character against tex.

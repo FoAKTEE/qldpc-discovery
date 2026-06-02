@@ -137,5 +137,3 @@ Each row is a TYPED entry: `symbol -> one-line meaning [modality] (tex anchor)`.
 - `^T` / `A^T` = the ring involution `x->x^{-1}, y->y^{-1}` = transpose of the circulant. (paper l.164)
 - MILP `MIP gap = 0` => `d` exact; otherwise `d` printed as `<=d` (incumbent upper bound). (supp l.673)
 - BP-OSD distances are UPPER bounds only; "trusted" via `d/sqrt(n)`, never treated as exact. (paper l.369; supp l.54)
-</content>
-</invoke>
