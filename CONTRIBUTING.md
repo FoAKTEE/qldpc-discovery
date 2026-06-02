@@ -4,7 +4,7 @@
 
 ```bash
 pip install -e ".[dev,decoders]"
-python -m pytest -q          # must stay green (49 tests)
+python -m pytest -q          # must stay green (54 tests; CI runs this + audit)
 qcode-audit                  # must be PASS (0 CRITICAL/HIGH)
 ```
 

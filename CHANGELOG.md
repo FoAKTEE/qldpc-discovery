@@ -30,6 +30,7 @@
 - `src/` layout reorganized into logical subpackages (algebra/codes/distance/structure/discovery).
 - Stable public API via `qcode_discovery/__init__.py`; CLI (`qcode-discover`/`qcode-validate`/`qcode-audit`).
 - pyproject with metadata, optional `[decoders]`/`[dev]` extras, console entry points.
+- PEP 561 `py.typed` marker; GitHub Actions CI (pytest + audit); CLI smoke tests (54 tests total).
 
 Bugs fixed during development: BP-OSD coset-logical orientation (returned d=6 for the d=12 gross code);
 `dedup_bb` signature omitted (l,m); WL-histogram dedup over-merged regular Tanner graphs (replaced).

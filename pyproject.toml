@@ -38,6 +38,9 @@ qcode-audit = "qcode_discovery.cli:audit_cmd"
 [tool.setuptools.packages.find]
 where = ["src"]
 
+[tool.setuptools.package-data]
+qcode_discovery = ["py.typed"]
+
 [tool.pytest.ini_options]
 pythonpath = ["src"]
 testpaths = ["tests"]

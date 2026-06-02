@@ -4,7 +4,7 @@
 > with LLM-Guided Search"* ([arXiv:2606.02418](https://arxiv.org/abs/2606.02418), Cruz-Benito, Cross,
 > Kremer, Faro; IBM) — built as a runnable Python package + discovery pipeline + results timeline.
 
-`python · numpy · scipy` · optional `ldpc` + `python-igraph` · **49 tests passing** · code-quality audit: PASS
+`python · numpy · scipy` · optional `ldpc` + `python-igraph` · **54 tests passing** · code-quality audit: PASS · CI: GitHub Actions
 
 The LLM/search proposes generator ansätze; a **scientific kernel admits** them. Discovery runs
 **blind** to the paper; the catalog is consulted only *post-hoc*, as a held-out test set.
@@ -44,7 +44,7 @@ See **[examples/quickstart.py](examples/quickstart.py)** and **[docs/usage.md](d
 
 ```
 src/qcode_discovery/   library: algebra · codes · distance · structure · discovery (+ cli)
-tests/                 49-test verification suite
+tests/                 54-test suite (kernel · discovery · CLI)
 scripts/               full-featured research drivers (run/validate/llm-search/audit)
 docs/                  index, usage, architecture, REPORT, EXTENDING
 examples/              runnable quickstart
