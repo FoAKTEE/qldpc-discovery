@@ -1,4 +1,16 @@
-# current_iter — window 1, iters 2-5 (blind discovery loop)
+# current_iter — window 1, iters 2-6 (blind discovery loop)
+
+## iter6 (latest): LC-CSS equivalence via Hadamard 2-coloring (component 13)
+- clifford_equiv.py: hadamard_two_coloring (parity union-find; Y-obstruction + 2-colorability,
+  App.E), lc_css_classify (uses pbb.is_css_group rank cond + Hadamard). _ParityUF.
+- Verified: CSS-as-PBB -> CSS_GROUP w/ constructive H pattern that PROVABLY makes generators
+  pure-X/Z; Y-support -> y_obstruction; [[144,12,12]] PBB -> CSS_INEQUIVALENT_TESTED (has Y).
+- 33 tests pass; audit PASS. Component 13 PARTIAL (Hadamard + rank cond done; uniform-S /
+  non-uniform {I,S}/{H,HS} enumeration + gaps (a),(b) = [FUTURE]).
+- Completion kernel pieces remaining: component 11 (BLISS dedup — needs igraph or WL fallback).
+
+---
+
 
 ## iter5 (latest): blind NON-CSS PBB discovery + PBB validation
 - search.blind_search_pbb (commutativity-filtered 4-tuples, symplectic-MILP, FOM) + validation.parse_pbb_catalog.

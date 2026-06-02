@@ -1,6 +1,6 @@
 ---
 active: true
-iteration: 5
+iteration: 6
 session_id: ""
 max_iterations: 300
 completion_promise: "QLDPC_BBC_DISCOVERY_PIPELINE_COMPLETE"

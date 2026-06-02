@@ -88,3 +88,45 @@ def test_blind_pbb_runs_and_is_noncss():
                            max_logicals=8, seed=4)
     assert out["n_commuting"] >= 1                       # commutativity filter found valid tuples
     assert all(e["k"] > 0 for e in out["archive_elites"])
+
+
+# ----------------------------- LC-CSS equivalence (Hadamard 2-coloring) -----------------------------
+import numpy as np
+from qcode_discovery.pbb_codes import PBBCode
+from qcode_discovery.clifford_equiv import hadamard_two_coloring, lc_css_classify, _ParityUF
+
+
+def _H_makes_css(SX, SZ, patt):
+    """Apply H on the flagged qubits and check every generator becomes pure-X or pure-Z."""
+    SX, SZ = SX.copy(), SZ.copy()
+    J = np.flatnonzero(patt)
+    SX[:, J], SZ[:, J] = SZ[:, J].copy(), SX[:, J].copy()
+    return bool(((~SZ.any(axis=1)) | (~SX.any(axis=1))).all())
+
+
+def test_parity_union_find_detects_conflict():
+    uf = _ParityUF(3)
+    assert uf.union(0, 1, 0)            # bit0 == bit1
+    assert uf.union(1, 2, 0)            # bit1 == bit2  => bit0 == bit2
+    assert uf.union(0, 2, 1) is False   # but bit0 XOR bit2 = 1 contradicts => conflict
+
+
+def test_hadamard_css_pattern_is_constructive():
+    css = PBBCode(6, 6, "1+x+y", "1+x^2+y^2", "", "")   # C=D=0 => genuinely CSS
+    n = css.n
+    SX, SZ = css.S[:, :n], css.S[:, n:]
+    had = hadamard_two_coloring(SX, SZ)
+    assert had["feasible"] and _H_makes_css(SX, SZ, had["H_pattern"])
+    assert lc_css_classify(css)["verdict"] == "CSS_GROUP"
+
+
+def test_hadamard_y_obstruction():
+    SX = np.array([[1, 0]], np.uint8)
+    SZ = np.array([[1, 0]], np.uint8)                    # generator 0 has Y on qubit 0
+    assert hadamard_two_coloring(SX, SZ)["y_obstruction"] is True
+
+
+def test_genuine_noncss_is_css_inequivalent():
+    p = PBBCode(12, 6, "y+y^2+x^3", "y^3+x+x^2", "y+x^3*y", "y^3+x^3*y^3")
+    assert not p.is_css_group()
+    assert lc_css_classify(p)["verdict"] == "CSS_INEQUIVALENT_TESTED"
