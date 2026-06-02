@@ -1,4 +1,11 @@
-# current_iter — window 1, iters 2-19 (blind discovery loop)
+# current_iter — window 1, iters 2-20 (blind discovery loop)
+
+## iter20: Claude-guided g3 rediscovers 2nd flagship [[288,16,12]] (POLY_MATCH) + validate poly-match fix
+- g3: x/y-swap pattern at (12,12) -> A=x³+y+y²,B=y³+x+x² = catalog [[288,16,12]] (POLY_MATCH). BP-OSD
+  d=28 overestimate (true d=12); fixed validate() so identical polynomials => POLY_MATCH regardless of
+  d-estimate (same code). 49 tests pass. Claude-guided search now rediscovered TWO headline codes blind.
+
+---
 
 ## iter19 (latest): CLAUDE-GUIDED LLM search rediscovers the gross code (user directive)
 - User: "use claude code as api and run search" -> Claude Code IS the LLM mutation operator (no

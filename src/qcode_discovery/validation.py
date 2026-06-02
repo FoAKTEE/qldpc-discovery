@@ -129,11 +129,16 @@ def validate(discoveries: list[dict], catalog_tex: str | Path | None, kind: str 
                 rB = _poly_set(r["B"], r["l"], r["m"])
                 poly_hit = (disc_A is not None and rA is not None and
                             {disc_A, disc_B} == {rA, rB})
+                # Identical polynomials => the SAME code. POLY_MATCH regardless of our d-estimate
+                # (a BP-OSD upper bound may overestimate the reference's true d).
+                if poly_hit:
+                    verdict, matched = "POLY_MATCH", r
+                    break
                 if d is not None and d == r["d"] and d_exact and not r["d_is_upper"]:
-                    verdict, matched = ("POLY_MATCH" if poly_hit else "MATCH"), r
+                    verdict, matched = "MATCH", r
                     break
                 if d is not None and d <= r["d"]:        # our (possibly upper-bound) d consistent
-                    verdict, matched = ("POLY_MATCH" if poly_hit else "UB_CONSISTENT"), r
+                    verdict, matched = "UB_CONSISTENT", r
             if matched is None and refs:
                 verdict = "PARAMS_NOT_IN_REF_AT_N"
         results.append({"discovery": f"[[{n},{k},{d}]]", "fom": disc.get("fom"),

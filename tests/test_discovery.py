@@ -87,6 +87,15 @@ def test_pbb_catalog_parses():
     assert (2, 6) in n36 and (4, 6) in n36
 
 
+def test_validation_polymatch_regardless_of_bposd_overestimate():
+    # Identical polynomials => same code => POLY_MATCH, even if our d is a BP-OSD overestimate.
+    # (The Claude-guided search found [[288,16,d_BP=28]] with the catalog [[288,16,12]] polynomials.)
+    disc = [{"n": 288, "k": 16, "d": 28, "exact": False, "l": 12, "m": 12,
+             "A": "x^3+y+y^2", "B": "y^3+x+x^2", "fom": 43.56}]
+    rep = validate(disc, PBB_CATALOG.parent / "css_catalog_tables.tex", kind="css")
+    assert rep["results"][0]["verdict"] == "POLY_MATCH"
+
+
 def test_validation_pbb_exact_match():
     # A blind [[36,2,6]] exact discovery must MATCH the PBB catalog entry of the same (n,k,d).
     disc = [{"n": 36, "k": 2, "d": 6, "exact": True, "l": 6, "m": 3, "A": "?", "B": "?", "fom": 2.0}]

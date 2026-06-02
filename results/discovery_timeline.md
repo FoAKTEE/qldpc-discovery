@@ -145,12 +145,20 @@ generator-ansatz mutation from FOM feedback only, **blind to the catalog**; `evo
 | g0_seed | naive all-mixed trinomial A=x+y+y², B=y+x+x² | 0.00 | (no k>0 codes) |
 | g1_xyswap | "mixing failed → concentrate one variable per poly (x/y-swap)" | 8.00 | [[72,12,6]] FOM=6 |
 | g2_expscan | "widen the lone-exponent scan {2,3,4,5}" | **18.00** | **[[144,12,12]] FOM=12** |
+| g3_n288 | "apply the winning x/y-swap pattern at a larger lattice (12,12)" | 43.56 | **[[288,16,12]]** (BP-OSD d=28, overestimate) |
 
 **Result:** at g2 the lone-exponent-3 x/y-swap at (12,6) is A=x³+y+y², B=y³+x+x² — the **gross code**,
 found COLD. Post-hoc validation: **POLY_MATCH** (identical polynomial sets) with the held-out catalog's
 `[[144,12,12]]` (`landmark:bravyi2024high`) — the strongest validation verdict. d=12 kernel-verified
 (iter 15). This realizes the central theme WITH the LLM operator: Claude-guided blind search →
 rediscovers the flagship code → exact match against the paper, only checked afterward.
+
+**g3 (iter 20):** applying the winning x/y-swap pattern at (12,12) [n=288] rediscovered a SECOND
+flagship — A=x³+y+y², B=y³+x+x² = the catalog's **[[288,16,12]]** (the paper's "most practically
+relevant" indecomposable wt-6 d=12 code). Post-hoc validation: **POLY_MATCH**. BP-OSD reported d=28
+(overestimate of the catalog's d=12; d/√n=1.65 slipped the trust filter) — reinforcing the
+BP-OSD-overestimation finding; the POLY_MATCH holds regardless because identical polynomials = same code.
+So the Claude-guided LLM search rediscovered TWO headline codes blind: [[144,12,12]] and [[288,16,12]].
 
 Discipline note: as orchestrator I have read the paper, so "blind" is best-effort — mutations were
 driven only by algebraic-pattern reasoning on fitness (widen exponents, swap variables), never by
