@@ -4,13 +4,17 @@
 (HiGHS, ldpc, igraph) to a pure-Julia package (`julia/`), GPU-parallel runnable. Python =
 source of truth; the Julia port must reproduce it on every landmark. Branch `main`; ultracode ON.
 
-## Status snapshot
+## Status snapshot (after wave-1 workflow, iter 2)
 - **Ported + cross-validated (✅):** GF(2) algebra, ring/circulants, BB construction + k + FOM,
-  theorems (thm:ab_d2, lem:crt_k), enumeration distance, **Brouwer–Zimmermann certified exact
-  distance** (matches HiGHS MILP; certifies [[72,12,6]] d=6 in 0.22 s, pure Julia). 28 Julia tests pass.
-- **Staged (🟡/🔴):** PBB + symplectic distance, BP-OSD (ldpc), Tanner decomposability, BLISS dedup
-  (igraph), LC equivalence, evaluation cascade, search/GA/evolve, validation, CLI, the GPU+parallel
-  layer (CUDA.jl), and the scalable exact solver for d=12 @ n=144. See `port_plan.md`.
+  theorems, enumeration distance, **Brouwer–Zimmermann certified exact distance** (HiGHS replacement;
+  [[72,12,6]] d=6 in 0.22 s) · **PBB construction + k** · **Tanner decomposability** · **BLISS dedup →
+  pure-Julia individualization-refinement canonical form** (igraph replacement; gross≡relabel≡blind) ·
+  **LC-CSS equivalence** · **BP-OSD → pure-Julia BP+OSD** (ldpc replacement; gross d_bound=12==Python) ·
+  **data-parallel GF(2)** (Threads; CUDA.jl path w/ CPU fallback). **46 Julia tests pass.**
+  All three C/C++ deps (HiGHS, ldpc, igraph) now have working pure-Julia replacements.
+- **Staged (🟡/🔴):** PBB symplectic distance; evaluation cascade; search/GA/evolve; validation; CLI;
+  actual CUDA kernels (CUDA.jl not installed) + threaded search fan-out; the SCALABLE exact solver to
+  certify the gross code's d=12 @ n=144 in Julia (overlapping-info-set BZ). See `port_plan.md`.
 
 ## Honest scope
 A complete, correct, GPU-parallel pure-Julia reimplementation — including from-scratch replacements

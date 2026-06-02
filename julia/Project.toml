@@ -3,6 +3,9 @@ uuid = "e65589a1-6be8-4a17-a56b-9b9c76ae45cd"
 authors = ["qldpc-discovery contributors"]
 version = "0.1.0"
 
+[deps]
+SHA = "ea8e919c-243c-51af-8825-aaa63cd721ce"
+
 [compat]
 julia = "1.9"
 

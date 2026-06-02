@@ -2,6 +2,8 @@ using Test
 include("../src/QCodeDiscovery.jl")
 using .QCodeDiscovery
 
+include("parity_tests.jl")   # wave-1 migrated subsystems (pbb, tanner, dedup, clifford, bposd, gpu)
+
 # Landmark values are cross-validated against the Python qcode_discovery package (source of truth):
 # the pure-Julia port reproduces construction, k, the theorem witnesses, and exact distance exactly.
 
