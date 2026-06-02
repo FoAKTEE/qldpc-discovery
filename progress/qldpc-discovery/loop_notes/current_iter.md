@@ -1,4 +1,16 @@
-# current_iter — window 1, iters 2-6 (blind discovery loop)
+# current_iter — window 1, iters 2-7 (blind discovery loop)
+
+## iter7 (latest): Tanner dedup (component 11) — FULL APPARATUS COMPLETE
+- dedup.py: WL-histogram FAILED verification (bi-regular Tanner graphs -> trivial coloring,
+  over-merges gross==diff). Replaced with SOUND lattice-symmetry canonicalization (x->x^a,
+  y->y^b, x<->y, A<->B) -> conservative UPPER-bound distinct count (paper's framing).
+- Verified: gross == x->x^5 relabel == A<->B swap; gross != diff(x^4) != A=B; dedup(5)->3 classes.
+- 34 tests pass; audit PASS. All 13 pipeline components now built (PROVEN/PARTIAL; only 7 BP-OSD
+  [FUTURE], needs ldpc). Theorems [SOLID]. Central theme done end-to-end (both families).
+- Next: scale blind CSS to n=144 vs catalog; wire dedup into campaign post-processing; decompose Bravyi.
+
+---
+
 
 ## iter6 (latest): LC-CSS equivalence via Hadamard 2-coloring (component 13)
 - clifford_equiv.py: hadamard_two_coloring (parity union-find; Y-obstruction + 2-colorability,

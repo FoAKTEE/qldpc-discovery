@@ -87,10 +87,17 @@ in pure numpy/scipy to avoid heavy deps for the load-bearing verifiers (KISS).
 
 ## Paper formalization progress (live snapshot — refresh ~every 5 iters)
 
-Window 1 (bootstrap): paper acquired + decomposed; kernel layer (components
-1,3,4,8 + theorems thm:ab_d2, lem:crt_k) targeted for first verified landmark.
-Highest-leverage open node: **component 1+3+4** — without BB construction +
-k-rank + CSS MILP distance there is no kernel to admit any discovery.
+**Window 1, iter 7 — full pipeline APPARATUS built (34 tests green).** Status:
+- PROVEN: 1 BB-construction, 2 PBB-construction, 3 k-rank, 4 CSS-MILP, 5 symplectic-MILP,
+  6 enumeration, 8 FOM, 9 evaluation-cascade, 10 blind-search (GA/MAP-Elites-lite), 12 decomposability.
+- PARTIAL: 11 dedup (sound lattice-symmetry fallback; full BLISS/igraph [FUTURE]),
+  13 LC-CSS (Hadamard 2-coloring + rank cond; uniform-S/{I,S}/{H,HS} enumeration [FUTURE]).
+- [FUTURE]: 7 BP-OSD (needs `ldpc`). Theorems thm:ab_d2, lem:crt_k: [SOLID].
+
+**Central theme achieved end-to-end:** blind discovery (no paper) → validate (held-out catalog),
+both families — CSS [[72,12,6]] UB_CONSISTENT vs Bravyi; non-CSS [[36,2,6]] EXACT MATCH vs PBB catalog.
+Highest-leverage next node: scale blind CSS search to **n=144** (target gross [[144,12,12]] vs catalog)
++ wire dedup into campaign post-processing for honest distinct-counts.
 
 ## Paper ingestion record (write-once)
 - 2026-06-02: arXiv:2606.02418 e-print acquired (`PROVENANCE.md`), 42pp,

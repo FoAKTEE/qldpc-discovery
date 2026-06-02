@@ -130,3 +130,20 @@ def test_genuine_noncss_is_css_inequivalent():
     p = PBBCode(12, 6, "y+y^2+x^3", "y^3+x+x^2", "y+x^3*y", "y^3+x^3*y^3")
     assert not p.is_css_group()
     assert lc_css_classify(p)["verdict"] == "CSS_INEQUIVALENT_TESTED"
+
+
+# ----------------------------- dedup (lattice-symmetry equivalence) -----------------------------
+from qcode_discovery.dedup import canonical_poly_signature, dedup_bb
+
+
+def test_dedup_merges_equivalent_separates_distinct():
+    gross  = BBCode(12, 6, "y+y^2+x^3", "y^3+x+x^2")
+    relab  = BBCode(12, 6, "y+y^2+x^3", "y^3+x^5+x^10")    # x->x^5 (coprime 12): equivalent
+    swapAB = BBCode(12, 6, "y^3+x+x^2", "y+y^2+x^3")        # A<->B: equivalent
+    diff   = BBCode(12, 6, "y+y^2+x^4", "y^3+x+x^2")        # distinct (3a=4 mod12 unsolvable)
+    ab     = BBCode(12, 6, "x^4+1+y^2", "x^4+1+y^2")        # A=B distinct code
+    sg = lambda c: canonical_poly_signature(c.l, c.m, c.A_terms, c.B_terms)
+    assert sg(gross) == sg(relab) == sg(swapAB)
+    assert sg(gross) != sg(diff) and sg(gross) != sg(ab)
+    res = dedup_bb([gross, relab, swapAB, diff, ab])
+    assert res["n_distinct"] == 3
