@@ -67,8 +67,33 @@ class Archive:
         return sorted(self.cells.values(), key=lambda r: r["fom"], reverse=True)
 
 
+def verify_elites_milp(elites, time_limit=10.0, max_logicals=None, log=None):
+    """Stage-3: recompute EXACT MILP distance for each archive elite (tightens BP-OSD bounds).
+
+    Returns the elites with d/exact/fom updated from MILP. Mirrors the paper's post-hoc MILP
+    verification of the codes that survive the BP-OSD-driven evolutionary loop.
+    """
+    from .bb_codes import BBCode
+    from .distance_milp import css_distance_milp
+    from .metrics import fom
+    say = log if log else (lambda *_: None)
+    out = []
+    for e in elites:
+        code = BBCode(e["l"], e["m"], e["A"], e["B"])
+        d = css_distance_milp(code, time_limit=time_limit, max_logicals=max_logicals)
+        ev = dict(e)
+        if d["d"] is not None:
+            ev["d"], ev["exact"] = d["d"], d["exact"]
+            ev["fom"] = fom(code.n, ev["k"], d["d"])
+            say(f"  Stage-3 MILP [[{code.n},{ev['k']},{d['d']}]] exact={d['exact']} FOM={ev['fom']:.2f}")
+        out.append(ev)
+    out.sort(key=lambda r: r["fom"], reverse=True)
+    return out
+
+
 def blind_search_css(lattices, *, n_random=400, generations=0, distance_budget=8,
-                     weight=3, time_limit=3.0, max_logicals=None, seed=0, log=None) -> dict:
+                     weight=3, time_limit=3.0, max_logicals=None, seed=0, log=None,
+                     distance_method="milp", trust_high=2.0) -> dict:
     """Run a blind CSS BB search over the given lattices [(l,m), ...].
 
     Phase 1: sample n_random naive trinomial pairs per lattice, Stage-1 screen k, take the
@@ -114,13 +139,17 @@ def blind_search_css(lattices, *, n_random=400, generations=0, distance_budget=8
             if ri > len(ks) * (distance_budget + 2):
                 break
         for (k, A, B) in selection:
-            res = evaluate_css(l, m, A, B, time_limit=time_limit, max_logicals=max_logicals)
+            res = evaluate_css(l, m, A, B, distance_method=distance_method,
+                               time_limit=time_limit, max_logicals=max_logicals)
             n_dist += 1
-            if res.get("d"):
+            # trust filter (only for BP-OSD upper bounds): discard d/sqrt(n) >= trust_high so
+            # overestimated d=2 traps cannot fake a high FOM (paper Sec V.D).
+            trusted = (distance_method != "bposd") or (res.get("d_over_sqrt_n") or 0) < trust_high
+            if res.get("d") and trusted:
                 evaluated.append(res)
-            if arch.consider(res):
-                say(f"  [{l},{m}] discovered [[{res['n']},{res['k']},{res['d']}]] "
-                    f"FOM={res['fom']:.2f} exact={res['exact']}")
+                if arch.consider(res):
+                    say(f"  [{l},{m}] discovered [[{res['n']},{res['k']},{res['d']}]] "
+                        f"FOM={res['fom']:.2f} exact={res['exact']}")
 
     # Phase 2: GA hill-climbing on elites (FOM fitness).
     for g in range(generations):
@@ -130,13 +159,15 @@ def blind_search_css(lattices, *, n_random=400, generations=0, distance_budget=8
             B = mutate_polynomial(elite["B"], l, m, rng)
             if screen_k_css(l, m, A, B) == 0:
                 continue
-            res = evaluate_css(l, m, A, B, time_limit=time_limit, max_logicals=max_logicals)
+            res = evaluate_css(l, m, A, B, distance_method=distance_method,
+                               time_limit=time_limit, max_logicals=max_logicals)
             n_dist += 1
-            if res.get("d"):
+            trusted = (distance_method != "bposd") or (res.get("d_over_sqrt_n") or 0) < trust_high
+            if res.get("d") and trusted:
                 evaluated.append(res)
-            if arch.consider(res):
-                say(f"  gen{g+1} [{l},{m}] improved [[{res['n']},{res['k']},{res['d']}]] "
-                    f"FOM={res['fom']:.2f} exact={res['exact']}")
+                if arch.consider(res):
+                    say(f"  gen{g+1} [{l},{m}] improved [[{res['n']},{res['k']},{res['d']}]] "
+                        f"FOM={res['fom']:.2f} exact={res['exact']}")
 
     return {"archive_elites": arch.elites(), "evaluated": evaluated,
             "n_evaluated": n_eval, "n_distance_evals": n_dist}

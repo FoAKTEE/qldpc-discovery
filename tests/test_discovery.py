@@ -31,6 +31,17 @@ def test_screen_k_rejects_zero():
     assert screen_k_css(3, 3, "1+x+y", "1+x+y^2") == 0   # this pair gives k=0
 
 
+def test_stage3_milp_verification():
+    # Stage-3 must recompute exact MILP distance for an elite (here a small (3,3) code).
+    from qcode_discovery.search import verify_elites_milp
+    from qcode_discovery.distance_milp import css_distance_milp
+    elite = {"l": 3, "m": 3, "A": "1+x+y", "B": "1+x^2+y^2", "k": 4, "n": 18, "d": 99,
+             "exact": False, "fom": 0.0}
+    out = verify_elites_milp([elite], time_limit=30.0)
+    code = BBCode(3, 3, "1+x+y", "1+x^2+y^2")
+    assert out[0]["d"] == css_distance_milp(code, time_limit=30.0)["d"] and out[0]["exact"]
+
+
 def test_search_runs_blind_and_finds_codes():
     # Blind search on a tiny lattice must run from naive seeds and populate the archive.
     out = blind_search_css([(3, 3)], n_random=120, distance_budget=4, generations=0,

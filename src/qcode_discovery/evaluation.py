@@ -54,6 +54,7 @@ def evaluate_css(l, m, A, B, distance_method: str = "milp", time_limit: float = 
     if res["d"]:
         res["fom"] = fom(code.n, k, res["d"])
         res["d_over_sqrt_n"] = res["d"] / math.sqrt(code.n)
+        res["trusted"] = res["d_over_sqrt_n"] < 2.0    # paper's trust filter (Sec V.D): >=2.0 discarded
     return res
 
 

@@ -1,4 +1,17 @@
-# current_iter — window 1, iters 2-10 (blind discovery loop)
+# current_iter — window 1, iters 2-11 (blind discovery loop)
+
+## iter11 (latest): full 3-stage cascade (Stage1 k -> Stage2 BP-OSD+trust -> Stage3 MILP)
+- evaluation: trust filter (d/sqrt(n) < 2.0) field. search: distance_method="bposd" + trust gate
+  (only for BP-OSD upper bounds), verify_elites_milp (Stage-3 exact). runner: --distance-method,
+  --stage3-verify flags + BLISS dedup.
+- DEMONSTRATED self-correction: Stage-2 BP-OSD ranked [[72,16,4]]; Stage-3 MILP revealed true
+  [[72,16,2]] (d=2 trap) — the paper's pipeline working. 38 tests pass; audit PASS.
+- Pipeline now matches paper architecture: fast BP-OSD loop + trust filter + post-hoc MILP exact.
+- Next: larger multi-lattice campaign (BP-OSD Stage-2, big budget) -> consolidated verified catalog
+  + BLISS dedup + validation; complete component 13 LC enumeration; decompose Bravyi.
+
+---
+
 
 ## iter10 (latest): exact BLISS dedup via igraph (component 11 -> PROVEN) + dedup_bb bugfix
 - dedup.bliss_canonical_hash / dedup_bliss: igraph color-respecting canonical labeling

@@ -29,6 +29,10 @@ def main() -> int:
     ap.add_argument("--max-logicals", type=int, default=10)
     ap.add_argument("--lattices", default="6x3,3x6,6x6")
     ap.add_argument("--type", choices=("css", "pbb"), default="css")
+    ap.add_argument("--distance-method", choices=("milp", "bposd"), default="milp",
+                    help="in-loop Stage-2 distance: milp (exact, slow) or bposd (fast upper bound)")
+    ap.add_argument("--stage3-verify", action="store_true",
+                    help="after the search, recompute EXACT MILP distance for archive elites (Stage 3)")
     args = ap.parse_args()
     lattices = [tuple(int(v) for v in s.split("x")) for s in args.lattices.split(",")]
 
@@ -36,11 +40,17 @@ def main() -> int:
           f"n_random={args.n_random} budget={args.budget} gens={args.gens}")
     print("(catalog-blind: no paper polynomials, no reported [[n,k,d]] consulted)\n")
     search_fn = blind_search_pbb if args.type == "pbb" else blind_search_css
-    out = search_fn(
-        lattices, n_random=args.n_random, distance_budget=args.budget, generations=args.gens,
-        time_limit=args.time_limit, max_logicals=args.max_logicals, seed=args.seed, log=print,
-    )
+    kwargs = dict(n_random=args.n_random, distance_budget=args.budget, generations=args.gens,
+                  time_limit=args.time_limit, max_logicals=args.max_logicals, seed=args.seed, log=print)
+    if args.type == "css":
+        kwargs["distance_method"] = args.distance_method
+    out = search_fn(lattices, **kwargs)
     elites = out["archive_elites"]
+
+    if args.stage3_verify and args.type == "css" and elites:
+        from qcode_discovery.search import verify_elites_milp   # noqa: E402
+        print("\n=== Stage 3: MILP exact verification of elites ===")
+        elites = verify_elites_milp(elites, time_limit=max(5.0, args.time_limit * 3), log=print)
 
     # Deduplicate distance-evaluated CSS representations by lattice-symmetry equivalence
     # (component 11) -> "N representations -> M distinct codes", mirroring the paper.
