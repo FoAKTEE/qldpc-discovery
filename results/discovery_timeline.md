@@ -93,6 +93,19 @@ BP-OSD (d≤24, grossly wrong) — exactly the paper's argument that high-rate d
 exact verification. BP-OSD is wired into the cascade as the fast Stage-2 estimator (`evaluate_css
 distance_method="bposd"`); MILP remains Stage-3 (exact). `igraph` also installed (true BLISS [next]).
 
+## Window 1 — 2026-06-02 — consolidated 3-stage cascade campaign (iter 12, seed 31)
+
+Full pipeline at scale: Stage-1 k-screen → Stage-2 BP-OSD+trust (fast) → Stage-3 MILP (certify)
+→ BLISS dedup, over (6,6)+(12,6). 800 k-screened, 18 distance-evals, BLISS: 18 reps → 17 distinct.
+
+**Pipeline self-correction (the paper's core value, live):** Stage-2 BP-OSD proposed a spectacular
+`[[144,24,14]]` (FOM 32.67); **Stage-3 MILP demoted it to `[[144,24,4]]`** (BP-OSD overestimated the
+high-rate code). Likewise `[[72,16,4]]`(BP) → `[[72,16,2]]`(MILP, the d=2 trap). Fast explores, exact certifies.
+
+Post-hoc validation (held-out catalog): `[[144,24,4]]` → UB_CONSISTENT w/ catalog `[[144,24,6]]`;
+`[[144,8,8]]` → UB_CONSISTENT w/ `[[144,8,12]]`; `[[72,12,6]]` → UB_CONSISTENT w/ Bravyi. k-values
+(exact via rank) match catalog entries at n=144.
+
 ## Reference catalog (arXiv:2606.02418 headline codes — `LiteratureGrounded`, to re-verify)
 
 Full catalogs: `ref-paper/arxiv-2606.02418/src/{css,pbb}_catalog_tables.tex` (97 CSS + 368 PBB = 465 distinct).

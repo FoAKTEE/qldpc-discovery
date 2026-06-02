@@ -49,8 +49,9 @@ def main() -> int:
 
     if args.stage3_verify and args.type == "css" and elites:
         from qcode_discovery.search import verify_elites_milp   # noqa: E402
-        print("\n=== Stage 3: MILP exact verification of elites ===")
-        elites = verify_elites_milp(elites, time_limit=max(5.0, args.time_limit * 3), log=print)
+        print("\n=== Stage 3: MILP verification of elites (logical cap keeps n=144 tractable) ===")
+        elites = verify_elites_milp(elites, time_limit=max(5.0, args.time_limit * 3),
+                                    max_logicals=args.max_logicals, log=print)
 
     # Deduplicate distance-evaluated CSS representations by lattice-symmetry equivalence
     # (component 11) -> "N representations -> M distinct codes", mirroring the paper.

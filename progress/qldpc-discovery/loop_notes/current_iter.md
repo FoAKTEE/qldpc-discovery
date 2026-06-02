@@ -1,4 +1,15 @@
-# current_iter — window 1, iters 2-11 (blind discovery loop)
+# current_iter — window 1, iters 2-12 (blind discovery loop)
+
+## iter12 (latest): consolidated 3-stage cascade campaign at scale + validation
+- Ran full pipeline (Stage1 k -> Stage2 BP-OSD+trust -> Stage3 MILP -> BLISS dedup) over (6,6),(12,6).
+- SELF-CORRECTION demonstrated: Stage2 BP-OSD [[144,24,14]] FOM=32.67 -> Stage3 MILP [[144,24,4]];
+  [[72,16,4]](BP) -> [[72,16,2]](MILP trap). BLISS: 18 reps -> 17 distinct.
+- Validation: [[144,24,4]]~catalog[[144,24,6]], [[144,8,8]]~[[144,8,12]], [[72,12,6]]~Bravyi (k-matches at n=144).
+- runner: Stage-3 verify now respects --max-logicals (n=144 tractable). 38 tests still green.
+- Loop continues: complete component 13 LC enumeration; decompose Bravyi (2308.07915); scale campaigns.
+
+---
+
 
 ## iter11 (latest): full 3-stage cascade (Stage1 k -> Stage2 BP-OSD+trust -> Stage3 MILP)
 - evaluation: trust filter (d/sqrt(n) < 2.0) field. search: distance_method="bposd" + trust gate
