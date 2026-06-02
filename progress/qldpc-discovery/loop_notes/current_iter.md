@@ -1,4 +1,19 @@
-# current_iter — window 1, iters 2-12 (blind discovery loop)
+# current_iter — window 1, iters 2-13 (blind discovery loop)
+
+## iter13 (latest): README + Bravyi (2308.07915) pipeline-0 decomposition (escalation)
+- iter13a: project README.md (front-door "final product" doc).
+- iter13b: focused decomposition workflow (3 agents) of the FOUNDATIONAL BB paper arXiv:2308.07915:
+  digests (chunk_001 BB definition l.308-888, chunk_002 logicals+circuit), chunk_index, and
+  relation_to_2606.md (6 typed dependency rows D1-D6 mapping Bravyi -> our modules + external_axioms).
+  Agent ran the kernel for evidence (gross n=144,k=12,CSS,wt6 VERIFIED).
+- external_axioms: ax:bb-construction REPLACED-BY (decomposed); added ax:milp-distance-method [ACTIVE].
+- [HOLE] flagged by agent: gross [[144,12,12]] d=12 still LiteratureGrounded (not MILP-re-run; ~13min).
+- NOTE: misdiagnosed a write-race as a workflow crash; reading-before-write preserved the agent's
+  (better) relation_to_2606.md. Lesson: confirm workflow completion via its notification, not a poll.
+- Loop continues: re-verify gross d=12 (bounded MILP); complete component 13 LC enumeration.
+
+---
+
 
 ## iter12 (latest): consolidated 3-stage cascade campaign at scale + validation
 - Ran full pipeline (Stage1 k -> Stage2 BP-OSD+trust -> Stage3 MILP -> BLISS dedup) over (6,6),(12,6).
