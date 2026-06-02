@@ -109,8 +109,27 @@ k-rank + CSS MILP distance there is no kernel to admit any discovery.
 - `ref-code/` (qcode-discovery clone; gitignored mirror) — file-dep in
   `reformulate/qldpc-discovery/paper_2606.02418/file_dependency_plan.md`
 
-## Audit — AFTER (reusable scripts) — filled at end of window 1
-_(see "Reusable scripts" section appended after decomposition + codebase scaffold)_
+## Audit — AFTER decomposition (reusable scripts)
+
+Post-decomposition reusable surface now in-tree (window 1):
+- **Kernel modules (`src/qcode_discovery/`)** — reusable across every campaign and every
+  future BB/PBB paper: `gf2` (F2 algebra), `polynomials` (ring R + circulants),
+  `bb_codes`/`pbb_codes` (construction), `metrics` (k, logicals, FOM), `distance_milp`
+  (CSS MILP), `distance_enum` (independent cross-check), `tanner` (decomposability),
+  `theorems` (witness factory). These ARE the "scientific kernel" the loop reuses.
+- **`scripts/code_quality_audit.py`** — reusable static diagnostic (self-evolution pt 4),
+  run in every iter's VERIFY step; returns nonzero on CRITICAL/HIGH.
+- **`tests/test_kernel.py`** — reusable regression harness; new components add tests here.
+- **Reference-repo finding:** `qcode-discovery` is EMPTY (README only) → NO external code to
+  reuse; the file-dependency graph is derived from the paper (`file_dependency_plan.md`).
+- **Reusable across papers:** the kernel is paper-agnostic (any BB/PBB-style code over a
+  group-algebra quotient ring). arXiv:2308.07915 (acquired) and future escalation papers
+  plug into the same `BBCode`/`PBBCode` + distance/dedup verifiers.
+
+Gaps to build (reuse-first, per `file_dependency_plan.md` / `bundle_dependency_plan.md`):
+`symplectic_distance_milp` (extend `distance_milp`), `evaluation.py` (cascade),
+`evolve.py` (MAP-Elites + ansatz), `bliss_dedup.py` (needs igraph; networkx fallback),
+`clifford_equiv.py` (Hadamard 2-coloring + LC rank cond), `distance_bposd.py` (needs ldpc).
 
 ## Next Tactics
 1. `[HOLE]` Decompose paper → chunk_index + digests + theorem/file dependency plans.
