@@ -3,11 +3,12 @@
 ## Install
 
 ```bash
-pip install -e .                 # core (numpy, scipy)
-pip install -e ".[decoders]"     # + ldpc (BP-OSD) + python-igraph (exact BLISS dedup)
-pip install -e ".[dev]"          # + pytest
+pip install .                    # from a clone — core (numpy, scipy)
+pip install ".[decoders]"        # + ldpc (BP-OSD) + python-igraph (exact BLISS dedup)
+pip install -e ".[dev,decoders]" # editable + pytest, for development
 ```
-Without installing, prefix commands with `PYTHONPATH=src`.
+Requires Python ≥ 3.10. After install, `import qcode_discovery` and the `qcode-*` commands work
+with no `PYTHONPATH`. To run from a checkout without installing, prefix commands with `PYTHONPATH=src`.
 
 ## Library (public API)
 

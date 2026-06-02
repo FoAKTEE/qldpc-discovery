@@ -12,9 +12,13 @@ The LLM/search proposes generator ansätze; a **scientific kernel admits** them.
 ## Install
 
 ```bash
-pip install -e .                 # core: numpy, scipy
-pip install -e ".[decoders]"     # + ldpc (BP-OSD distance) + python-igraph (exact BLISS dedup)
+pip install .                    # from a clone — core deps: numpy, scipy
+pip install ".[decoders]"        # + ldpc (BP-OSD distance) + python-igraph (exact BLISS dedup)
+pip install -e ".[dev,decoders]" # editable, for development (adds pytest)
 ```
+
+Requires Python ≥ 3.10. Installs the `qcode-discover` / `qcode-validate` / `qcode-audit` console
+commands; `import qcode_discovery` works with no `PYTHONPATH`.
 
 ## Quickstart
 
