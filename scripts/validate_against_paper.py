@@ -17,16 +17,21 @@ ROOT = Path(__file__).resolve().parent.parent
 
 
 def main() -> int:
-    disc_path = ROOT / "results" / "blind_css_discovery.json"
+    import argparse
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--type", choices=("css", "pbb"), default="css")
+    args = ap.parse_args()
+    disc_path = ROOT / "results" / f"blind_{args.type}_discovery.json"
     if not disc_path.exists():
-        print(f"no blind results at {disc_path}; run scripts/run_blind_discovery.py first", file=sys.stderr)
+        print(f"no blind results at {disc_path}; run scripts/run_blind_discovery.py --type {args.type} first",
+              file=sys.stderr)
         return 1
     payload = json.loads(disc_path.read_text())
-    catalog = ROOT / "ref-paper" / "arxiv-2606.02418" / "src" / "css_catalog_tables.tex"
-    report = validate(payload["discoveries"], catalog)
+    catalog = ROOT / "ref-paper" / "arxiv-2606.02418" / "src" / f"{args.type}_catalog_tables.tex"
+    report = validate(payload["discoveries"], catalog, kind=args.type)
 
-    lines = ["# Validation report — blind discoveries vs arXiv:2606.02418 (post-hoc)", "",
-             f"Reference codes: {report['n_reference_codes']} (landmarks + parsed CSS catalog). "
+    lines = [f"# Validation report ({args.type.upper()}) — blind discoveries vs arXiv:2606.02418 (post-hoc)", "",
+             f"Reference codes: {report['n_reference_codes']} ({args.type} catalog + landmarks). "
              "The catalog is a HELD-OUT TEST SET — never consulted during the blind search.", "",
              f"Blind seed: {payload.get('seed')}  ·  k-screened: {payload.get('n_k_screened')}  ·  "
              f"distance-evals: {payload.get('n_distance_evals')}", "",
@@ -42,7 +47,7 @@ def main() -> int:
               "POLY_MATCH = identical (A,B) polynomial sets; UB_CONSISTENT = same (n,k), our d "
               "(upper bound) consistent with the reference d; NOVEL_AT_N = no reference code at "
               "this block length (the CSS catalog starts at n=144)."]
-    out = ROOT / "results" / "validation_report.md"
+    out = ROOT / "results" / f"validation_report_{args.type}.md"
     out.write_text("\n".join(lines) + "\n")
 
     print("\n".join(lines))

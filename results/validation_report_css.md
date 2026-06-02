@@ -1,6 +1,6 @@
-# Validation report — blind discoveries vs arXiv:2606.02418 (post-hoc)
+# Validation report (CSS) — blind discoveries vs arXiv:2606.02418 (post-hoc)
 
-Reference codes: 227 (landmarks + parsed CSS catalog). The catalog is a HELD-OUT TEST SET — never consulted during the blind search.
+Reference codes: 227 (css catalog + landmarks). The catalog is a HELD-OUT TEST SET — never consulted during the blind search.
 
 Blind seed: 7  ·  k-screened: 1500  ·  distance-evals: 28
 

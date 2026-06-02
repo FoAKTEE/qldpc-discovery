@@ -14,7 +14,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
-from qcode_discovery.search import blind_search_css   # noqa: E402
+from qcode_discovery.search import blind_search_css, blind_search_pbb   # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -28,13 +28,15 @@ def main() -> int:
     ap.add_argument("--time-limit", type=float, default=2.0)
     ap.add_argument("--max-logicals", type=int, default=10)
     ap.add_argument("--lattices", default="6x3,3x6,6x6")
+    ap.add_argument("--type", choices=("css", "pbb"), default="css")
     args = ap.parse_args()
     lattices = [tuple(int(v) for v in s.split("x")) for s in args.lattices.split(",")]
 
-    print(f"BLIND CSS discovery — lattices={lattices} seed={args.seed} "
+    print(f"BLIND {args.type.upper()} discovery — lattices={lattices} seed={args.seed} "
           f"n_random={args.n_random} budget={args.budget} gens={args.gens}")
     print("(catalog-blind: no paper polynomials, no reported [[n,k,d]] consulted)\n")
-    out = blind_search_css(
+    search_fn = blind_search_pbb if args.type == "pbb" else blind_search_css
+    out = search_fn(
         lattices, n_random=args.n_random, distance_budget=args.budget, generations=args.gens,
         time_limit=args.time_limit, max_logicals=args.max_logicals, seed=args.seed, log=print,
     )
@@ -47,15 +49,16 @@ def main() -> int:
 
     payload = {
         "policy": "blind — no paper knowledge used in discovery",
-        "seed": args.seed, "lattices": lattices,
+        "type": args.type, "seed": args.seed, "lattices": lattices,
         "n_k_screened": out["n_evaluated"], "n_distance_evals": out["n_distance_evals"],
+        "n_commuting": out.get("n_commuting"),
         "discoveries": [
             {"n": r["n"], "k": r["k"], "d": r["d"], "fom": round(r["fom"], 3),
              "exact": r["exact"], "l": r["l"], "m": r["m"], "A": r["A"], "B": r["B"]}
             for r in elites
         ],
     }
-    out_path = ROOT / "results" / "blind_css_discovery.json"
+    out_path = ROOT / "results" / f"blind_{args.type}_discovery.json"
     out_path.write_text(json.dumps(payload, indent=2))
     print(f"\nwrote {out_path}  ({len(elites)} codes)")
     return 0

@@ -1,4 +1,14 @@
-# current_iter — window 1, iters 2-4 (blind discovery loop)
+# current_iter — window 1, iters 2-5 (blind discovery loop)
+
+## iter5 (latest): blind NON-CSS PBB discovery + PBB validation
+- search.blind_search_pbb (commutativity-filtered 4-tuples, symplectic-MILP, FOM) + validation.parse_pbb_catalog.
+- RAN blind PBB (seed 5, (6,3)/(3,6)): found [[36,2,6]] d=6 exact, [[36,4,5]] d=5 exact, ...
+- POST-HOC validation: [[36,2,6]] -> **MATCH** (exact) with PBB catalog. Blind non-CSS rediscovery confirmed.
+- 29 tests pass; audit PASS. -> results/blind_pbb_discovery.json, results/validation_report_pbb.md.
+- Roadmap item 2 (blind PBB) DONE. Next: item 1 (scale CSS to n=144), item 3 (bliss dedup), item 4 (LC).
+
+---
+
 
 **Overwritten every iteration.** Multi-window task, closing=false (lightweight intermediate).
 

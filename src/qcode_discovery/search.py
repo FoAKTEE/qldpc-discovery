@@ -13,7 +13,8 @@ from __future__ import annotations
 import random
 from dataclasses import dataclass, field
 
-from .evaluation import screen_k_css, evaluate_css
+from .evaluation import screen_k_css, evaluate_css, evaluate_pbb
+from .pbb_codes import PBBCode
 
 
 def random_polynomial(l: int, m: int, weight: int, rng: random.Random) -> list[tuple[int, int]]:
@@ -133,3 +134,72 @@ def blind_search_css(lattices, *, n_random=400, generations=0, distance_budget=8
                     f"FOM={res['fom']:.2f} exact={res['exact']}")
 
     return {"archive_elites": arch.elites(), "n_evaluated": n_eval, "n_distance_evals": n_dist}
+
+
+def random_commuting_pbb(l, m, rng, base_weight=3, pert_weights=(1, 2, 3), tries=40):
+    """A naive random PBB 4-tuple (A,B,C,D) that satisfies the commutativity constraint.
+
+    A,B are weight-`base_weight` (the BB-construction definition); C,D weights are drawn from
+    `pert_weights` (generic perturbation — NOT the paper's discovered |C|=|D|=2 optimum).
+    Returns (A,B,C,D) or None if no commuting tuple found in `tries` (most tuples don't commute).
+    """
+    for _ in range(tries):
+        A = random_polynomial(l, m, base_weight, rng)
+        B = random_polynomial(l, m, base_weight, rng)
+        C = random_polynomial(l, m, rng.choice(pert_weights), rng)
+        D = random_polynomial(l, m, rng.choice(pert_weights), rng)
+        try:
+            PBBCode(l, m, A, B, C, D)                 # raises unless A C^T + B D^T symmetric
+            return A, B, C, D
+        except ValueError:
+            continue
+    return None
+
+
+def blind_search_pbb(lattices, *, n_random=600, distance_budget=6, generations=0,
+                     time_limit=4.0, max_logicals=None, seed=0, log=None) -> dict:
+    """Blind non-CSS PBB search over the given lattices. Catalog-blind; FOM-driven.
+
+    Phase 1: sample commuting 4-tuples, screen k, take a k-diverse set, symplectic-distance
+    them -> FOM, archive. Phase 2: optional GA mutating elite (A,B,C,D). Returns archive + counts.
+    """
+    rng = random.Random(seed)
+    arch = Archive()
+    n_eval = n_dist = n_commute = 0
+    say = log if log else (lambda *_: None)
+
+    for (l, m) in lattices:
+        screened = []
+        for _ in range(n_random):
+            n_eval += 1
+            tup = random_commuting_pbb(l, m, rng)
+            if tup is None:
+                continue
+            n_commute += 1
+            A, B, C, D = tup
+            try:
+                k = PBBCode(l, m, A, B, C, D).k
+            except ValueError:
+                continue
+            if k > 0:
+                screened.append((k, A, B, C, D))
+        by_k: dict[int, list] = {}
+        for (k, A, B, C, D) in screened:
+            by_k.setdefault(k, []).append((A, B, C, D))
+        selection, ks, ri = [], sorted(by_k), 0
+        while len(selection) < distance_budget and any(by_k.values()):
+            k = ks[ri % len(ks)]
+            if by_k[k]:
+                selection.append((k, *by_k[k].pop(0)))
+            ri += 1
+            if ri > len(ks) * (distance_budget + 2):
+                break
+        for (k, A, B, C, D) in selection:
+            res = evaluate_pbb(l, m, A, B, C, D, time_limit=time_limit, max_logicals=max_logicals)
+            n_dist += 1
+            if res.get("valid") and arch.consider({**res, "A": A, "B": B, "C": C, "D": D}):
+                say(f"  [{l},{m}] discovered non-CSS [[{res['n']},{res['k']},{res['d']}]] "
+                    f"FOM={res['fom']:.2f} exact={res['exact']} mixed={res['non_css']}")
+
+    return {"archive_elites": arch.elites(), "n_evaluated": n_eval,
+            "n_commuting": n_commute, "n_distance_evals": n_dist}

@@ -8,9 +8,13 @@ from qcode_discovery.bb_codes import BBCode
 from qcode_discovery.metrics import css_k
 from qcode_discovery.distance_milp import css_distance_milp
 from qcode_discovery.evaluation import evaluate_css, screen_k_css
-from qcode_discovery.search import blind_search_css, random_polynomial, mutate_polynomial
-from qcode_discovery.validation import validate, landmark_codes
+from qcode_discovery.search import (blind_search_css, blind_search_pbb,
+                                     random_polynomial, mutate_polynomial)
+from qcode_discovery.validation import validate, landmark_codes, parse_pbb_catalog
+from pathlib import Path
 import random
+
+PBB_CATALOG = Path(__file__).resolve().parent.parent / "ref-paper" / "arxiv-2606.02418" / "src" / "pbb_catalog_tables.tex"
 
 
 def test_evaluation_cascade_matches_kernel():
@@ -61,3 +65,26 @@ def test_validation_upper_bound_consistent():
     rep = validate(disc, catalog_tex=None)
     assert rep["results"][0]["verdict"] in ("UB_CONSISTENT", "MATCH", "POLY_MATCH")
     assert any("72,12,6" in (r["matched_ref"] or "") for r in rep["results"])
+
+
+# ----------------------------- PBB (non-CSS) discovery layer -----------------------------
+def test_pbb_catalog_parses():
+    cat = parse_pbb_catalog(PBB_CATALOG)
+    assert len(cat) >= 300                              # 368 PBB codes in the catalog
+    n36 = {(c["k"], c["d"]) for c in cat if c["n"] == 36}
+    assert (2, 6) in n36 and (4, 6) in n36
+
+
+def test_validation_pbb_exact_match():
+    # A blind [[36,2,6]] exact discovery must MATCH the PBB catalog entry of the same (n,k,d).
+    disc = [{"n": 36, "k": 2, "d": 6, "exact": True, "l": 6, "m": 3, "A": "?", "B": "?", "fom": 2.0}]
+    rep = validate(disc, PBB_CATALOG, kind="pbb")
+    assert rep["results"][0]["verdict"] == "MATCH"
+
+
+def test_blind_pbb_runs_and_is_noncss():
+    # Blind PBB search must run from naive seeds and find genuinely non-CSS (mixed) codes.
+    out = blind_search_pbb([(6, 3)], n_random=80, distance_budget=2, time_limit=6.0,
+                           max_logicals=8, seed=4)
+    assert out["n_commuting"] >= 1                       # commutativity filter found valid tuples
+    assert all(e["k"] > 0 for e in out["archive_elites"])

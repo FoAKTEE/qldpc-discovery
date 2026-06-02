@@ -38,12 +38,36 @@ consulted** (blind_discovery_policy). Lattices (6,3),(3,6),(6,6); 1500 k-screene
 The search independently rediscovered the rate–distance frontier AND the d=2 trap (low FOM)
 without being told — exactly the paper's central empirical finding. Raw: `results/blind_css_discovery.json`.
 
-### Post-hoc validation vs the paper (held-out test set) — `results/validation_report.md`
+### Post-hoc validation vs the paper (held-out test set) — `results/validation_report_css.md`
 Run ONLY after the blind campaign (`scripts/validate_against_paper.py`; 227 reference codes =
 2 landmarks + 225 parsed catalog reps):
 - `[[72,12,6]]` → **UB_CONSISTENT** with Bravyi's `[[72,12,6]]` MILP-validation code (k=12, d≤6 ⊆ d=6). ✓
 - Remaining n=36/72 discoveries → NOVEL_AT_N (the CSS catalog starts at n=144) — honest.
 - Next scale-up (loop): blind runs at n=144/288 to match the catalog directly (e.g. gross `[[144,12,12]]`).
+
+## Window 1 — 2026-06-02 — BLIND non-CSS PBB discovery (seed 5, catalog-blind)
+
+Blind 4-tuple search (`scripts/run_blind_discovery.py --type pbb`): naive random trinomial
+bases + random weight-{1,2,3} perturbations (NOT the paper's |C|=|D|=2 optimum), commutativity-
+filtered (~17% hit, matches paper's ~10%), symplectic-MILP distance, FOM fitness. Lattices
+(6,3),(3,6); 800 k-screened, 16 symplectic-distance evals. All discoveries genuinely non-CSS (mixed X/Z).
+
+| discovered (blind, non-CSS) | FOM | status |
+|---|---|---|
+| `[[36,8,4]]` | 3.56 | d≤4 |
+| `[[36,4,5]]` | 2.78 | d=5 exact |
+| `[[36,2,6]]` | 2.00 | **d=6 exact** |
+| `[[36,4,4]]` | 1.78 | d=4 exact |
+
+### Post-hoc validation vs the PBB catalog (held-out) — `results/validation_report_pbb.md`
+368-code PBB catalog parsed (n=36 reference triples: (k=2,d=6), (k=4,d=6)):
+- `[[36,2,6]]` → **MATCH** (exact (n,k,d) hit) with PBB catalog `[[36,2,6]]`. ✓✓ — a blind
+  **non-CSS** rediscovery confirmed exactly against the held-out catalog.
+- `[[36,4,5]]`, `[[36,4,4]]` → UB_CONSISTENT with catalog `[[36,4,6]]` (different k=4 codes).
+- The remaining high-k/d=2 codes → PARAMS_NOT_IN_REF_AT_N (catalog screened d≤4 out).
+
+Net: the blind→validate loop is demonstrated for BOTH families — CSS (UB_CONSISTENT vs Bravyi
+`[[72,12,6]]`) and non-CSS (exact MATCH vs PBB `[[36,2,6]]`).
 
 ## Reference catalog (arXiv:2606.02418 headline codes — `LiteratureGrounded`, to re-verify)
 

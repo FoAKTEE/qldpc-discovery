@@ -46,6 +46,31 @@ def parse_css_catalog(tex_path: str | Path) -> list[dict]:
     return codes
 
 
+def parse_pbb_catalog(tex_path: str | Path) -> list[dict]:
+    """Parse pbb_catalog_tables.tex rows into reported non-CSS PBB codes (held-out reference).
+
+    Columns: Cl & (l,m) & A & B & C & D & k & d & FOM.
+    """
+    text = Path(tex_path).read_text()
+    codes: list[dict] = []
+    for raw in text.splitlines():
+        line = raw.strip()
+        if " & " not in line or not line.endswith("\\\\"):
+            continue
+        cols = [c.strip() for c in line[:-2].split("&")]
+        latt = re.search(r"\(\s*(\d+)\s*,\s*(\d+)\s*\)", cols[1]) if len(cols) > 1 else None
+        if not latt or len(cols) < 9:
+            continue
+        l, m = int(latt.group(1)), int(latt.group(2))
+        k, _ = _num(cols[6])
+        d, d_up = _num(cols[7])
+        if k is None or d is None:
+            continue
+        codes.append({"l": l, "m": m, "n": 2 * l * m, "k": k, "d": d, "d_is_upper": d_up,
+                      "A": cols[2], "B": cols[3], "pattern": "PBB", "source": "pbb_catalog"})
+    return codes
+
+
 def landmark_codes() -> list[dict]:
     """Paper-referenced CSS landmark/validation codes (Bravyi gross-code family, Sec V.B)."""
     return [
@@ -63,18 +88,23 @@ def _poly_set(expr, l, m):
         return None
 
 
-def validate(discoveries: list[dict], catalog_tex: str | Path | None) -> dict:
+def validate(discoveries: list[dict], catalog_tex: str | Path | None, kind: str = "css") -> dict:
     """Classify each blind discovery against the paper reference. Returns a report dict.
 
+    kind: 'css' (landmarks + CSS catalog, polynomial-set matching) or 'pbb' (PBB catalog,
+    (n,k,d)-only matching since PBB equivalence is local-Clifford-level).
     classification per discovery:
       - 'MATCH'            : a reference code at the same n with equal k and equal d (both exact).
       - 'UB_CONSISTENT'    : same (n,k); our d is an upper bound consistent with reference d.
-      - 'POLY_MATCH'       : same (l,m) and identical (A,B) polynomial sets as a reference code.
+      - 'POLY_MATCH'       : same (l,m) and identical (A,B) polynomial sets as a reference code (css only).
       - 'NOVEL_AT_N'       : no reference code at this n (e.g. CSS catalog starts at n=144).
     """
-    reference = list(landmark_codes())
-    if catalog_tex and Path(catalog_tex).exists():
-        reference += parse_css_catalog(catalog_tex)
+    if kind == "pbb":
+        reference = parse_pbb_catalog(catalog_tex) if (catalog_tex and Path(catalog_tex).exists()) else []
+    else:
+        reference = list(landmark_codes())
+        if catalog_tex and Path(catalog_tex).exists():
+            reference += parse_css_catalog(catalog_tex)
     ref_by_n: dict[int, list] = {}
     for r in reference:
         ref_by_n.setdefault(r["n"], []).append(r)
