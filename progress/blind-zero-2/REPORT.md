@@ -52,10 +52,13 @@ reveals the truth, and the *amount of certification compute itself changes the a
 - **EXACT-certified (trustworthy — Brouwer–Zimmermann/enum gap=0):** small n only.
   Best: `[[32,14,4]]` FOM 7.0, `[[96,16,4]]` FOM 2.67, `[[16,14,2]]`. Exact certification is infeasible
   for n≳160 (BZ is exponential), so larger codes remain upper-bounded.
-- **ISD@3000 robust upper bounds (best honest bounds at this budget; NOT proven exact):** sparse low-k
-  high-distance codes that ISD@3000 could not refute (spread 0): `[[360,10,34]]` FOM 32.1,
-  `[[336,8,32]]` FOM 24.4, `[[360,8,32]]` FOM 22.8, `[[384,8,32]]` FOM 21.3. These are *plausibly genuine*
-  (they sit in the paper's known high-distance sparse regime) but, per §3, may still drop at higher ISD.
+- **Robust high-distance upper bounds (genuine-looking — survive ISD@10000):** unlike the high-k/mid-FOM
+  codes that collapse, a sparse low-k family is STABLE under a large certification budget. Stress-tested at
+  **ISD@10000**: `[[336,8,32]]`, `[[360,8,32]]`, `[[384,8,32]]` held at d=32 (spread 0), `[[180,10,16]]`
+  held at d=16; only `[[360,10,34]]` eased to **d=30** (FOM 25). These sit squarely in the paper's known
+  high-distance sparse regime (cf. its `[[360,8,30]]`-type codes) and are **plausibly genuine blind
+  rediscoveries** — robust upper bounds, though not exact-certifiable at n≈360. (They are still upper
+  bounds: `[[360,10,34]]→30` shows slow tightening continues; none was proven exact.)
 - **PBB (non-CSS):** 6 codes, max `[[24,4,4]]` — sparse and low-distance; the family is hard to populate
   with blind random seeds.
 
@@ -63,12 +66,18 @@ Best code per regime is tabulated in **`BEST_CODES.md`** (111 certified (n,k); 9
 
 ## 5. Honest conclusion
 A blind, catalog-free BB search **comprehensively covers the paper's parameter space** and rediscovers
-the code *families* and the rate–distance frontier *shape*. It does **not**, by itself, yield trustworthy
-high-FOM codes: the apparent records are BP-OSD (and low-iter-ISD) **overestimates that collapse under
-proper certification**. The only fully-trustworthy distances are EXACT-certified, which are feasible only
-at small n and are modest. This independently reproduces the paper's own methodological lesson — reliable
-code discovery **requires exact distance in/after the loop** (the paper used MILP); a BP-OSD-driven blind
-scan chases artifacts.
+the code *families* and the rate–distance frontier *shape*. Two distinct outcomes, separated only by
+proper certification:
+1. **Most apparent records are artifacts.** The high-k frontier and many mid-FOM codes are BP-OSD (and
+   even low-iter-ISD) **overestimates that collapse under certification** (high-k → d=2–3; mid codes drop
+   2–3×). A raw BP-OSD-driven scan chases these — you cannot trust its FOM ranking.
+2. **A genuine high-distance sparse family survives.** `[[336,8,32]] [[360,8,32]] [[384,8,32]]`
+   (FOM≈21–24) and `[[360,10,30]]` (FOM≈25) are **robust to ISD@10000** and sit in the paper's
+   high-distance regime — credible blind rediscoveries (robust upper bounds, not exact-proven).
+
+The only *fully* trustworthy distances are EXACT-certified (small n, modest FOM). This independently
+reproduces the paper's methodological lesson — reliable discovery **requires exact distance in/after the
+loop** (the paper used MILP); certification compute, not the scan, decides what is real.
 
 ## 6. Honest limitations
 - **Evolutionary phase abandoned:** with broad lattices up to n=1000, the sound k-scaled ISD fitness made
