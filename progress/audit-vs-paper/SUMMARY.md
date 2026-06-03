@@ -59,11 +59,20 @@ CSS lattices (gen=8, pop=12) in ~2.5 min. Score climbed 26→40→55; top trustw
 overestimate artifacts, and `[[360,4,24]]` FOM=6.4 matches the paper's catalog value exactly. The paper's
 core evolutionary method now runs correctly in pure Julia (trustworthy ISD fitness + parallel).
 
-## Remaining next step (within constraints)
-Feed the evolution **varying-weight / factored ansatze** (the `GeneratorAnsatz` currently emits fixed
-weight-3) + more generations/lattices, to push the honest blind frontier toward the paper's higher-FOM
-codes (`[[360,8,30]]` FOM=20). No longer blocked by tooling or the overestimate failure mode — purely a
-scaling + ansatz-richness run.
+## iter 21: full paper-method machinery built (pure Julia, blind)
+Added a `:factored` varying-weight ansatz strategy (A=(1+y^a+..)(1+x^j), weight 2·yt up to 12) + wired
+it into `random_ansatz`/`mutate_ansatz`. The evolution now explores the paper's weight-6→12 regime with
+trustworthy ISD fitness — verified producing `[[360,120,4]]` wt=12, `[[288,8,12]]` wt=6, all honest
+(ISD-certified) distances. **The complete paper-method analog now runs in pure Julia + blind:**
+varying-weight seeds · structured ansatze (xyswap/univariate/factored) · evolutionary search (parallel)
+· trustworthy ISD fitness · exact/ISD certification.
+
+## Remaining gap is now COMPUTE, not capability
+Pushing the honest blind frontier to the paper's FOM-20 codes (`[[360,8,30]]`) is now a **scaling** run
+(longer evolution / more generations / more lattices) — but ISD fitness on weight-6→12 codes is costly
+and a full run exceeds a single bounded slot (three such runs timed out at 290s). The capability is in
+place and validated at small scale; reaching the paper's frontier needs sustained background compute
+(chunk the evolution across generations / dedicate cores) — a resource decision, not an engineering gap.
 
 ## Two package bugs found + fixed (root-caused, regression-tested, ported)
 1. BZ closure-boxing OOM (uncatchable crash on high-weight codes) → allocation-free kernels.
