@@ -52,11 +52,18 @@ into `evaluate_css` + `ansatz_fitness`/`evolve_ansaetze`. Verified — the same 
 `[[144,32,2]]` at FOM=0.9 instead of 107, no longer chasing the artifact. Blind evolutionary search now
 optimizes a trustworthy distance.
 
-## Clear prioritized next step (within constraints; deferred to user)
-**Parallelize `evolve_ansaetze` + run the ISD-fitness evolution at scale** over the paper's lattices.
-The fix is in place and verified at minimal scale; the only remaining blocker is that `evolve_ansaetze`
-is single-threaded and times out at 4 lattices — a tooling/parallelization task. This is the single most
-promising avenue for blind discovery to approach the paper's frontier without relaxing any constraint.
+## Capstone (iter 20): parallelized + validated at scale — DONE
+Parallelized `evolve_ansaetze` (threaded fitness) and ran the ISD-fitness evolution over the paper's 8
+CSS lattices (gen=8, pop=12) in ~2.5 min. Score climbed 26→40→55; top trustworthy (ISD-tight) codes
+`[[360,4,24]]` FOM=6.4, `[[360,8,16]]` FOM=5.7, `[[288,4,20]]` FOM=5.6 — all honest distances, no
+overestimate artifacts, and `[[360,4,24]]` FOM=6.4 matches the paper's catalog value exactly. The paper's
+core evolutionary method now runs correctly in pure Julia (trustworthy ISD fitness + parallel).
+
+## Remaining next step (within constraints)
+Feed the evolution **varying-weight / factored ansatze** (the `GeneratorAnsatz` currently emits fixed
+weight-3) + more generations/lattices, to push the honest blind frontier toward the paper's higher-FOM
+codes (`[[360,8,30]]` FOM=20). No longer blocked by tooling or the overestimate failure mode — purely a
+scaling + ansatz-richness run.
 
 ## Two package bugs found + fixed (root-caused, regression-tested, ported)
 1. BZ closure-boxing OOM (uncatchable crash on high-weight codes) → allocation-free kernels.
