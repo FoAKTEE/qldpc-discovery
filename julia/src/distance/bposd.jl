@@ -312,7 +312,7 @@ syndrome to 0 and a random nontrivial logical pattern λ on the logical rows; BP
 minimum decoded weight over `trials × configs`.  Returns the best (min) weight, or `nothing`
 when k=0 / no valid solution was ever found."""
 function _bposd_one_type(check::Matrix{UInt8}, logicals::Matrix{UInt8}, n::Int,
-                         trials::Int, configs, seed::Int)
+                         trials::Int, configs, seed::Int; max_iter::Int=n)
     m, k = size(check, 1), size(logicals, 1)
     k == 0 && return nothing
     Heff = vcat(check, logicals)
@@ -327,7 +327,7 @@ function _bposd_one_type(check::Matrix{UInt8}, logicals::Matrix{UInt8}, n::Int,
             any(!iszero, lam) || continue
             s = vcat(zeros(UInt8, m), lam)
             hard, posterior, converged = _bp_decode(g, s, prior_llr;
-                                                     method=bp_method, max_iter=n)
+                                                     method=bp_method, max_iter=max_iter)
             e = _osd(Heff, s, posterior; osd_order=osd_order)
             # also consider the raw BP solution when it already satisfied the syndrome
             cand = Vector{UInt8}[]
@@ -362,10 +362,11 @@ can overestimate; it is never promoted to exact).  Pure Julia; no C/C++.
 
 Coset method (paper V.C): the min-weight X-logical x satisfies H_Z x = 0 and must ANTICOMMUTE with a
 dual (Z) logical to be nontrivial, so H_eff = (H_Z ; L_Z); symmetrically the Z-distance stacks L_X."""
-function bposd_distance(code::BBCode; trials::Int=200, configs=_BPOSD_DEFAULT_CONFIGS, seed::Int=0)
+function bposd_distance(code::BBCode; trials::Int=200, configs=_BPOSD_DEFAULT_CONFIGS, seed::Int=0,
+                        max_iter::Int=code.n)
     X, Z = css_logicals(code.HX, code.HZ)
-    dX = _bposd_one_type(code.HZ, Z, code.n, trials, configs, seed)        # X-logicals via H_Z + L_Z
-    dZ = _bposd_one_type(code.HX, X, code.n, trials, configs, seed + 1)    # Z-logicals via H_X + L_X
+    dX = _bposd_one_type(code.HZ, Z, code.n, trials, configs, seed; max_iter=max_iter)        # X via H_Z + L_Z
+    dZ = _bposd_one_type(code.HX, X, code.n, trials, configs, seed + 1; max_iter=max_iter)    # Z via H_X + L_X
     cand = Int[v for v in (dX, dZ) if v !== nothing]
     d_bound = isempty(cand) ? nothing : minimum(cand)
     return (d_bound=d_bound, d_X=dX, d_Z=dZ)
