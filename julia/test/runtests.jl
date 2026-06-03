@@ -3,6 +3,7 @@ include("../src/QCodeDiscovery.jl")
 using .QCodeDiscovery
 
 include("parity_tests.jl")   # wave-1 migrated subsystems (pbb, tanner, dedup, clifford, bposd, gpu)
+include("bposd_regression_tests.jl")  # _independent_mod / css_logicals degenerate-code crash regression
 
 # Landmark values are cross-validated against the Python qcode_discovery package (source of truth):
 # the pure-Julia port reproduces construction, k, the theorem witnesses, and exact distance exactly.

@@ -29,3 +29,6 @@ results/
 # --- Local methodology repo (not part of this package; tracked in its own repo) ---
 phys-agentic-loop/
 # NOTE: progress/ IS tracked on this experiment branch (blind-search mission management).
+
+# Julia package: do not commit the resolved manifest
+Manifest.toml
