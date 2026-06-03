@@ -1,0 +1,10 @@
+certifying 7 frontier codes (SEEDS=1 HITRIALS=80 HIMAXITER=120 ENUM<=8@n<=1 BZ_NMAX=1) on 191 threads
+DONE: 7 certified (0 EXACT); wrote progress/blind-zero-2/ROBUST2_OUT.md
+top certified:
+  [[336,8,32]] UB css  (scan d0=32, spread=0)  FOM=24.38
+  [[216,8,24]] UB css  (scan d0=24, spread=0)  FOM=21.33
+  [[384,8,32]] UB css  (scan d0=32, spread=0)  FOM=21.33
+  [[264,10,22]] UB css  (scan d0=22, spread=0)  FOM=18.33
+  [[144,8,16]] UB css  (scan d0=16, spread=0)  FOM=14.22
+  [[144,8,4]] UB css  (scan d0=4, spread=0)  FOM=0.89
+  [[216,8,4]] UB css  (scan d0=4, spread=0)  FOM=0.59

@@ -6,6 +6,22 @@ Best discovered code per regime, distances CERTIFIED post-hoc: **EXACT** = Brouw
 Totals: 118 distinct (n,k) certified — 19 EXACT, 99 ISD-tight UB.
 
 
+## 0. Genuine high-distance codes — stress-tested at ISD@10000 (most credible discoveries)
+
+These survive the highest certification budget (spread 0 at ISD@10000), across two independent runs —
+unlike the high-k/mid-FOM codes that collapse to d=2–8. Robust upper bounds, not exact-provable at these n,
+but credible blind rediscoveries in the paper's high-distance sparse regime.
+
+| [[n,k,d]] | FOM | ISD@10000 | run |
+|---|---|---|---|
+| [[336,8,32]] | 24.4 | d=32, spread 0 | both |
+| [[384,8,32]] | 21.3 | d=32, spread 0 | both |
+| [[216,8,24]] | 21.3 | d=24, spread 0 | 2 |
+| [[264,10,22]] | 18.3 | d=22, spread 0 | 2 |
+| [[144,8,16]] | 14.2 | d=16, spread 0 | 2 |
+| [[360,10,30]] | 25.0 | d=30 (eased 34→30) | 1 |
+| [[180,10,16]] | 14.2 | d=16, spread 0 | 1 |
+
 ## 1. Best FOM overall (certified)
 
 | [[n,k,d]] | FOM | verifier | d0(scan) | spread | k/n | d/√n |
