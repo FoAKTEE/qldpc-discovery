@@ -55,3 +55,18 @@ d=2). HONEST CAVEAT: it is still an ISD UPPER bound, and this run did not record
 polynomials, so it is not yet INDEPENDENTLY re-certified (high-iter ISD / exact BZ). Fixed: evolve_search.jl
 now records A,B so future headline codes are verifiable. Status of [[360,80,8]] FOM=14.2: PROMISING /
 PRELIMINARY, pending independent re-certification — NOT a confirmed beat.
+
+## iter26: RETRACTION of the [[360,80,8]] headline — it was an ISD-undertraining artifact
+Skeptical verification: reconstructed five representative weight-12/14 factored high-k codes at n=360
+(the family the evolved [[360,80,8]] came from) and ran HIGH-ITER ISD (@3000). ALL give d=2 (FOM ~1-2):
+[[360,100,2]], [[360,70,2]], [[360,60,2]], [[360,200,2]]. The family is genuinely d=2. Therefore the
+evolved [[360,80,8]] FOM=14.2 (ISD@300 fitness) is RETRACTED as almost certainly an ISD-UNDERTRAINING
+artifact — ISD at 300 iters failed to find the weight-2 logical for that specific high-k code, reporting
+d=8, and the evolution (maximizing ISD-d) exploited it. NO confirmed beat of the paper.
+
+REFINED FINDING: ISD fitness is far better than BP-OSD but is NOT fully reliable at fixed low iters for
+high-k codes — the evolution can still find codes where ISD@300 overestimates. A trustworthy ISD fitness
+needs iters SCALED to the code (k / codeword-space size), or a post-hoc high-iter re-certification of
+headline codes (now possible: evolve_search.jl records A,B). The cross-axis conclusion STANDS and is
+reinforced: blind search recovers families + frontier shape but does NOT exceed the paper; apparent beats
+are overestimate/undertraining artifacts that skeptical high-iter verification correctly demotes.

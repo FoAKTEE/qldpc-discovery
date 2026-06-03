@@ -1,3 +1,4 @@
+# NOTE (iter26): the high-FOM high-k entries here (e.g. [[360,80,8]] FOM=14.2) are ISD@300 UPPER bounds that high-iter ISD@3000 RETRACTS to d=2 — undertraining artifacts, NOT confirmed codes. See audit-vs-paper/EVOLUTION_FINDING.md.
 n	k	d	fom	wt	l	m
 360	80	8	14.2222	12	15	12
 360	80	6	8.0000	12	15	12
