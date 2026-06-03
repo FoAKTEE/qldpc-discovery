@@ -30,9 +30,18 @@ so it structurally could not reach the weight-7/8/10 records or the high-k / PBB
   overestimate `[[288,12,30]]` → d=16 (the paper's exact value). It is an UPPER bound (refuter), not a
   lower-bound certificate.
 - **High-k campaign (#1)** recovered the k-axis (k=24…160; was capped at 20). Factored/mixed seeds lifted
-  high-k distance from d=2 → d=5 (`[[294,78,5]]`, `[[336,72,5]]`, `[[288,48,5]]`).
+  high-k distance from d=2 → d=5 (`[[294,78,5]]`, `[[336,72,5]]`, `[[288,48,5]]`). Three generic families
+  tested (univariate d2, factored/mixed d5, cross-factored d4) — high-k distance caps at d=4–5 blind.
+- **PBB family** exercised (MODE=pbb): 12 EXACT non-CSS codes found, but blind random (A,B,C,D) seeding is
+  far too sparse (~0.07% commute+nontrivial) to reach the paper's 32 structured PBB points (`PBB_VS_PAPER.md`).
 - **One solid blind landmark throughout**: the independent rediscovery of `[[144,12,12]]` (gross-code
   parameters) from random seeds.
+
+## Consistent cross-axis finding
+Across high-distance (weight), high-k (3 structural families), and PBB: **blind generic search recovers
+the code families and the rate–distance frontier shape, but the paper's specific high-FOM optima**
+(weight-7 d=30, high-k d=8–14, PBB FOM-44) **require structured/catalog-derived constructions** — beyond
+generic blind seeds within pure-Julia.
 
 ## Two package bugs found + fixed (root-caused, regression-tested, ported)
 1. BZ closure-boxing OOM (uncatchable crash on high-weight codes) → allocation-free kernels.
