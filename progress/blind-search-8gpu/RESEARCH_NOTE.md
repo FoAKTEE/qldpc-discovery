@@ -74,5 +74,19 @@ seeds, no catalog. This is the held-out paper landmark recovered independently =
   [[72,12,6]]); certifier re-run on the 8 crashers completes + demotes ([[144,16,13]]->[[144,16,6]],
   3 EXACT). Committed blind-zero 5fc00aa; package fix ported to main. [SOLID]
 
+## iter10 — broadened-search VALIDATION (n<=360) + a 2nd package fix
+- 2nd package-discipline fix: DEDUP=1 made write_frontier run canonical_hash (0.1-1.3s/code) over all
+  cells every checkpoint -> monitor stalled, no frontier written. Fixed: cheap representation-level
+  distinct signature; rigorous BLISS dedup deferred post-hoc. (54d7dca; main a2b9f3e.)
+- Broadened run (CSS n<=360, wt3-5, ansatz0.3, GA2, dedup): 177085 screened, 530 cells, stab-weight
+  diversity 6/7/8/9/10 (was uniformly 6). Certifier: 530 certified, 99 EXACT, ZERO crashes — at-scale
+  proof of the iter9 BZ allocation-free fix on exactly the high-weight code class that OOM-crashed before.
+- Paper coverage (progress/audit-vs-paper/BROADENED_VS_PAPER.md): 10/28 catalog (n,k) present; reached
+  paper d (UB) at 6. WINS unreachable at weight-3: [[360,8,30]] d=32 UB (paper FOM-20 weight-7),
+  [[144,8,12]] d=12 (weight-6 MX), [[288,8,20]], [[288,16,12]]. OPEN gaps: (a) high-k codes (k=24-54)
+  all missed — rate filter + FOM bias suppress them, needs a separate high-k campaign; (b) large-n d are
+  uncertified BP-OSD UBs (some overestimates, e.g. [[288,12,16]] d=30 vs paper-exact 16 — needs MILP).
+  Honest: weight axis closes the high-distance gap; NO certified beat on the paper's own block lengths. [SOLID]
+
 ## Landmarks (post-hoc reference only; NOT used by the search)
 gross [[144,12,12]] (k=12,d=12) · [[72,12,6]] · [[288,24,12]]=gross+gross.
