@@ -16,6 +16,7 @@ include("algebra/polynomials.jl")   # ring F2[x,y]/(xˡ−1,yᵐ−1) + circulan
 include("codes/codes.jl")           # BB (CSS) construction, k, FOM
 include("distance/distance.jl")          # enumeration distance
 include("distance/distance_exact.jl")    # Brouwer–Zimmermann certified exact distance (HiGHS replacement)
+include("distance/isd.jl")               # Lee–Brickell ISD: tight UPPER bound at large n (refutes overestimates)
 include("codes/theorems.jl")        # thm:ab_d2, lem:crt_k witnesses
 include("codes/pbb.jl")             # PBB (non-CSS) construction
 include("structure/tanner.jl")      # Tanner-graph decomposability (union-find)
@@ -36,6 +37,8 @@ export as_f2, rref, gf2_rank, nullspace_gf2, in_rowspace
 export parse_terms, circulant, BBCode, css_k, fom, stabilizer_weight, css_valid
 # distance (pure-Julia exact)
 export css_distance_enum, min_weight_logical, min_distance_bz
+# distance (tight upper bound at large n via information-set decoding)
+export min_distance_isd
 # theorem witnesses
 export verify_ab_d2, verify_crt_k
 # PBB (non-CSS)
