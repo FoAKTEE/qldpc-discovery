@@ -107,7 +107,10 @@ function evaluate_css(l::Int, m::Int, A, B; distance_method::Symbol=:milp, time_
             # keeps the fitness trustworthy. CAPPED (iter29) so ultra-high-k evals don't dominate wall-time
             # and stall the (barriered) evolution — the cap still covers the interesting k range; ISD finds
             # the trivial weight-2 logicals of ultra-high-k codes well within it.
-            eff_iters = min(isd_iters * max(1, cld(k, 8)), isd_iters * 10)
+            # ultra-high-rate codes (k/n>0.25) are the trivial UV family (d=2, found in a few iters); use
+            # CHEAP base iters for them and reserve the (capped) k-scaling for the interesting k/n<=0.25
+            # regime where the paper's high-k codes (e.g. [[288,50,8]] rate 0.17) live (iter30 perf fix).
+            eff_iters = (k > code.n ÷ 4) ? isd_iters : min(isd_iters * max(1, cld(k, 8)), isd_iters * 10)
             dres = min_distance_isd(code; iters=eff_iters, pmax=2)
             d = dres.d > 0 ? dres.d : nothing
             exact = false
