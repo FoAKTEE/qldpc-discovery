@@ -4,6 +4,7 @@ using .QCodeDiscovery
 
 include("parity_tests.jl")   # wave-1 migrated subsystems (pbb, tanner, dedup, clifford, bposd, gpu)
 include("bposd_regression_tests.jl")  # _independent_mod / css_logicals degenerate-code crash regression
+include("distance_alloc_regression_tests.jl")  # BZ/enum hot-loop allocation-free (closure-boxing OOM) regression
 
 # Landmark values are cross-validated against the Python qcode_discovery package (source of truth):
 # the pure-Julia port reproduces construction, k, the theorem witnesses, and exact distance exactly.

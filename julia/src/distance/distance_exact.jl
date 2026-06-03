@@ -44,36 +44,62 @@ function _is_logical(c::Vector{_W}, U::Vector{Vector{_W}})   # c ∉ rowspace(H_
     return false
 end
 
+"""Allocation-free scan of every weight-`w` combination of the `κ` packed generator `rows`, updating
+the best logical weight; honors the per-call combination budget `cap`. Returns `(best, enumerated,
+capped)`. This is an EXTRACTED FUNCTION, not a closure: the hot loop must not capture-and-reassign
+outer locals (`best`/`enumerated`), which Julia boxes into heap cells — that made the loop allocate
+~5 heap objects per combination and OOM-crashed the process (uncatchably) on high-κ codes. Plain
+locals here keep it at zero allocations per combination, so `cap` bounds work AND memory."""
+function _bz_scan_weight!(acc::Vector{_W}, rows::Vector{Vector{_W}}, Upacked::Vector{Vector{_W}},
+                          κ::Int, w::Int, best::Int, cap::Int, nw::Int)
+    enumerated = 0
+    combo = collect(1:w)
+    while true
+        enumerated += 1
+        fill!(acc, zero(_W))
+        @inbounds for r in combo
+            rr = rows[r]
+            for t in 1:nw
+                acc[t] ⊻= rr[t]
+            end
+        end
+        wt = _packweight(acc)
+        if wt < best && _is_logical(acc, Upacked)
+            best = wt
+        end
+        enumerated >= cap && return (best, enumerated, true)
+        i = w
+        @inbounds while i >= 1 && combo[i] == κ - w + i
+            i -= 1
+        end
+        i == 0 && return (best, enumerated, false)
+        @inbounds combo[i] += 1
+        @inbounds for j in i+1:w
+            combo[j] = combo[j-1] + 1
+        end
+    end
+end
+
 """Minimum-weight logical of one sector (codewords = rowspace(`G`), nontrivial iff U·c ≠ 0), by
-Brouwer–Zimmermann enumeration. Returns `(d, certified, enumerated)`. Stops (uncertified) at `cap`."""
+Brouwer–Zimmermann enumeration. Returns `(d, certified, enumerated)`. Stops (uncertified) at `cap`
+total combinations (split across the increasing-weight passes)."""
 function _bz_min_logical(G::Matrix{UInt8}, U::Matrix{UInt8}; cap::Int=50_000_000)
     Gr, pivots = rref(G)                 # systematic form; pivot columns are the information set
     κ = length(pivots)
     n = size(G, 2)
     nw = _nwords(n)
-    rows = [_pack(view(Gr, i, :), nw) for i in 1:κ]
-    Upacked = [_pack(view(U, i, :), nw) for i in 1:size(U, 1)]
+    rows = Vector{_W}[_pack(view(Gr, i, :), nw) for i in 1:κ]
+    Upacked = Vector{_W}[_pack(view(U, i, :), nw) for i in 1:size(U, 1)]
     best = n + 1
     enumerated = 0
     acc = zeros(_W, nw)
     w = 1
     while w <= κ
         w >= best && return (d=best, certified=true, enumerated=enumerated)   # lower bound w ≥ best
-        capped = _each_combination(κ, w) do combo
-            enumerated += 1
-            fill!(acc, zero(_W))
-            @inbounds for r in combo
-                rr = rows[r]
-                for t in 1:nw
-                    acc[t] ⊻= rr[t]
-                end
-            end
-            wt = _packweight(acc)
-            if wt < best && _is_logical(acc, Upacked)
-                best = wt
-            end
-            return enumerated >= cap
-        end
+        remaining = cap - enumerated
+        remaining <= 0 && return (d=best, certified=false, enumerated=enumerated)
+        best, e, capped = _bz_scan_weight!(acc, rows, Upacked, κ, w, best, remaining, nw)
+        enumerated += e
         capped && return (d=best, certified=false, enumerated=enumerated)
         (w + 1) >= best && return (d=best, certified=true, enumerated=enumerated)
         w += 1

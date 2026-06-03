@@ -91,28 +91,57 @@ def verify_elites_milp(elites, time_limit=10.0, max_logicals=None, log=None):
     return out
 
 
+def _elite_canonical_hash(elite: dict) -> str:
+    """Structural canonical hash of a CSS BB elite (for in-loop distinct-code counting).
+
+    Pure structural canonicalization — no catalog input (blind-safe). Prefers the exact
+    colored-Tanner-graph BLISS hash over the code's H_X/H_Z; falls back to the lattice-symmetry
+    polynomial signature when python-igraph is absent. Codes that are permutation-equivalent
+    (BLISS) — or, in the fallback, lattice-symmetry equivalent — share a hash.
+    """
+    from ..structure.dedup import bliss_canonical_hash, canonical_poly_signature
+    from ..codes.bb_codes import BBCode
+    code = BBCode(elite["l"], elite["m"], elite["A"], elite["B"])
+    try:
+        return bliss_canonical_hash(code.HX, code.HZ)
+    except ImportError:                                 # python-igraph not installed
+        sig = canonical_poly_signature(code.l, code.m, code.A_terms, code.B_terms)
+        return repr((code.l, code.m, sig))
+
+
 def blind_search_css(lattices, *, n_random=400, generations=0, distance_budget=8,
-                     weight=3, time_limit=3.0, max_logicals=None, seed=0, log=None,
-                     distance_method="milp", trust_high=2.0) -> dict:
+                     weight=3, weights=None, dedup=False, time_limit=3.0, max_logicals=None,
+                     seed=0, log=None, distance_method="milp", trust_high=2.0) -> dict:
     """Run a blind CSS BB search over the given lattices [(l,m), ...].
 
     Phase 1: sample n_random naive trinomial pairs per lattice, Stage-1 screen k, take the
     top `distance_budget` by k, Stage-2 evaluate distance -> FOM, populate the archive.
     Phase 2 (optional): `generations` of FOM-hill-climbing GA mutating archive elites.
-    Returns {archive_elites, n_evaluated, n_distance_evals}. NO paper data consulted.
+
+    `weights`: when None (default) every A,B is the fixed `weight` (today's behavior); when a
+    (wmin, wmax) sequence, draw wA, wB uniformly from range(wmin, wmax+1) per seed (blind-safe
+    check-weight variation — only widens reach, injects no catalog poly) and record the realized
+    `stab_weight` (= |A|+|B|) on each elite. `dedup`: when True (default False), canonicalize each
+    elite's Tanner graph and add `n_distinct` (the structural distinct-code count) to the summary.
+    Returns {archive_elites, evaluated, n_evaluated, n_distance_evals} (+ n_distinct if dedup).
+    NO paper data consulted.
     """
     rng = random.Random(seed)
     arch = Archive()
     n_eval = n_dist = 0
     evaluated: list[dict] = []                          # every distance-evaluated representation
     say = log if log else (lambda *_: None)
+    wlo, whi = (weights[0], weights[1]) if weights is not None else (None, None)
+
+    def _draw_weight() -> int:                          # per-seed weight (blind: uniform over range)
+        return weight if weights is None else rng.randint(wlo, whi)
 
     for (l, m) in lattices:
         # Phase 1: cheap k-screen of random trinomial pairs.
         screened = []
         for _ in range(n_random):
-            A = random_polynomial(l, m, weight, rng)
-            B = random_polynomial(l, m, weight, rng)
+            A = random_polynomial(l, m, _draw_weight(), rng)
+            B = random_polynomial(l, m, _draw_weight(), rng)
             n_eval += 1
             k = screen_k_css(l, m, A, B)
             if k > 0:
@@ -169,8 +198,11 @@ def blind_search_css(lattices, *, n_random=400, generations=0, distance_budget=8
                     say(f"  gen{g+1} [{l},{m}] improved [[{res['n']},{res['k']},{res['d']}]] "
                         f"FOM={res['fom']:.2f} exact={res['exact']}")
 
-    return {"archive_elites": arch.elites(), "evaluated": evaluated,
-            "n_evaluated": n_eval, "n_distance_evals": n_dist}
+    out = {"archive_elites": arch.elites(), "evaluated": evaluated,
+           "n_evaluated": n_eval, "n_distance_evals": n_dist}
+    if dedup:                                           # structural distinct-code count over elites
+        out["n_distinct"] = len({_elite_canonical_hash(e) for e in out["archive_elites"]})
+    return out
 
 
 def random_commuting_pbb(l, m, rng, base_weight=3, pert_weights=(1, 2, 3), tries=40):
@@ -193,12 +225,40 @@ def random_commuting_pbb(l, m, rng, base_weight=3, pert_weights=(1, 2, 3), tries
     return None
 
 
+def _pbb_elite_signature(elite: dict) -> tuple:
+    """Structural signature of a PBB elite for distinct-code counting (blind-safe).
+
+    The PBB symplectic stabilizer matrices have no CSS H_X/H_Z, so the BLISS colored-Tanner
+    hash does not apply; we canonicalize the full (A,B,C,D) 4-tuple under the BB lattice-symmetry
+    group (x->x^a, y->y^b, x<->y) instead. Pure structural canonicalization — no catalog input.
+    SOUND for that group (a signature difference certifies distinctness; a conservative count).
+    """
+    from ..structure.dedup import _units
+    l, m = elite["l"], elite["m"]
+    polys = [{(i % l, j % m) for (i, j) in elite[key]} for key in ("A", "B", "C", "D")]
+    best = None
+    for a in _units(l):
+        for b in _units(m):
+            forms = [tuple(frozenset(((a * i) % l, (b * j) % m) for (i, j) in P) for P in polys)]
+            if l == m:                                  # x<->y swap (only a symmetry when l=m)
+                forms.append(tuple(frozenset((j, i) for (i, j) in P) for P in forms[0]))
+            for form in forms:
+                key = tuple(tuple(sorted(P)) for P in form)
+                if best is None or key < best:
+                    best = key
+    return (l, m, best)
+
+
 def blind_search_pbb(lattices, *, n_random=600, distance_budget=6, generations=0,
-                     time_limit=4.0, max_logicals=None, seed=0, log=None) -> dict:
+                     time_limit=4.0, max_logicals=None, seed=0, log=None, dedup=False) -> dict:
     """Blind non-CSS PBB search over the given lattices. Catalog-blind; FOM-driven.
 
     Phase 1: sample commuting 4-tuples, screen k, take a k-diverse set, symplectic-distance
     them -> FOM, archive. Phase 2: optional GA mutating elite (A,B,C,D). Returns archive + counts.
+
+    `dedup`: when True (default False) add `n_distinct` to the summary — the count of elites
+    distinct under the BB lattice-symmetry group applied to the (A,B,C,D) 4-tuple (see
+    `_pbb_elite_signature`; PBB has no CSS H_X/H_Z, so the BLISS Tanner hash does not apply here).
     """
     rng = random.Random(seed)
     arch = Archive()
@@ -238,5 +298,8 @@ def blind_search_pbb(lattices, *, n_random=600, distance_budget=6, generations=0
                 say(f"  [{l},{m}] discovered non-CSS [[{res['n']},{res['k']},{res['d']}]] "
                     f"FOM={res['fom']:.2f} exact={res['exact']} mixed={res['non_css']}")
 
-    return {"archive_elites": arch.elites(), "n_evaluated": n_eval,
-            "n_commuting": n_commute, "n_distance_evals": n_dist}
+    out = {"archive_elites": arch.elites(), "n_evaluated": n_eval,
+           "n_commuting": n_commute, "n_distance_evals": n_dist}
+    if dedup:                                           # structural distinct-code count over elites
+        out["n_distinct"] = len({_pbb_elite_signature(e) for e in out["archive_elites"]})
+    return out
