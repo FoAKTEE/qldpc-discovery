@@ -142,22 +142,23 @@ function evolve_ansaetze(lattices; generations::Int=4, pop::Int=6, time_limit::R
     rng = Random.MersenneTwister(seed)
     say = log === nothing ? (_...) -> nothing : log
     fit(a) = ansatz_fitness(a, lattices; time_limit=time_limit, distance_method=distance_method, isd_iters=isd_iters)
-    population = Tuple{GeneratorAnsatz,Any}[]
-    for _ in 1:pop
-        a = random_ansatz(rng)
-        push!(population, (a, fit(a)))
+    # Evaluate a vector of ansatze's fitnesses IN PARALLEL (independent; ansatz_fitness is pure). RNG-based
+    # ansatz GENERATION stays sequential (MersenneTwister is stateful) — only the costly fitness is threaded.
+    function fit_all(as)
+        fs = Vector{Any}(undef, length(as))
+        Threads.@threads for i in eachindex(as)
+            fs[i] = fit(as[i])
+        end
+        return Tuple{GeneratorAnsatz,Any}[(as[i], fs[i]) for i in eachindex(as)]
     end
+    population = fit_all(GeneratorAnsatz[random_ansatz(rng) for _ in 1:pop])
     for g in 0:generations-1
         sort!(population; by=t -> t[2].score, rev=true)
         best = population[1]
         say("  gen$g: best score=$(round(best[2].score; digits=2)) over " *
             "$(best[2].n_lattices_with_code) lattices")
         survivors = population[1:max(1, pop ÷ 2)]
-        children = Tuple{GeneratorAnsatz,Any}[]
-        for (a, _) in survivors
-            child = mutate_ansatz(a, rng)
-            push!(children, (child, fit(child)))
-        end
+        children = fit_all(GeneratorAnsatz[mutate_ansatz(a, rng) for (a, _) in survivors])
         population = vcat(survivors, children)
     end
     sort!(population; by=t -> t[2].score, rev=true)

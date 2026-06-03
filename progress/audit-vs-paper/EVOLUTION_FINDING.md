@@ -21,3 +21,14 @@ parallelization for bounded-time runs at scale.)
 ISD-based fitness for the discovery cascade + evolutionary loop, + parallelize evolve_ansaetze. This is
 the single change most likely to make blind evolutionary search productive (the paper's method, done
 right) — deferred as a substantial, well-scoped step rather than run ad hoc at the tail of this arc.
+
+## iter20: parallelized + validated at scale — blind ISD-evolution produces HONEST codes
+Parallelized evolve_ansaetze (fitness evals threaded; RNG generation stays sequential). Ran the
+ISD-fitness evolution at scale (8 paper CSS lattices, gen=8, pop=12, -t 32) in ~2.5 min. Score climbed
+26 -> 40 -> 55 across generations. Top TRUSTWORTHY (ISD-tight) codes discovered blind:
+[[360,4,24]] FOM=6.4, [[360,8,16]] FOM=5.7, [[288,4,20]] FOM=5.6, [[144,4,14]] FOM=5.4 — all wt=6, all
+HONEST distances (no [[144,32,22]]-style artifacts). [[360,4,24]] FOM=6.4 MATCHES the paper's catalog
+value exactly. The paper's evolutionary method, done right in pure Julia (trustworthy ISD fitness +
+parallelized), now produces honest blind discoveries. To approach the paper's higher-FOM codes
+([[360,8,30]] FOM20), feed the evolution varying-weight / factored ansatze + more generations — a scaling
+run, no longer blocked by tooling or the overestimate failure mode.
