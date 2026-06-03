@@ -1,6 +1,6 @@
 ---
 active: true
-iteration: 32
+iteration: 34
 session_id: ""
 max_iterations: 300
 completion_promise: "QLDPC_BLINDZERO_8GPU_SEARCH_COMPLETE"
@@ -8,7 +8,7 @@ started_at: "2026-06-03T00:00:00Z"
 role: Ralph-loop local state for qldpc-discovery — 8-GPU BLIND BB-CODE SEARCH (blind-zero)
 scope: .claude/ralph-loop.local.md — surfaced on SessionStart by inject_infra.sh, gated on Stop by ralph_stop_guard.sh
 mission: "Run + manage a from-scratch, catalog-BLIND search for BB quantum LDPC codes within [[n<=1000, k<=300, d<=300]] using the pure-Julia QCodeDiscovery package on 8x A100 GPUs + 256 cores, maximally parallel; record + certify the discovered frontier"
-branch: blind-zero
+branch: blind-zero-2
 pua_flavor: "musk"
 orchestration:
   ultracode: true
