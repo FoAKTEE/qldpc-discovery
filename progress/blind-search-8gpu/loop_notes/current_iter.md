@@ -1,29 +1,29 @@
-# current_iter — 8-GPU blind search, iter 4 (overwrite-mode)
+# current_iter — 8-GPU blind search, iter 5 (overwrite-mode)
 
 ## Anchor
-Directive: clean up scripts (keep only useful), then RUN the large parameter space on 200 CPU only,
-managed by .claude + phys-agentic-loop.
+Directive: do NOT work around the crash — debug + FIX the Julia package at root cause; and make
+"encounter a bug -> debug the package" a BINDING rule injected into the infra.
 
-## EDIT
-- Cleaned scripts/search/: removed ~16 scratch files (bench_*, test_*, microbench, profile_dist,
-  validate_gpu, gpu_kernel.jl [ported to package], broken gpu_blind_search.jl, CUDA env). Left ONE
-  clean driver: scripts/search/blind_search.jl (CPU-only blind search, 200-thread MAP-Elites).
-- Diagnosed 2 smoke failures (tool-verified): bposd_distance (a) ERRORED on some degenerate random
-  codes -> per-candidate try/catch; (b) cost ~ n via hardcoded max_iter=n (0.45s@n72 -> 87s@n600).
-- PACKAGE FIX (julia/src/distance/bposd.jl): added a tunable `max_iter` kwarg to bposd_distance
-  (default code.n => backward-compatible; BP+OSD still returns a valid UPPER bound). The search caps
-  it (max_iter=30) for tractable distance across n<=1000.
-- Driver: BLIND (naive weight-3 seeds, no paper data), per-thread workers loop screen(css_k) ->
-  bposd_distance(max_iter=30,trials=32) -> d/sqrt(n) trust filter (<2.0) -> MAP-Elites by (n,k);
-  archives merged; frontier written to progress/blind-search-8gpu/frontier.md. Distances honestly
-  labeled BP-OSD UPPER bounds (uncertified).
-
-## VERIFY (TRF-R)
-- bposd max_iter edit: gross d_bound=12 at default AND at max_iter=30 (unchanged + cap valid). Ref 12.
-- smoke (16 threads, WALL=20): exit 0, no crash, frontier produced (e.g. [[810,8,44]], [[180,12,12]]).
-- FULL RUN launched: 200 threads, NMAX=1000, WALL=600s, TRIALS=32, MAXITER=30 (background byl4g988p).
+## Done this iter
+- INJECTED `package_debug_policy` into .claude/ralph-loop.local.md (BINDING): any bug/crash/error ->
+  root-cause + fix IN the package (julia/src|ext) + regression test, BEFORE proceeding; no workarounds
+  (no thread-count reduction, no silent try/catch swallowing, no skipping without a fix).
+- DIAGNOSED the crash (tool-verified, ruling out the easy explanations):
+  - NOT a thread ceiling: -t 64 / 128 / 192 ALL complete (exit 0, DONE). 200-thread Julia runtime
+    itself is fine (a no-package 200-thread busy loop completes).
+  - IT IS CANDIDATE EXPOSURE: a rare degenerate code (~1 in several thousand) aborts the process
+    ABRUPTLY at ~4000+ candidates. exit 1, NO Julia exception (driver top-level try/catch does NOT
+    fire), --check-bounds=yes does NOT help => NOT an @inbounds OOB; a genuine SEGFAULT in a package
+    routine (or a thread-safety/heavy-alloc fault) on that degenerate code.
+- Launched debug Workflow wvkhs33ub: instrument -> capture the exact failing (l,m,A,B) + the package
+  function -> root-cause -> fix in package + regression test in julia/test -> verify at -t 200 over
+  many candidates + package tests green.
 
 ## Status
-Apparatus PROVEN; full 200-CPU run in flight. Frontier + certification of best codes -> on completion.
-code_quality_policy_pass: R2 (bposd max_iter param + clean CPU driver, verified) -> PROVEN.
-Honest: frontier distances are BP-OSD upper bounds; headline high-d codes need MILP/BZ certification [FUTURE].
+Full run GATED on the package fix (per the new policy). No frontier recorded yet (the bisection
+frontiers are BP-OSD upper bounds from incomplete runs, NOT a deliverable).
+
+## Verifier
+T=64/128/192 -> DONE exit 0; -t 200 / long -> abrupt exit 1 (no exception, check-bounds no help);
+minimal 200-thread busy loop -> OK. code_quality_policy_pass: R1 (diagnosis + infra policy) -> PROVEN.
+Package fix + verification -> pending workflow wvkhs33ub.

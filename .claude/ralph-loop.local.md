@@ -1,6 +1,6 @@
 ---
 active: true
-iteration: 4
+iteration: 5
 session_id: ""
 max_iterations: 300
 completion_promise: "QLDPC_BLINDZERO_8GPU_SEARCH_COMPLETE"
@@ -35,6 +35,16 @@ gpu_policy:
     The k-screening (GF(2) rank) runs batched on ALL 8 A100s in parallel (CUDA.device! per device,
     concurrent tasks); the distance oracle (BP-OSD) runs across all 256 CPU threads. Verify GPU rank
     == CPU rank on each device (0 mismatches) before trusting a run. Report devices actually used.
+package_debug_policy:
+  policy: "BINDING — fix bugs in the package, never work around them"
+  rule: |
+    Whenever a bug/crash/error/incorrect-result is encountered ANYWHERE (driver, run, test), ROOT-CAUSE
+    it and FIX IT IN THE JULIA PACKAGE (julia/src or julia/ext) with a regression test in julia/test,
+    BEFORE proceeding. Do NOT paper over it: no thread-count reduction, no silent try/catch swallowing,
+    no "skip the bad case" without first understanding + fixing the underlying defect. Reproduce ->
+    instrument to the exact failing input + package function -> fix at the root -> add a regression
+    test -> verify the original failure is gone. Only then resume. A blanket guard may be added AFTER
+    the root cause is fixed (defense in depth), never instead of it.
 search_space:
   rule: "BB codes, n = 2*l*m <= 1000 (l*m <= 500), weight-3 polynomials; report k<=300, d<=300."
 tracking_files:
