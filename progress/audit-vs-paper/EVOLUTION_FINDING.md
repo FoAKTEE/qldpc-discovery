@@ -82,3 +82,13 @@ uninteresting. PRODUCTION REFINEMENT (clear next step, not yet applied): bound t
 eff_iters, OR add a combo/time budget to min_distance_isd, OR cheaply reject ultra-high-rate codes
 (k/n above a threshold) before the costly ISD. Net: correctness done + verified; the scaled-fitness
 evolution needs a per-eval budget to be practical at high k.
+
+## iter30: END-TO-END VALIDATION — sound apparatus produces an honest frontier, NO beats
+With the fixed fitness (k-scaled iter27 + capped iter29 + cheap ultra-high-rate iter30), a full evolution
+(gen=8, ~8min) completed and produced a genuinely HONEST frontier: max FOM 5.7 ([[360,128,4]] wt12), all
+high-k codes d<=5. DECISIVE: the retracted artifact is now correctly [[360,80,5]] FOM=5.6 (honest d=5, NOT
+the d=8 ISD@300 artifact) — the sound fitness no longer chases it. Top honest codes: [[360,128,4]] FOM5.7,
+[[360,80,5]] FOM5.6, [[288,78,4]] FOM4.3, [[288,16,8]] FOM3.6. NO blind code exceeds the paper (max FOM 5.7
+<< the paper's high-k FOM 11+). This END-TO-END confirms the conclusion with the now-sound apparatus:
+blind evolution produces honest codes and does NOT beat the paper; the earlier apparent beats were
+artifacts that the fixed fitness no longer generates. progress/blind-search-8gpu/evolved_frontier_honest.tsv.
