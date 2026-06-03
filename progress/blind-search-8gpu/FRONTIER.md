@@ -5,6 +5,11 @@ TRUST, not raw FOM: EXACT certificates first, then ISD-tight upper bounds, then 
 upper bounds (which MAY still overestimate — they predate the ISD refuter). Raw uncertified scan
 bounds excluded. Paper comparison is post-hoc.
 
+**iter26 caveat:** the EXACT section is the genuinely verified frontier. UPPER-BOUND sections (ISD-tight,
+BP-OSD-tightened) can OVERESTIMATE — ISD at low iters undertrains for high-k codes (verified: the
+long-run headline [[360,80,8]] FOM=14.2 was RETRACTED to d=2 by ISD@3000). Treat high-k upper-bound
+entries as preliminary pending high-iter re-certification. No blind code is a certified beat of the paper.
+
 1555 distinct (n,k); 423 EXACT, 26 ISD-tight, 1106 BP-OSD-tightened.
 
 ## Verified frontier — EXACT (Brouwer–Zimmermann / enumeration gap=0)
