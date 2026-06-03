@@ -88,5 +88,19 @@ seeds, no catalog. This is the held-out paper landmark recovered independently =
   uncertified BP-OSD UBs (some overestimates, e.g. [[288,12,16]] d=30 vs paper-exact 16 — needs MILP).
   Honest: weight axis closes the high-distance gap; NO certified beat on the paper's own block lengths. [SOLID]
 
+## iter11-12 — user-requested gap work (#2 large-n cert, then #1 high-k campaign)
+- #2 ISD (iter11, julia/src/distance/isd.jl): Lee-Brickell information-set decoding -> tight UPPER bound
+  at large n. Finds low-weight logicals BP-OSD misses; a found logical of weight w PROVES d<=w (valid UB,
+  not a lower-bound certificate). Verified: finds [[18,4,4]]=4, [[72,12,6]]=6, gross [[144,12,12]]=12 (2s;
+  exact BZ CANNOT certify this), never below true d. Demotes the broadened overestimate [[288,12,30]]
+  (BP-OSD d0=30) -> d=16 = the paper's exact (288,12) value. Committed b4f0b96, main 3065c2c. Honest:
+  refutes overestimates; full MILP-grade large-n EXACT lower-bound cert remains the pure-Julia limit. [SOLID]
+- #1 high-k campaign (iter12, blind_search.jl OBJECTIVE=k): univariate/CRT seeding (random params,
+  lem:crt_k family) + filter off + k-sort. Recovers the k-AXIS (k=24..160 at n<=360; FOM mode maxed at
+  k=20 with 0 cells k>=24). ISD certifies true d, demoting BP-OSD garbage ([[360,160,156]]->EXACT d=2).
+  HONEST: pure univariate is d=2 at extreme k (k=24 reaches d=6-10 UB); the paper's high-k codes (d=4-8)
+  use richer weight-8 cross-factored structure -> we reach the right (n,k) but lower d. progress/audit-vs-
+  paper/HIGHK_VS_PAPER.md. Next lever (documented): higher-weight/factored high-k seeds. [SOLID]
+
 ## Landmarks (post-hoc reference only; NOT used by the search)
 gross [[144,12,12]] (k=12,d=12) · [[72,12,6]] · [[288,24,12]]=gross+gross.

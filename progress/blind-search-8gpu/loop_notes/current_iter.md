@@ -1,31 +1,27 @@
-# current_iter — iter 11: large-n exact-certification tool (ISD, user-requested #2)
+# current_iter — iter 12: high-k campaign (user #1) + result
 
 ## Anchor
-User: "2 then 1, don't ask again" -> #2 large-n exact certification, then #1 high-k campaign.
+User #1 (after #2): recover the paper's high-k codes (k=24-54) the FOM-mode search missed (it maxed at
+k=20, ZERO cells k>=24 — random BB polys are high-rank -> low k).
 
-## DESIGN (honest reconciliation)
-For BB CSS LOGICAL distance, dim ker(H_Z) = (n+k)/2 > n/2 -> only ONE information set fits -> the
-multi/overlapping-info-set BZ lower-bound improvement gives NOTHING (existing code comment confirms),
-and combinatorial enumeration hits C(kc,d) ~ 1e20 at n=288/d=16. True exact cert there needs an
-industrial MILP (paper's HiGHS) — precluded by the pure-Julia (no C/C++) constraint. So the honest,
-achievable, verifiable pure-Julia win is a TIGHT UPPER BOUND via Lee-Brickell information-set decoding:
-it finds low-weight logicals BP-OSD misses (refuting overestimates), and a found logical of weight w is
-an unconditional proof d<=w (UPPER bound, NOT a lower-bound certificate).
+## EDIT (committed with the mode)
+blind_search.jl OBJECTIVE=fom|k. :k mode = univariate/CRT seeding (UNIVAR=0.8; A=1+y^a+y^2a, B=1+x^j+x^2j,
+RANDOM a,j — lem:crt_k family, NOT catalog), rate filter OFF, frontier sorted by k.
 
-## EDIT
-- julia/src/distance/isd.jl (NEW): _isd_min_logical + min_distance_isd (Lee-Brickell; random info set ->
-  systematic form -> enumerate row-combos size 1..pmax; reuses packed-GF(2) helpers). Exported.
-- scripts/search/certify.jl: ISD is now the PRIMARY upper-bound tightener (ISD_ITERS=1200, ISD_PMAX=2),
-  BP-OSD a cross-check (SEEDS default 1). BZ still the exact certifier where it completes.
-- julia/test/runtests.jl: ISD testset (finds [[18,4,4]]=4, [[72,12,6]]=6, gross [[144,12,12]]=12, never below).
+## VERIFY (campaign + ISD certify)
+Campaign (OBJECTIVE=k, n<=360, WALL=90, cheap search d): 672411 screened, 249 cells, k=24..160 (FOM-mode
+maxed at 20). ISD certification (iter11 tool): 249 certified, 115 EXACT. ISD demotes the BP-OSD garbage
+these ultra-degenerate codes produce, e.g. [[360,160,156]] (BP-OSD d0=156) -> EXACT d=2.
 
-## VERIFY
-runtests.jl all PASS (RUNTESTS_EXIT=0): ISD testset 4/4 (gross d=12 found in 2.1s — exact BZ CANNOT
-certify this), alloc regressions 12/12+2/2+3/3, exact-distance landmarks preserved (enum 4/4, BZ 3/3).
-DEMOTION DEMO: broadened [[288,12,30]] (BP-OSD d0=30 overestimate) -> ISD d=16 = the paper's exact
-catalog value for (288,12). ISD found the true weight-16 logical BP-OSD missed. [SOLID]
+## RESULT (progress/audit-vs-paper/HIGHK_VS_PAPER.md)
+- k-AXIS RECOVERED: produces k=24..160 at n<=360 (was impossible in FOM mode). The ISD tool is essential
+  (true d vs BP-OSD garbage).
+- BUT pure univariate is d=2 at extreme k; only k=24 reaches d=6-10 (UB). The paper's high-k codes (d=4-8:
+  [[144,54,4]], [[288,50,8]]) use RICHER weight-8 cross-factored structure than pure 3-term univariate.
+  So we reach the right (n,k) but LOWER d than the paper's high-k optima.
+- Next lever (documented, not run): higher-weight/factored high-k seeds to lift d from 2 toward 4-8.
 
 ## STATUS
-#2 delivered (honest: tight UB / overestimate-refuter; exact cert stays BZ-where-feasible; MILP-grade
-large-n lower-bound cert acknowledged as the pure-Julia limit). Committing + porting to main. NEXT: #1
-high-k campaign (k-maximizing search mode to recover the paper's k=24-54 codes the rate filter suppresses).
+Both user asks delivered: #2 (ISD large-n upper-bound refuter, iter11) + #1 (high-k campaign, iter12).
+Honest: ISD refutes overestimates + the high-k axis is recovered (low d); full MILP-grade large-n exact
+cert and the paper's d=4-8 high-k optima remain documented open levers. Committing artifacts + porting.
