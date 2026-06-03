@@ -17,8 +17,15 @@ to the gross/Bravyi families is POST-HOC only.
 
 ## Status
 - iter1: restored + audited + re-targeted `.claude` (was the finished Julia-migration mission) to this
-  8-GPU blind-search mission; loop now manages it. Multi-GPU search driver being built + validated by a
-  Workflow agent on the 8 A100s (scripts/search/gpu_blind_search.jl); frontier to be recorded on completion.
+  8-GPU blind-search mission; loop now manages it. Multi-GPU search driver being built by a Workflow.
+- iter2: DIAGNOSED GPU 0% util — the package's batched GF(2) rank kernel was ONE-THREAD-PER-MATRIX
+  (near-zero A100 occupancy, 0.22x the 256-core CPU). [SOLID, tool-verified]
+- iter3: FIXED in the package — warp-per-matrix kernel (julia/ext/QCodeDiscoveryCUDAExt.jl) + threaded
+  host packing (julia/src/parallel/gpu_cuda.jl). Correct (0 mismatches vs CPU incl. real BB), end-to-end
+  1.1x the 256-core CPU (was 0.22x), kernel-isolated 98% util. Package tests green. [SOLID]
+  KEY FINDING: nvidia-smi still ~0% during the SEARCH because GPU compute is only 3.1% of even the
+  screen wall time (host-pack 325 ms >> GPU 10.5 ms), and the search's heavy cost is CPU BP-OSD distance.
+  Screening cannot saturate 8 A100s. => to truly use the GPUs, move BP-OSD DISTANCE to GPU. [FUTURE]
 
 ## Next tactics
 1. Land + validate the multi-GPU driver (GPU rank == CPU on all 8 devices; all 8 used).

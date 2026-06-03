@@ -112,23 +112,23 @@ contiguous buffer is what we copy to the device in one `CuArray` transfer.
 """
 function _gf2_flatten_batch(mats::Vector{<:AbstractMatrix})
     nmats = length(mats)
-    packs = Vector{Tuple{Vector{UInt64},Int,Int}}(undef, nmats)
-    total = 0
-    @inbounds for i in 1:nmats
-        wds, nr, nw = _gf2_pack_words(mats[i])
-        packs[i] = (wds, nr, nw)
-        total += nr * nw
-    end
-    words   = Vector{UInt64}(undef, total)
-    offsets = Vector{Int}(undef, nmats)
     rows    = Vector{Int}(undef, nmats)
     nwords  = Vector{Int}(undef, nmats)
+    offsets = Vector{Int}(undef, nmats)
     pos = 0
-    @inbounds for i in 1:nmats
-        wds, nr, nw = packs[i]
-        offsets[i] = pos; rows[i] = nr; nwords[i] = nw
-        copyto!(words, pos + 1, wds, 1, length(wds))
+    @inbounds for i in 1:nmats                       # shapes + prefix-sum offsets (cheap, serial)
+        nr, nc = size(mats[i])
+        nw = cld(nc, 64)
+        rows[i] = nr; nwords[i] = nw; offsets[i] = pos
         pos += nr * nw
+    end
+    words = Vector{UInt64}(undef, pos)
+    # THREADED packing: the dominant host cost. Each matrix packs into its own disjoint slice
+    # (offsets are fixed above), so this is data-parallel across all CPU cores — without it the
+    # GPU sits idle behind single-threaded bit-packing (the diagnosed wall-time bottleneck).
+    Threads.@threads for i in 1:nmats
+        wds, _, _ = _gf2_pack_words(mats[i])
+        @inbounds copyto!(words, offsets[i] + 1, wds, 1, length(wds))
     end
     return words, offsets, rows, nwords
 end

@@ -1,26 +1,32 @@
-# current_iter — 8-GPU blind search, iter 2 (overwrite-mode)
+# current_iter — 8-GPU blind search, iter 3 (overwrite-mode)
 
 ## Anchor
-User report: nvidia-smi shows all GPUs 0%. Investigate + debug why the GPUs aren't used.
+Directive: fix the GPU 0%-util bug, and make the fix TO THE JULIA PACKAGE (not scratch).
 
-## Diagnosis (evidence, tool-verified)
-- CUDA.functional()=true, 8 devices visible, cuda_batched_rank runs on-device (mem allocates, ranks correct).
-- ROOT CAUSE: the batched GF(2) rank GPU kernel (ext/QCodeDiscoveryCUDAExt.jl) is ONE-THREAD-PER-MATRIX
-  (serial elimination per thread) -> near-zero A100 occupancy.
-- Benchmark (4000 random 144x288 GF(2) matrices, rank):
-    CPU batched_rank (256 threads): 300 ms/call
-    GPU cuda_batched_rank:          1361 ms/call   (~0% util)
-    => GPU is 0.22x CPU (~4.5x SLOWER) and effectively idle. ranks match (correct).
-- Secondary: the search's heavy cost is BP-OSD distance (CPU); GPU only screens. So GPUs help only if
-  (a) the screen kernel beats CPU AND screening volume is massive, or (b) distance also moves to GPU.
+## EDIT (fix landed in the package)
+- julia/ext/QCodeDiscoveryCUDAExt.jl: replaced the ONE-THREAD-PER-MATRIX kernel with a
+  WARP-PER-MATRIX kernel (32 lanes cooperate: ballot pivot-search + shuffle broadcast + lane-strided
+  elimination, pivot row cached in shared mem; warps packed 8/block -> saturate all SMs) + a
+  block-per-matrix fallback for wide matrices (>16 words/row). Dispatch in _cuda_rank_impl.
+- julia/src/parallel/gpu_cuda.jl: threaded _gf2_flatten_batch (host bit-packing was single-threaded).
 
-## Fix (in flight)
-- Workflow wz2v59x93 (ultracode): rewrite the kernel for HIGH OCCUPANCY (block/warp per matrix,
-  cooperative bit-packed elimination) to beat the 256-core CPU at real util; shard across all 8 GPUs;
-  rework scripts/search/gpu_blind_search.jl to screen at massive scale on 8 GPUs + CPU distance on
-  survivors. Honesty clause: if GPU still can't beat 256-core CPU for this workload, report
-  cpu-is-better + recommend moving BP-OSD distance to GPU instead.
+## VERIFY (tool-verified, TRF-R)
+- Correctness: cuda_batched_rank == CPU gf2_rank, 0 mismatches @ 72x144,144x288,288x576,500x1000 + real BB.
+- End-to-end (4000x 144x288): GPU 283 ms vs CPU(256t) 312 ms = 1.1x  [was 0.22x with old kernel] — GPUs now BEAT CPU.
+- Kernel isolated: 98% A100 util, ~10.5 ms (device transfer+kernel+back).
+- Package tests (CPU path, no CUDA): julia/test/runtests.jl -> PASS (exit 0).
 
-## Verifier
-GPU-vs-CPU bench: 1361ms vs 300ms (0.22x), util ~0% — reproduced. CUDA functional=true, 8 devices.
-code_quality_policy_pass: R1 (root-cause diagnosis, tool-verified) — PROVEN. Fix pending workflow.
+## FINDING (typed) — why nvidia-smi still reads ~0% during the search
+- claim: batched GF(2)-rank SCREENING is intrinsically GPU-light; GPU can't be saturated by it.
+- evidence (modality=Measurement): cuda_batched_rank wall time breakdown = host-pack 325 ms vs
+  GPU(transfer+kernel+back) 10.5 ms => GPU busy only 3.1% of wall time. And in the search, the
+  EXPENSIVE step is BP-OSD distance on CPU (~45-80 s/round) >> the GPU screen (~3 s).
+- status: [SOLID]. The kernel bug is FIXED (util when running = 98%, end-to-end 1.1x), but the GPUs
+  will keep reading ~0% during the search because there isn't enough GPU work in screening.
+- consequence: to actually saturate 8 A100s, the BP-OSD DISTANCE (belief propagation) must run on GPU.
+  That is the real "use the GPUs" fix (next iteration) — plus build packed circulant rows directly
+  (skip the dense UInt8 intermediate) to cut host-pack.
+
+## code_quality_policy_pass
+R2 (GPU kernel rewrite + threaded host pack, cross-validated vs CPU) -> PROVEN (kernel fix).
+GPU-saturation via GPU BP-OSD distance -> [FUTURE] (next iteration).
