@@ -43,6 +43,21 @@ the code families and the rate–distance frontier shape, but the paper's specif
 (weight-7 d=30, high-k d=8–14, PBB FOM-44) **require structured/catalog-derived constructions** — beyond
 generic blind seeds within pure-Julia.
 
+## Deepest result — WHY, and a pure-Julia fix (iter 18–19)
+Exercising the paper's core evolutionary method (`evolve_ansaetze`) revealed the unifying cause: its
+**BP-OSD fitness chases overestimates** (it evolved toward `[[144,32,22]]` FOM=107, a BP-OSD artifact;
+true d≈2). This is exactly why the paper added **MILP-exact distance in the loop** (Campaign 4). The fix,
+in pure Julia: an **`:isd` distance method** (Lee–Brickell ISD, a trustworthy tight upper bound) wired
+into `evaluate_css` + `ansatz_fitness`/`evolve_ansaetze`. Verified — the same evolution now values
+`[[144,32,2]]` at FOM=0.9 instead of 107, no longer chasing the artifact. Blind evolutionary search now
+optimizes a trustworthy distance.
+
+## Clear prioritized next step (within constraints; deferred to user)
+**Parallelize `evolve_ansaetze` + run the ISD-fitness evolution at scale** over the paper's lattices.
+The fix is in place and verified at minimal scale; the only remaining blocker is that `evolve_ansaetze`
+is single-threaded and times out at 4 lattices — a tooling/parallelization task. This is the single most
+promising avenue for blind discovery to approach the paper's frontier without relaxing any constraint.
+
 ## Two package bugs found + fixed (root-caused, regression-tested, ported)
 1. BZ closure-boxing OOM (uncatchable crash on high-weight codes) → allocation-free kernels.
 2. DEDUP per-checkpoint `canonical_hash` stall → cheap representation-level distinct signature.
