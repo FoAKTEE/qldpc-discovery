@@ -1,16 +1,14 @@
 # Definitive discovered frontier — blind-zero (consolidated, honesty-ordered)
 
-Best code per (n,k) across all blind campaigns (scan/broadened/high-k/evolved). Ordered by
-TRUST, not raw FOM: EXACT certificates first, then ISD-tight upper bounds, then BP-OSD-tightened
-upper bounds (which MAY still overestimate — they predate the ISD refuter). Raw uncertified scan
-bounds excluded. Paper comparison is post-hoc.
+Best code per (n,k) across ALL blind campaigns (scan/broadened/high-k/evolved incl. the iter30
+SOUND-fitness honest evolution). Ordered by TRUST: EXACT certificates first, then ISD-tight upper
+bounds, then BP-OSD-tightened upper bounds.
 
-**iter26 caveat:** the EXACT section is the genuinely verified frontier. UPPER-BOUND sections (ISD-tight,
-BP-OSD-tightened) can OVERESTIMATE — ISD at low iters undertrains for high-k codes (verified: the
-long-run headline [[360,80,8]] FOM=14.2 was RETRACTED to d=2 by ISD@3000). Treat high-k upper-bound
-entries as preliminary pending high-iter re-certification. No blind code is a certified beat of the paper.
+**iter26/30 caveat:** the EXACT section is the genuinely verified frontier. Upper-bound sections
+can overestimate; the iter30 honest evolution (sound k-scaled+capped ISD fitness) yields max
+FOM 5.78 with NO artifacts — no blind code is a certified beat of the paper.
 
-1555 distinct (n,k); 423 EXACT, 26 ISD-tight, 1106 BP-OSD-tightened.
+1556 distinct (n,k); 423 EXACT, 33 ISD-tight, 1100 BP-OSD-tightened.
 
 ## Verified frontier — EXACT (Brouwer–Zimmermann / enumeration gap=0)
 
@@ -47,32 +45,32 @@ entries as preliminary pending high-iter re-certification. No blind code is a ce
 | [[30,4,6]] | 4.8 | certified.md |
 | [[60,8,6]] | 4.8 | certified.md |
 
-## ISD-tight upper bounds (trustworthy; blind evolution, refute overestimates)
+## ISD-tight upper bounds (blind evolution; iter30 = sound capped fitness, validated honest)
 
 | [[n,k,d]] | FOM | source |
 |---|---|---|
-| [[288,90,4]] | 5.0 | evolved |
-| [[288,8,12]] | 4.0 | evolved |
-| [[360,4,18]] | 3.6 | evolved |
-| [[288,16,8]] | 3.6 | evolved |
-| [[288,108,3]] | 3.4 | evolved |
-| [[288,58,4]] | 3.2 | evolved |
-| [[360,8,12]] | 3.2 | evolved |
-| [[360,70,4]] | 3.1 | evolved |
-| [[288,50,4]] | 2.8 | evolved |
-| [[360,108,3]] | 2.7 | evolved |
-| [[288,48,4]] | 2.7 | evolved |
-| [[360,52,4]] | 2.3 | evolved |
-| [[288,68,3]] | 2.1 | evolved |
-| [[288,150,2]] | 2.1 | evolved |
-| [[360,186,2]] | 2.1 | evolved |
-| [[144,2,12]] | 2.0 | evolved |
-| [[288,64,3]] | 2.0 | evolved |
-| [[288,2,16]] | 1.8 | evolved |
-| [[288,32,4]] | 1.8 | evolved |
-| [[360,136,2]] | 1.5 | evolved |
+| [[288,104,4]] | 5.8 | evolved_frontier_honest |
+| [[360,128,4]] | 5.7 | evolved_frontier_honest |
+| [[360,80,5]] | 5.6 | evolved_frontier_honest |
+| [[288,90,4]] | 5.0 | evolved_frontier |
+| [[288,78,4]] | 4.3 | evolved_frontier_honest |
+| [[288,8,12]] | 4.0 | evolved_frontier |
+| [[360,4,18]] | 3.6 | evolved_frontier |
+| [[288,16,8]] | 3.6 | evolved_frontier |
+| [[288,108,3]] | 3.4 | evolved_frontier |
+| [[288,58,4]] | 3.2 | evolved_frontier |
+| [[360,8,12]] | 3.2 | evolved_frontier |
+| [[360,70,4]] | 3.1 | evolved_frontier |
+| [[360,16,8]] | 2.8 | evolved_frontier_honest |
+| [[288,50,4]] | 2.8 | evolved_frontier |
+| [[360,108,3]] | 2.7 | evolved_frontier |
+| [[288,48,4]] | 2.7 | evolved_frontier |
+| [[360,52,4]] | 2.3 | evolved_frontier |
+| [[288,68,3]] | 2.1 | evolved_frontier |
+| [[288,150,2]] | 2.1 | evolved_frontier |
+| [[360,186,2]] | 2.1 | evolved_frontier |
 
-## BP-OSD-tightened upper bounds (UNCERTIFIED — may overestimate; predate the ISD refuter)
+## BP-OSD-tightened upper bounds (UNCERTIFIED — may overestimate)
 
 | [[n,k,d]] | FOM | source |
 |---|---|---|
@@ -81,7 +79,6 @@ entries as preliminary pending high-iter re-certification. No blind code is a ce
 | [[336,20,26]] | 40.2 | certified.md |
 | [[280,12,30]] | 38.6 | certified_broadened.md |
 | [[600,16,38]] | 38.5 | certified.md |
-| [[288,12,30]] | 37.5 | certified_broadened.md |
 | [[780,16,42]] | 36.2 | certified.md |
 | [[336,12,31]] | 34.3 | certified_broadened.md |
 | [[686,12,44]] | 33.9 | certified.md |
@@ -91,3 +88,4 @@ entries as preliminary pending high-iter re-certification. No blind code is a ce
 | [[280,10,28]] | 28.0 | certified_broadened.md |
 | [[324,10,30]] | 27.8 | certified_broadened.md |
 | [[208,16,19]] | 27.8 | certified_broadened.md |
+| [[350,10,31]] | 27.5 | certified_broadened.md |
