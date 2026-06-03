@@ -70,3 +70,15 @@ needs iters SCALED to the code (k / codeword-space size), or a post-hoc high-ite
 headline codes (now possible: evolve_search.jl records A,B). The cross-axis conclusion STANDS and is
 reinforced: blind search recovers families + frontier shape but does NOT exceed the paper; apparent beats
 are overestimate/undertraining artifacts that skeptical high-iter verification correctly demotes.
+
+## iter28: k-scaled fitness is CORRECT but unbounded scaling is impractical for evolution (perf finding)
+Attempted a full validation evolution with the k-scaled fitness (gen=12, pop=14). It ran >27 min and was
+KILLED (confirmatory-only — the fix's CORRECTNESS is already unit-verified iter27: k=80 -> true d=2).
+FINDING: unbounded k-scaling (eff_iters = isd_iters*ceil(k/8)) makes the highest-k codes' ISD evals
+(k=160 -> 6000 iters on a codeword space of dim ~260) DOMINATE wall-time, and the per-generation
+@threads barrier serializes the whole population on those few stragglers (observed: down to 4 busy cores).
+So the fitness is trustworthy but the cost is dominated by ultra-high-k codes that are trivial (d=2) and
+uninteresting. PRODUCTION REFINEMENT (clear next step, not yet applied): bound the per-eval ISD cost — cap
+eff_iters, OR add a combo/time budget to min_distance_isd, OR cheaply reject ultra-high-rate codes
+(k/n above a threshold) before the costly ISD. Net: correctness done + verified; the scaled-fitness
+evolution needs a per-eval budget to be practical at high k.
