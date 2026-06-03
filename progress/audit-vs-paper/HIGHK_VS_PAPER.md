@@ -42,3 +42,19 @@ ISD demotes BP-OSD garbage to the true distance, e.g. [[360,160,156]] (BP-OSD d0
    factor products) to lift the high-k distance from 2 toward the paper's 4-8. Documented, not yet run.
 
 _Source: progress/blind-search-8gpu/{frontier_highk.md, certified_highk.md} (249 cells, 115 EXACT)._
+
+---
+
+## iter13 update: factored/mixed seeds lift high-k distance d=2 -> d=5
+
+Added factored A=(1+y^a)(1+x^j) + mixed univariate+diagonal seed families (random params; general
+algebraic, not catalog) to the high-k mode. Re-ran the campaign (934 cells, 344 EXACT) + ISD certify.
+
+RESULT: high-k distance lifted from d=2 (pure univariate) to **d=5** — now producing [[294,78,5]],
+[[336,72,5]], [[360,72,5]], [[288,48,5]] (k=48..78 at d=5, ISD upper bounds = real exhibited codes).
+
+vs paper high-k points: ours [[288,48,5]] vs paper [[288,50,8]] (right k, d=5<8); [[360,20,4]] vs
+[[360,20,14]] (d below). So the structural seeds recover the high-k REGIME at d=4-5, a genuine lift from
+d=2, but the paper's d=8-14 high-k codes use richer weight-8 cross-factored algebra beyond our generic
+factored/mixed families. Honest standing: k-axis fully recovered (k up to 160); high-k distance d=4-5
+(was 2); the paper's d=8-14 high-k optima remain the open structural frontier.

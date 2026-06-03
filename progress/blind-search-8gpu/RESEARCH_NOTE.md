@@ -102,5 +102,11 @@ seeds, no catalog. This is the held-out paper landmark recovered independently =
   use richer weight-8 cross-factored structure -> we reach the right (n,k) but lower d. progress/audit-vs-
   paper/HIGHK_VS_PAPER.md. Next lever (documented): higher-weight/factored high-k seeds. [SOLID]
 
+- iter13 (high-k distance lever): added factored A=(1+y^a)(1+x^j) + mixed seed families to OBJECTIVE=k
+  (generic algebraic, random params). Re-ran (934 cells, 344 EXACT) + ISD. LIFTED high-k distance d=2 ->
+  d=5: now [[294,78,5]], [[336,72,5]], [[288,48,5]] (k=48..78 at d=5). vs paper [[288,50,8]] (right k,
+  d=5<8). Honest: k-axis recovered + high-k d lifted 2->5; the paper's d=8-14 high-k codes use richer
+  weight-8 cross-factored algebra beyond our generic seeds — documented open structural frontier. [SOLID]
+
 ## Landmarks (post-hoc reference only; NOT used by the search)
 gross [[144,12,12]] (k=12,d=12) · [[72,12,6]] · [[288,24,12]]=gross+gross.
