@@ -116,12 +116,13 @@ end
 Uses the BP-OSD distance estimator with the trust filter (paper Campaigns 1-3 caveat: BP-OSD
 overestimates d for high-k codes, so reported codes are UPPER BOUNDS — verify via exact Stage-3
 before treating as discoveries). Returns (score, codes, n_lattices_with_code)."""
-function ansatz_fitness(ansatz::GeneratorAnsatz, lattices; time_limit::Real=2.0)
+function ansatz_fitness(ansatz::GeneratorAnsatz, lattices; time_limit::Real=2.0,
+                        distance_method::Symbol=:bposd, isd_iters::Int=600)
     codes = Any[]
     total = 0.0
     for (l, m) in lattices
         for (A, B) in generate(ansatz, l, m)
-            r = evaluate_css(l, m, A, B; distance_method=:bposd, time_limit=time_limit)
+            r = evaluate_css(l, m, A, B; distance_method=distance_method, time_limit=time_limit, isd_iters=isd_iters)
             if r.d !== nothing && r.trusted
                 push!(codes, r)
                 total += r.fom
@@ -137,13 +138,14 @@ Blind (random seeds). Returns (best_ansatz, best). The fitness uses BP-OSD dista
 — survivors MUST be passed through the exact Stage-3 (`evaluate_css(...; distance_method=:milp)`)
 before being treated as discoveries, exactly as the paper added MILP-in-the-loop for Campaigns 4-5."""
 function evolve_ansaetze(lattices; generations::Int=4, pop::Int=6, time_limit::Real=1.0,
-                         seed::Int=0, log=nothing)
+                         seed::Int=0, log=nothing, distance_method::Symbol=:bposd, isd_iters::Int=600)
     rng = Random.MersenneTwister(seed)
     say = log === nothing ? (_...) -> nothing : log
+    fit(a) = ansatz_fitness(a, lattices; time_limit=time_limit, distance_method=distance_method, isd_iters=isd_iters)
     population = Tuple{GeneratorAnsatz,Any}[]
     for _ in 1:pop
         a = random_ansatz(rng)
-        push!(population, (a, ansatz_fitness(a, lattices; time_limit=time_limit)))
+        push!(population, (a, fit(a)))
     end
     for g in 0:generations-1
         sort!(population; by=t -> t[2].score, rev=true)
@@ -154,7 +156,7 @@ function evolve_ansaetze(lattices; generations::Int=4, pop::Int=6, time_limit::R
         children = Tuple{GeneratorAnsatz,Any}[]
         for (a, _) in survivors
             child = mutate_ansatz(a, rng)
-            push!(children, (child, ansatz_fitness(child, lattices; time_limit=time_limit)))
+            push!(children, (child, fit(child)))
         end
         population = vcat(survivors, children)
     end
