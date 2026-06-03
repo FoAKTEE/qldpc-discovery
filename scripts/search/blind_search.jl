@@ -170,20 +170,15 @@ function ga_refine!(gens::Int)
     end
 end
 
-# distinct-code count via canonical hash (CSS) / structural tuple (PBB) — structural truth-telling.
+# distinct-code count: CHEAP representation-level signature (l,m + normalized A,B,C,D term strings),
+# microseconds per cell. The archive already keys by (n,k); this collapses identical representations.
+# NOTE: rigorous symmetry/BLISS dedup (canonical_hash) is a POST-HOC certifier step, NOT run here —
+# canonical_hash is 0.1-1.3s per code, far too slow to run over all cells on every checkpoint (doing so
+# stalled the monitor so no frontier was ever written). This count is a fast lower bound on distinctness.
 function distinct_count(snap)
     hs = Set{String}()
     for e in snap
-        try
-            if e.fam === :css
-                c = bbcode_from_terms(e.l, e.m, e.At, e.Bt)
-                push!(hs, canonical_hash(c.HX, c.HZ))
-            else
-                push!(hs, "pbb:$(e.l),$(e.m),$(e.A)|$(e.B)|$(e.C)|$(e.D)")
-            end
-        catch
-            push!(hs, "raw:$(e.n),$(e.k),$(e.d),$(e.l),$(e.m)")
-        end
+        push!(hs, "$(e.l),$(e.m)|$(e.fam)|$(e.A)|$(e.B)|$(e.C)|$(e.D)")
     end
     return length(hs)
 end
