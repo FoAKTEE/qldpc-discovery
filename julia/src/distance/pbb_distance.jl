@@ -40,17 +40,52 @@ end
 G a 2k×2n F(2) basis) that is NOT in `rowspace(S)` — i.e. a genuine logical — by Brouwer–Zimmermann
 enumeration. `U2 = nullspace(S)` (over F(2)^{2n}) certifies non-membership: (a|b) ∉ rowspace(S) ⟺
 U2·(a|b) ≠ 0. Returns `(d, certified, enumerated)`; stops (uncertified) at `cap` combinations."""
+# Allocation-free per-weight scan (extracted from a closure to avoid captured-variable boxing — see
+# the note on `_bz_scan_weight!` in distance_exact.jl). Updates best symplectic weight; honors `cap`.
+function _bz_scan_weight_symp!(acca::Vector{_W}, accb::Vector{_W},
+                               arows::Vector{Vector{_W}}, brows::Vector{Vector{_W}},
+                               Ua::Vector{Vector{_W}}, Ub::Vector{Vector{_W}},
+                               κ::Int, w::Int, best::Int, cap::Int, nw::Int)
+    enumerated = 0
+    combo = collect(1:w)
+    while true
+        enumerated += 1
+        fill!(acca, zero(_W)); fill!(accb, zero(_W))
+        @inbounds for r in combo
+            ar = arows[r]; br = brows[r]
+            for t in 1:nw
+                acca[t] ⊻= ar[t]
+                accb[t] ⊻= br[t]
+            end
+        end
+        wt = _symp_weight(acca, accb)
+        if wt < best && _is_symp_logical(acca, accb, Ua, Ub)
+            best = wt
+        end
+        enumerated >= cap && return (best, enumerated, true)
+        i = w
+        @inbounds while i >= 1 && combo[i] == κ - w + i
+            i -= 1
+        end
+        i == 0 && return (best, enumerated, false)
+        @inbounds combo[i] += 1
+        @inbounds for j in i+1:w
+            combo[j] = combo[j-1] + 1
+        end
+    end
+end
+
 function _bz_min_symplectic(G::Matrix{UInt8}, U2::Matrix{UInt8}, n::Int; cap::Int=50_000_000)
     Gr, pivots = rref(G)                 # systematic form; pivot columns = the information set
     κ = length(pivots)
     twon = size(G, 2)                    # = 2n
     nw = _nwords(n)                       # words per HALF (n bits), not 2n
     # Split each RREF generator row into its X-half (cols 1:n) and Z-half (cols n+1:2n), packed.
-    arows = [_pack(view(Gr, i, 1:n), nw)        for i in 1:κ]
-    brows = [_pack(view(Gr, i, (n+1):twon), nw) for i in 1:κ]
+    arows = Vector{_W}[_pack(view(Gr, i, 1:n), nw)        for i in 1:κ]
+    brows = Vector{_W}[_pack(view(Gr, i, (n+1):twon), nw) for i in 1:κ]
     # Membership-certificate rows U2 likewise split into halves (length-2n vectors).
-    Ua = [_pack(view(U2, i, 1:n), nw)        for i in 1:size(U2, 1)]
-    Ub = [_pack(view(U2, i, (n+1):twon), nw) for i in 1:size(U2, 1)]
+    Ua = Vector{_W}[_pack(view(U2, i, 1:n), nw)        for i in 1:size(U2, 1)]
+    Ub = Vector{_W}[_pack(view(U2, i, (n+1):twon), nw) for i in 1:size(U2, 1)]
     best = n + 1
     enumerated = 0
     acca = zeros(_W, nw)
@@ -59,22 +94,10 @@ function _bz_min_symplectic(G::Matrix{UInt8}, U2::Matrix{UInt8}, n::Int; cap::In
     while w <= κ
         lb = (w + 1) >> 1                # ⌈w/2⌉ lower bound on symplectic weight at info-weight w
         lb >= best && return (d=best, certified=true, enumerated=enumerated)
-        capped = _each_combination(κ, w) do combo
-            enumerated += 1
-            fill!(acca, zero(_W)); fill!(accb, zero(_W))
-            @inbounds for r in combo
-                ar = arows[r]; br = brows[r]
-                for t in 1:nw
-                    acca[t] ⊻= ar[t]
-                    accb[t] ⊻= br[t]
-                end
-            end
-            wt = _symp_weight(acca, accb)
-            if wt < best && _is_symp_logical(acca, accb, Ua, Ub)
-                best = wt
-            end
-            return enumerated >= cap
-        end
+        remaining = cap - enumerated
+        remaining <= 0 && return (d=best, certified=false, enumerated=enumerated)
+        best, e, capped = _bz_scan_weight_symp!(acca, accb, arows, brows, Ua, Ub, κ, w, best, remaining, nw)
+        enumerated += e
         capped && return (d=best, certified=false, enumerated=enumerated)
         # After info-weight w, unfound logicals have symplectic weight ≥ ⌈(w+1)/2⌉.
         ((w + 2) >> 1) >= best && return (d=best, certified=true, enumerated=enumerated)

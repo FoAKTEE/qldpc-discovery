@@ -27,27 +27,49 @@ function _each_combination(f, n::Int, w::Int)
 end
 
 """Minimum weight (1..max_weight) of a vector in ker(`checks`) over F(2) that is NOT in
-rowspace(`stab`). Returns -1 if none exists at weight ≤ max_weight (distance exceeds the budget)."""
+rowspace(`stab`). Returns -1 if none exists at weight ≤ max_weight (distance exceeds the budget).
+
+Allocation-free hot loop: the in-kernel test is the F(2) parity of each check row over the `w` set
+columns (no per-combination matrix–vector product, which previously allocated a length-`size(checks,1)`
+array on EVERY combination), and the combination walk is inlined (no capturing closure to box)."""
 function min_weight_logical(checks::AbstractMatrix, stab::AbstractMatrix; max_weight::Int=6)
     n = size(checks, 2)
+    nrc = size(checks, 1)
     chk = Int.(checks)
-    found = Ref(-1)
     v = zeros(Int, n)
     for w in 1:max_weight
-        hit = _each_combination(n, w) do combo
-            fill!(v, 0)
-            @inbounds for idx in combo
-                v[idx] = 1
+        combo = collect(1:w)
+        while true
+            in_ker = true
+            @inbounds for r in 1:nrc                 # row r in kernel ⟺ parity over set columns is even
+                p = 0
+                for idx in combo
+                    p ⊻= chk[r, idx]
+                end
+                if (p & 1) != 0
+                    in_ker = false
+                    break
+                end
             end
-            in_ker = all(iszero, (chk * v) .% 2)
-            in_ker && !in_rowspace(stab, v)
-        end
-        if hit
-            found[] = w
-            break
+            if in_ker
+                fill!(v, 0)
+                @inbounds for idx in combo
+                    v[idx] = 1
+                end
+                in_rowspace(stab, v) || return w     # nontrivial logical of weight w
+            end
+            i = w                                     # advance to the next w-combination (lexicographic)
+            @inbounds while i >= 1 && combo[i] == n - w + i
+                i -= 1
+            end
+            i == 0 && break
+            @inbounds combo[i] += 1
+            @inbounds for j in i+1:w
+                combo[j] = combo[j-1] + 1
+            end
         end
     end
-    return found[]
+    return -1
 end
 
 """Exact CSS distance by minimum-weight logical search (pure Julia). Returns a NamedTuple

@@ -1,43 +1,41 @@
-# current_iter — 8-GPU blind search, iter 8 (overwrite-mode)
+# current_iter — iter 9: audit vs paper + pipeline broadening + BZ-boxing crash fix
 
 ## Anchor
-User: launch the full-coverage scan with PROPER FILTERS (codes like [[112,24,20]] are too-good-to-be-true
-BP-OSD overestimates); then, after the scan, launch the CERTIFIERS.
+User: compare blind-zero vs the bbc branch (paper arXiv:2606.02418 catalog + SOTA), audit the gap,
+write it to progress/, then make changes to the Julia AND Python pipelines accordingly.
+
+## PLAN
+Audit coverage + methodology + pipeline gaps via a 10-agent Workflow; implement the blind-safe,
+env-gated reach/certification changes the audit prioritizes.
 
 ## EDIT
-- RATE-AWARE trust filter (scripts/search/blind_search.jl): keep iff d/sqrt(n) < cap(k/n) with
-  cap = 1.8 (k/n<=0.06) / 1.4 (<=0.12) / 1.1 (>0.12). BP-OSD overestimates d MORE at high rate
-  (paper's finding); real high-rate codes obey the rate-distance tradeoff -> a high d/sqrt(n) at high
-  rate is an overestimate. Drops [[112,24,20]] (k/n=0.21, d/sqrt(n)=1.89). Frontier now records k/n;
-  added a machine-readable frontier.md.tsv sidecar (all cells) for the certifier.
-- CERTIFIER (scripts/search/certify.jl): per code, parallel — (1) high-effort BP-OSD (HITRIALS=300,
-  large max_iter) tightens the upper bound, exposing overestimates; (2) min_distance_bz EXACT for
-  small codes (n<=200). Writes certified.md showing d0(scan) -> d(certified) + EXACT/UB status.
+- AUDIT (progress/audit-vs-paper/AUDIT.md): paper does varying check weight (Campaign 4: weight 4-6),
+  structured patterns (XY/MX/SD), evolutionary campaigns, PBB (368/465 codes), BLISS dedup, MILP exact +
+  multi-decoder. We were fixed weight-3, uniform-random, BB-only, single BP-OSD. Honest: our high-FOM
+  large-n codes are UNCERTIFIED BP-OSD UBs; one solid claim = blind [[144,12,12]] rediscovery.
+- blind_search.jl: WMIN/WMAX (varying weight), MODE css|pbb|both, ANSATZ structured seeding, GENS GA
+  refinement, DEDUP canonical-hash distinct count, FIXLM deep single-lattice. ALL default to the
+  original fixed-weight-3 CSS random scan (prior run reproduces).
+- certify.jl: multi-seed BP-OSD + spread column, BZ-primary tightening, ENUM gated by ENUM_BUDGET, PBB
+  (symplectic exact) handling, 12-col TSV (back-compat with 8-col).
+- python/src/discovery/search.py (agent): weights= + dedup= parity on blind_search_css/_pbb. pytest 51
+  passed / 3 skipped (paper-catalog-gated).
 
-## VERIFY (TRF-R)
-- Filter smoke (-t 48,2, WALL=20): top frontier now ALL low-rate (k/n 0.006-0.067), no high-rate
-  overestimates; e.g. [[560,12,40]] k/n=0.021, [[180,12,18]] k/n=0.067. TSV sidecar: 101 rows. DONE exit 0.
+## PACKAGE BUG (package_debug_policy) — ROOT-CAUSED + FIXED
+Certifier OOM-crashed (exit 144, ~14e9 allocs, uncatchable C abort) on the new high-weight (8/9),
+high-κ (=80) n=144 codes. ROOT CAUSE: _bz_min_logical / _bz_min_symplectic / min_weight_logical ran
+their hot loops in `do`-block closures that captured-and-reassigned best/enumerated -> Julia BOXES
+them -> ~4.8 heap allocs PER COMBINATION (measured). `cap` bounded combinations, NOT memory -> GC death.
+FIX: extracted allocation-free kernels (_bz_scan_weight!, _bz_scan_weight_symp!) + inline F(2) parity
+in min_weight_logical (no per-combo matvec). Regression test julia/test/distance_alloc_regression_tests.jl
+(3 captured crashers; pins <0.5 allocs/combination + sane d). NOT a thread/cap workaround — root fix.
 
-## Status
-FULL scan DONE (bgvzl89jr exit 0): screened=183151 dist_evals=10913 cells=418 elapsed=619s,
-throughput ~296 cand/s on 200 cores. Top BP-OSD UB: [[336,20,32]] FOM60.95, [[780,16,50]] 51.28,
-[[720,16,48]] 51.20, [[528,16,40]] 48.48. Rate filter HELD: top frontier all low-rate (k/n<=0.06),
-no [[112,24,20]]-style overestimates survived. frontier.md (top 40) + frontier.md.tsv (all 418) written.
+## VERIFY (in flight: bg task b2i66o3dh)
+(A) full runtests.jl — correctness (BZ d=4 @ [[18,4,4]], certified d=6 @ [[72,12,6]] must still hold)
++ new alloc regression. (B) re-certify the 8 OOM-crashers — must complete + demote (d0~13-21 -> ~6).
+Default + all-flags search smoke already PASS (TEST1 reproduces weight-3 CSS; TEST2 shows wt 8/9, GA,
+distinct=8). PENDING: paste green test tail -> COMMIT blind-zero -> port package fix to main.
 
-CERTIFIER DONE (bfm56zivl exit 0): 418 certified, 39 EXACT (min_distance_bz gap=0), 379 UB, 0 err.
-Demoted overestimates ([[336,20,32]]->[[336,20,26]], [[528,16,40]]->[[528,16,28]], [[780,16,50]]->42).
-Top certified FOM: [[840,16,46]] 40.30, [[336,20,26]] 40.24, [[600,16,38]] 38.51. -> certified.md (full).
-Honest: scan d's are BP-OSD UPPER bounds (rate-filtered); certifier gives EXACT (small n) or tightened UB.
-code_quality_policy_pass: R1 (rate-aware filter + certifier pipeline) -> PROVEN.
-
-## VALIDATION (post-hoc, blind discipline honored)
-Blind search REDISCOVERED [[144,12,12]] (gross-code params) at (12,6) with a DIFFERENT poly pair than
-canonical; certifier d0=14 -> d=12. Held-out paper landmark reached blind => apparatus validated.
-
-## MISSION COMPLETE
-Scan + certify + record + validate all DONE. RESEARCH_NOTE.md updated with results. Committing blind-zero.
-
-## Port to main (DONE)
-Per user "make the same change of source code and script to main branch": ported bposd.jl heap-corruption
-fix + max_iter, CUDA warp kernel, threaded packing, regression test, blind_search.jl/certify.jl to main
-(90816c8). Verified on main: runtests.jl all PASS, regression 35/35, 0 failures. blind-zero pushed (af3f381).
+## STATUS
+Not complete — verification pending; then commit + port to main. completion_promise NOT emitted
+(extension scope active). code_quality_policy_pass: R2 (package hot-loop fix + regression) -> PENDING VERIFY.
