@@ -58,3 +58,13 @@ vs paper high-k points: ours [[288,48,5]] vs paper [[288,50,8]] (right k, d=5<8)
 d=2, but the paper's d=8-14 high-k codes use richer weight-8 cross-factored algebra beyond our generic
 factored/mixed families. Honest standing: k-axis fully recovered (k up to 160); high-k distance d=4-5
 (was 2); the paper's d=8-14 high-k optima remain the open structural frontier.
+
+## iter16 (firm conclusion): generic seeds cap at high-k d=4-5
+
+Tested weight-8 cross-factored constructions A=(1+x^j)(1+x^k)(1+y^a) (shared x-factor -> high k):
+best high-k(>=24) = [[288,112,4]] d=4. Combined with iter12 (univariate d=2) and iter13 (factored/mixed
+d=5), THREE generic structural families now bound the achievable high-k distance at d=4-5. The paper's
+d=8-14 high-k codes ([[288,50,8]], [[360,24,12]], [[360,20,14]]) require TARGETED weight-8 algebra that
+generic blind structural search does not reach. Honest conclusion: high-k AXIS fully recovered (k up to
+160), high-k DISTANCE capped at d=4-5 under blind generic seeds; closing to d=8 needs either the paper's
+specific (non-blind) constructions or a fundamentally smarter search — a genuine research frontier.
