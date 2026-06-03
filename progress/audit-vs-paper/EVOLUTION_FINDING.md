@@ -41,3 +41,17 @@ Blind evolution now explores the paper's weight-6/8 high-k regime with HONEST di
 at d=4 vs the paper's d=8. So the evolutionary method (the paper's own approach), run blind in pure Julia,
 reaches the right STRUCTURE but not the specific d=8 polynomials — the cross-axis finding now demonstrated
 by the method itself. Top FOM 5.0; the paper's FOM-20 needs longer evolution / the specific catalog polys.
+
+## iter25: long evolution (gen=30, ~13min) — promising high-k codes + ISD-iters convergence check
+Sustained run (gen=30, pop=20, ISD fitness, 8 paper lattices, -t 24): best score 155.4, 48 codes
+(evolved_frontier_long.tsv). Headline: [[360,80,8]] FOM=14.2 wt=12, [[360,80,6]] FOM=8.0, [[288,4,22]]
+FOM=6.7 — [[360,80,8]] would EXCEED the paper's high-k codes ([[288,50,8]] FOM 11.1) IF genuine.
+
+SKEPTICAL CHECK (does ISD-fitness exploit undertraining at high k?): on a pure-univariate k=80 code at
+n=360, ISD-d is STABLE at d=2 across 300/1500/6000 iters — ISD converges FAST for high-k, so it is NOT
+badly undertrained at k=80. This SUPPORTS the evolved [[360,80,8]] d=8 being a genuine ISD upper bound
+(the weight-12 factored structure can legitimately have higher distance than the weight-3 univariate's
+d=2). HONEST CAVEAT: it is still an ISD UPPER bound, and this run did not record the specific code's
+polynomials, so it is not yet INDEPENDENTLY re-certified (high-iter ISD / exact BZ). Fixed: evolve_search.jl
+now records A,B so future headline codes are verifiable. Status of [[360,80,8]] FOM=14.2: PROMISING /
+PRELIMINARY, pending independent re-certification — NOT a confirmed beat.

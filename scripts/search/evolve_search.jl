@@ -36,10 +36,14 @@ function main()
     r = evolve_ansaetze(lats; generations=GENERATIONS, pop=POP, time_limit=TIME_LIMIT,
                         seed=SEED, distance_method=METHOD, isd_iters=ISD_ITERS, log=println)
     codes = sort(r.best.codes, by=c -> -c.fom)
+    polystr(t) = isempty(t) ? "" : join(["x^$a*y^$b" for (a, b) in t], "+")
     open(OUT, "w") do io
-        println(io, "n\tk\td\tfom\twt\tl\tm")
+        # record A,B polynomials so headline codes are INDEPENDENTLY VERIFIABLE (high-iter ISD / exact BZ);
+        # the in-loop d is an ISD upper bound at ISD_ITERS — re-certify before treating as a discovery.
+        println(io, "n\tk\td\tfom\twt\tl\tm\tA\tB")
         for c in codes
-            @printf(io, "%d\t%d\t%d\t%.4f\t%d\t%d\t%d\n", c.n, c.k, c.d, c.fom, c.stab_weight, c.l, c.m)
+            @printf(io, "%d\t%d\t%d\t%.4f\t%d\t%d\t%d\t%s\t%s\n",
+                    c.n, c.k, c.d, c.fom, c.stab_weight, c.l, c.m, polystr(c.A), polystr(c.B))
         end
     end
     @printf("DONE: best score=%.1f over %d lattices; %d codes (ISD-trustworthy) -> %s\n",
