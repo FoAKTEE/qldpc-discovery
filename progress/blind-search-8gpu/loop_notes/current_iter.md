@@ -1,27 +1,26 @@
-# current_iter — 8-GPU blind search, iter 1 (overwrite-mode)
+# current_iter — 8-GPU blind search, iter 2 (overwrite-mode)
 
 ## Anchor
-Restore + audit + re-target the agentic management infra (.claude ralph loop + phys-agentic-loop) to
-manage the from-scratch 8-GPU blind BB-code search on blind-zero.
+User report: nvidia-smi shows all GPUs 0%. Investigate + debug why the GPUs aren't used.
 
-## Done this iter
-- Migrated the new parallel python/+julia/ package onto blind-zero (commit 7a014de).
-- Restored .claude from git history (d3c0a2b, pre-publication-cleanup).
-- AUDIT: the hook scripts (inject_infra.sh, inject_alignment.sh, ralph_stop_guard.sh, settings.json)
-  are GENERIC infra (read phys-agentic-loop + ralph state; no hardcoded mission) -> kept. The only
-  stale content was ralph-loop.local.md (held the finished Julia-migration mission, branch main,
-  iter 4) -> rewrote it for the 8-GPU blind-search mission (active:true, branch blind-zero,
-  promise QLDPC_BLINDZERO_8GPU_SEARCH_COMPLETE, blind_discovery_policy + gpu_policy).
-- Created progress/blind-search-8gpu/{RESEARCH_NOTE, frontier, loop_notes}.
+## Diagnosis (evidence, tool-verified)
+- CUDA.functional()=true, 8 devices visible, cuda_batched_rank runs on-device (mem allocates, ranks correct).
+- ROOT CAUSE: the batched GF(2) rank GPU kernel (ext/QCodeDiscoveryCUDAExt.jl) is ONE-THREAD-PER-MATRIX
+  (serial elimination per thread) -> near-zero A100 occupancy.
+- Benchmark (4000 random 144x288 GF(2) matrices, rank):
+    CPU batched_rank (256 threads): 300 ms/call
+    GPU cuda_batched_rank:          1361 ms/call   (~0% util)
+    => GPU is 0.22x CPU (~4.5x SLOWER) and effectively idle. ranks match (correct).
+- Secondary: the search's heavy cost is BP-OSD distance (CPU); GPU only screens. So GPUs help only if
+  (a) the screen kernel beats CPU AND screening volume is massive, or (b) distance also moves to GPU.
 
-## In flight
-- Workflow wl9x3o0ul (ultracode): building + validating the multi-GPU search driver on the 8 A100s
-  (scripts/search/gpu_blind_search.jl) + a demonstrator run. Loop will manage runs once it lands.
-
-## Next
-1. Land + validate the driver (GPU rank==CPU on all 8 devices; all 8 used).
-2. Run substantial blind search n<=1000; record frontier; certify best codes.
+## Fix (in flight)
+- Workflow wz2v59x93 (ultracode): rewrite the kernel for HIGH OCCUPANCY (block/warp per matrix,
+  cooperative bit-packed elimination) to beat the 256-core CPU at real util; shard across all 8 GPUs;
+  rework scripts/search/gpu_blind_search.jl to screen at massive scale on 8 GPUs + CPU distance on
+  survivors. Honesty clause: if GPU still can't beat 256-core CPU for this workload, report
+  cpu-is-better + recommend moving BP-OSD distance to GPU instead.
 
 ## Verifier
-(infra-only iter) .claude audited + re-targeted; phys-agentic-loop present.
-code_quality_policy_pass: R0 (infra restore/audit/re-target) — PROVEN.
+GPU-vs-CPU bench: 1361ms vs 300ms (0.22x), util ~0% — reproduced. CUDA functional=true, 8 devices.
+code_quality_policy_pass: R1 (root-cause diagnosis, tool-verified) — PROVEN. Fix pending workflow.
