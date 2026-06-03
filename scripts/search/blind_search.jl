@@ -35,7 +35,9 @@ const WMIN       = parse(Int, get(ENV, "WMIN", get(ENV, "WEIGHT", "3")))
 const WMAX       = parse(Int, get(ENV, "WMAX", get(ENV, "WEIGHT", "3")))
 const KMAX       = parse(Int, get(ENV, "KMAX", "300"))
 const MODE       = Symbol(get(ENV, "MODE", "css"))            # :css | :pbb | :both
+const OBJECTIVE  = Symbol(get(ENV, "OBJECTIVE", "fom"))       # :fom (FOM frontier) | :k (high-k campaign)
 const ANSATZ     = parse(Float64, get(ENV, "ANSATZ", "0.0"))  # fraction of CSS trials from structured ansatz
+const UNIVAR     = parse(Float64, get(ENV, "UNIVAR", OBJECTIVE === :k ? "0.8" : "0.0"))  # fraction of univariate (high-k) seeds
 const DEDUP      = get(ENV, "DEDUP", "0") == "1"
 const GENS       = parse(Int, get(ENV, "GENS", "0"))
 const FIXLM      = get(ENV, "FIXLM", "")
@@ -59,6 +61,16 @@ const SCREENED  = Threads.Atomic{Int}(0)
 const DISTEVALS = Threads.Atomic{Int}(0)
 
 polystr(terms) = isempty(terms) ? "" : join(["x^$a*y^$b" for (a, b) in terms], "+")
+
+# Univariate / CRT-family seed (A = 1 + y^a + y^2a, B = 1 + x^j + x^2j) with RANDOM a, j. A general
+# algebraic high-k family (lem:crt_k: k can be ~8l/3) — a structural prior, NOT the paper's catalog
+# (random parameters). These are high-rate, low-distance (UV pattern) — the high-k campaign's producer.
+function univariate_seed(l::Int, m::Int, rng)
+    a = rand(rng, 1:max(1, m - 1)); j = rand(rng, 1:max(1, l - 1))
+    A = [(0, 0), (0, mod(a, m)), (0, mod(2a, m))]
+    B = [(0, 0), (mod(j, l), 0), (mod(2j, l), 0)]
+    return A, B
+end
 
 # rate-aware d/sqrt(n) trust cap: BP-OSD overestimates d MORE at high rate (paper's signature
 # finding); a high d/sqrt(n) at high rate is almost surely an overestimate.
@@ -90,7 +102,9 @@ function eval_css(l, m, At, Bt, distseed)
     d = r.d_bound === nothing ? 0 : r.d_bound
     d <= 0 && return nothing
     dsn = d / sqrt(c.n)
-    dsn >= trust_cap(k / c.n) && return nothing
+    # FOM mode: drop high-rate BP-OSD overestimates. k mode (high-k campaign): keep all valid-k cells
+    # (high-k codes are low d/sqrt(n) anyway; the rate filter must not hide the k-axis).
+    OBJECTIVE !== :k && dsn >= trust_cap(k / c.n) && return nothing
     return (n=c.n, k=k, d=d, fom=fom(c.n, k, d), l=l, m=m, dsn=dsn,
             wt=stabilizer_weight(c), fam=:css,
             A=polystr(c.A), B=polystr(c.B), C="", D="",
@@ -129,6 +143,10 @@ function worker(wid::Int, t0::Float64)
                 Ct = random_polynomial(l, m, rand(rng, 0:PBB_PERT_W), rng)
                 Dt = random_polynomial(l, m, rand(rng, 0:PBB_PERT_W), rng)
                 cell = eval_pbb(l, m, At, Bt, Ct, Dt)
+            elseif UNIVAR > 0 && rand(rng) < UNIVAR
+                # univariate / CRT high-k seed (random params) — the high-k campaign's producer
+                At, Bt = univariate_seed(l, m, rng)
+                cell = eval_css(l, m, At, Bt, SCREENED[] * 131 + wid)
             elseif ANSATZ > 0 && rand(rng) < ANSATZ
                 # structured (generic-parameter) ansatz seed — encodes a STRUCTURAL prior, not catalog polys
                 pairs = generate(random_ansatz(rng), l, m)
@@ -185,7 +203,8 @@ end
 
 function write_frontier(elapsed::Float64)
     lock(GLOCK); snap = collect(values(GARCH)); unlock(GLOCK)     # snapshot under lock
-    elites = sort(snap, by=x -> -x.fom)
+    # FOM mode sorts by FOM; high-k campaign sorts by k (then FOM) so the high-rate codes surface.
+    elites = OBJECTIVE === :k ? sort(snap, by=x -> (-x.k, -x.fom)) : sort(snap, by=x -> -x.fom)
     ndist = DEDUP ? distinct_count(snap) : length(elites)
     open(OUT, "w") do io
         println(io, "# Discovered frontier — BLIND CPU search (blind-zero), n<=$NMAX  [LIVE: rewritten every $(CHECKPOINT)s]")

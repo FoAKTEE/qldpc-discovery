@@ -1,6 +1,6 @@
 ---
 active: true
-iteration: 10
+iteration: 12
 session_id: ""
 max_iterations: 300
 completion_promise: "QLDPC_BLINDZERO_8GPU_SEARCH_COMPLETE"
