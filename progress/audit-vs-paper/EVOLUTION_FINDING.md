@@ -32,3 +32,12 @@ value exactly. The paper's evolutionary method, done right in pure Julia (trustw
 parallelized), now produces honest blind discoveries. To approach the paper's higher-FOM codes
 ([[360,8,30]] FOM20), feed the evolution varying-weight / factored ansatze + more generations — a scaling
 run, no longer blocked by tooling or the overestimate failure mode.
+
+## iter22: sustained evolutionary run (driver scripts/search/evolve_search.jl) — at scale
+Ran the evolutionary driver (gen=14, pop=16, ISD fitness, 8 paper CSS lattices, -t 48, ~5 min, no
+timeout) -> best score 95.9, 46 ISD-trustworthy codes (progress/blind-search-8gpu/evolved_frontier.tsv).
+Blind evolution now explores the paper's weight-6/8 high-k regime with HONEST distances: [[288,90,4]] wt8,
+[[288,50,4]] wt8, [[288,48,4]] wt8 — the EXACT (n,k,weight) of the paper's [[288,50,8]]/[[288,48,8]], but
+at d=4 vs the paper's d=8. So the evolutionary method (the paper's own approach), run blind in pure Julia,
+reaches the right STRUCTURE but not the specific d=8 polynomials — the cross-axis finding now demonstrated
+by the method itself. Top FOM 5.0; the paper's FOM-20 needs longer evolution / the specific catalog polys.
