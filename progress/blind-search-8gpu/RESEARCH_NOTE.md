@@ -54,5 +54,25 @@ with a DIFFERENT polynomial pair (A=x+x^4y^5+x^10y, B=x^4y^5+x^5y^3+x^9y^4) than
 ("y+y^2+x^3","y^3+x+x^2"); certifier tightened scan d0=14 -> d=12. Reached blind from naive random weight-3
 seeds, no catalog. This is the held-out paper landmark recovered independently => apparatus validated.
 
+## iter9 — AUDIT vs paper (arXiv:2606.02418) + pipeline broadening + package crash fix
+- AUDIT (progress/audit-vs-paper/AUDIT.md, 10-agent workflow): the paper's SOTA needs VARYING check
+  weight (Campaign 4: weight 4-6 -> stab weight 8-12), structured patterns (XY/MX/SD), evolutionary
+  campaigns, the PBB non-CSS family (368/465 codes), BLISS dedup, MILP-exact + multi-decoder. Our blind
+  run was fixed weight-3, uniform-random, BB-only, single cheap BP-OSD -> structurally cannot reach the
+  weight-7/8/10 records or PBB. Honest: our high-FOM large-n codes are uncertified BP-OSD UBs; the one
+  solid claim remains the blind [[144,12,12]] rediscovery.
+- PIPELINE BROADENING (all env-gated; defaults reproduce the prior weight-3 CSS run). blind_search.jl:
+  WMIN/WMAX, MODE css|pbb|both, ANSATZ, GENS, DEDUP, FIXLM. certify.jl: multi-seed BP-OSD + spread,
+  BZ-primary tightening, ENUM gated by ENUM_BUDGET, PBB exact symplectic. python/src/discovery/search.py:
+  weights= + dedup= parity (pytest 51 pass/3 skip). [SOLID]
+- PACKAGE FIX (package_debug_policy): certify.jl OOM-crashed (exit 144, ~14e9 allocs, uncatchable) on
+  the new high-weight/high-κ n=144 codes. ROOT CAUSE: _bz_min_logical/_bz_min_symplectic/min_weight_logical
+  hot loops in `do`-closures boxed captured best/enumerated -> ~4.8 allocs/combination; `cap` bounded
+  combinations not memory -> GC death. FIX: allocation-free extracted kernels + inline F(2) parity;
+  regression test julia/test/distance_alloc_regression_tests.jl (3 captured crashers, <0.5 allocs/comb).
+  Verified: runtests all PASS (exit 0); correctness landmarks preserved (enum d=4, BZ certified d=6 @
+  [[72,12,6]]); certifier re-run on the 8 crashers completes + demotes ([[144,16,13]]->[[144,16,6]],
+  3 EXACT). Committed blind-zero 5fc00aa; package fix ported to main. [SOLID]
+
 ## Landmarks (post-hoc reference only; NOT used by the search)
 gross [[144,12,12]] (k=12,d=12) · [[72,12,6]] · [[288,24,12]]=gross+gross.
