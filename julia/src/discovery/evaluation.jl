@@ -104,8 +104,10 @@ function evaluate_css(l::Int, m::Int, A, B; distance_method::Symbol=:milp, time_
             # SCALE iters with k: at FIXED iters, ISD UNDERTRAINS for high-k codes (large codeword space)
             # and overestimates d, which an FOM-maximizing search EXPLOITS (iter26: [[360,80,8]] FOM=14.2
             # was a fixed-300-iter artifact, retracted to d=2 by enough iters). Scaling ~linearly in k
-            # keeps the fitness trustworthy across the rate range.
-            eff_iters = isd_iters * max(1, cld(k, 8))
+            # keeps the fitness trustworthy. CAPPED (iter29) so ultra-high-k evals don't dominate wall-time
+            # and stall the (barriered) evolution — the cap still covers the interesting k range; ISD finds
+            # the trivial weight-2 logicals of ultra-high-k codes well within it.
+            eff_iters = min(isd_iters * max(1, cld(k, 8)), isd_iters * 10)
             dres = min_distance_isd(code; iters=eff_iters, pmax=2)
             d = dres.d > 0 ? dres.d : nothing
             exact = false
