@@ -1,31 +1,31 @@
-# current_iter — iter 10: broadened-search validation (DONE) + a 2nd package-discipline fix
+# current_iter — iter 11: large-n exact-certification tool (ISD, user-requested #2)
 
 ## Anchor
-Validate iter9's pipeline broadening: run the broadened search in the paper's regime (n<=360) and test
-post-hoc whether varying weight + ansatz + GA recovers paper catalog codes the fixed-weight-3 run missed.
+User: "2 then 1, don't ask again" -> #2 large-n exact certification, then #1 high-k campaign.
 
-## EDIT/FIX (package_debug_policy, 2nd this session)
-The broadened run surfaced a 2nd bug: with DEDUP=1, write_frontier ran canonical_hash (BLISS, measured
-0.1-1.3s/code) over ALL cells EVERY checkpoint -> monitor stalled -> NO frontier ever written (looked
-hung). Root-caused (timed canonical_hash) + fixed: distinct_count now uses a cheap representation-level
-signature (microseconds); rigorous BLISS dedup deferred to a post-hoc step. Committed 54d7dca, ported
-to main a2b9f3e.
+## DESIGN (honest reconciliation)
+For BB CSS LOGICAL distance, dim ker(H_Z) = (n+k)/2 > n/2 -> only ONE information set fits -> the
+multi/overlapping-info-set BZ lower-bound improvement gives NOTHING (existing code comment confirms),
+and combinatorial enumeration hits C(kc,d) ~ 1e20 at n=288/d=16. True exact cert there needs an
+industrial MILP (paper's HiGHS) — precluded by the pure-Julia (no C/C++) constraint. So the honest,
+achievable, verifiable pure-Julia win is a TIGHT UPPER BOUND via Lee-Brickell information-set decoding:
+it finds low-weight logicals BP-OSD misses (refuting overestimates), and a found logical of weight w is
+an unconditional proof d<=w (UPPER bound, NOT a lower-bound certificate).
 
-## VERIFY (broadened run + certification)
-Run: CSS n<=360, WMIN3 WMAX5, ANSATZ0.3, GENS2, DEDUP1, -t128,2, WALL240 -> 177085 screened, 530 cells,
-distinct=530, weight diversity 6/7/8/9/10 (was uniformly 6). Certifier (light: SEEDS1 HITRIALS100 BZ_NMAX160)
--> 530 certified, 99 EXACT, ZERO crashes (at-scale proof of the BZ allocation-free fix — 530 high-weight
-n<=360 codes, exactly the class that OOM-crashed before iter9).
+## EDIT
+- julia/src/distance/isd.jl (NEW): _isd_min_logical + min_distance_isd (Lee-Brickell; random info set ->
+  systematic form -> enumerate row-combos size 1..pmax; reuses packed-GF(2) helpers). Exported.
+- scripts/search/certify.jl: ISD is now the PRIMARY upper-bound tightener (ISD_ITERS=1200, ISD_PMAX=2),
+  BP-OSD a cross-check (SEEDS default 1). BZ still the exact certifier where it completes.
+- julia/test/runtests.jl: ISD testset (finds [[18,4,4]]=4, [[72,12,6]]=6, gross [[144,12,12]]=12, never below).
 
-## RESULT (progress/audit-vs-paper/BROADENED_VS_PAPER.md)
-Paper CSS catalog coverage: 10/28 (n,k) points present; reached paper d (UB) at 6. KEY WINS the weight-3
-run could NOT reach: [[360,8,30]] d=32 UB (paper FOM-20 weight-7 code), [[144,8,12]] d=12 (weight-6 MX),
-[[288,8,20]], [[288,16,12]], [[288,14,12]]. GAPS: (a) all 18 missing are HIGH-k (k=24-54) codes — our
-rate filter + FOM bias suppresses them -> needs a separate high-k campaign; (b) large-n d are uncertified
-BP-OSD UBs (e.g. [[288,12,16]] ours d=30 vs paper-exact 16 = overestimate; needs MILP we lack). No
-certified beat on the paper's own n.
+## VERIFY
+runtests.jl all PASS (RUNTESTS_EXIT=0): ISD testset 4/4 (gross d=12 found in 2.1s — exact BZ CANNOT
+certify this), alloc regressions 12/12+2/2+3/3, exact-distance landmarks preserved (enum 4/4, BZ 3/3).
+DEMOTION DEMO: broadened [[288,12,30]] (BP-OSD d0=30 overestimate) -> ISD d=16 = the paper's exact
+catalog value for (288,12). ISD found the true weight-16 logical BP-OSD missed. [SOLID]
 
 ## STATUS
-iter10 COMPLETE: broadening validated (weight axis closes the high-d gap; high-k axis + large-n exact
-certification remain open + documented). Committing artifacts. Honest: this is a validation, not new
-SOTA. The user's explicit request (audit + pipeline changes) was delivered in iter9.
+#2 delivered (honest: tight UB / overestimate-refuter; exact cert stays BZ-where-feasible; MILP-grade
+large-n lower-bound cert acknowledged as the pure-Julia limit). Committing + porting to main. NEXT: #1
+high-k campaign (k-maximizing search mode to recover the paper's k=24-54 codes the rate filter suppresses).

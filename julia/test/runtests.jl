@@ -66,3 +66,14 @@ end
     g = min_distance_bz(c72; cap=20_000_000)
     @test g.certified && g.d == 6                         # CERTIFIED d=6 in pure Julia
 end
+
+@testset "ISD tight upper bound (Lee–Brickell; large-n overestimate refuter)" begin
+    # ISD must find a logical of EXACTLY the true distance (a valid upper bound) and NEVER below it
+    # (going below would mean a stabilizer was miscounted as a logical). The gross code's d=12 is the
+    # key case: exact Brouwer–Zimmermann cannot certify it (one info set), but ISD exhibits it in ~2s.
+    @test min_distance_isd(BBCode(3, 3, "1+x+y", "1+x^2+y^2"); iters=600, seed=1).d == 4   # [[18,4,4]]
+    @test min_distance_isd(BBCode(6, 6, "x^3+y+y^2", "y^3+x+x^2"); iters=1500, seed=1).d == 6  # [[72,12,6]]
+    gross = min_distance_isd(BBCode(12, 6, "y+y^2+x^3", "y^3+x+x^2"); iters=4000, seed=1)
+    @test gross.d == 12                                   # gross [[144,12,12]] — found as UB, BZ can't certify
+    @test gross.dX >= 12 && gross.dZ >= 12                # never below true distance (valid upper bounds)
+end

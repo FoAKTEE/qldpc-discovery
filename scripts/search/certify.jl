@@ -23,7 +23,9 @@ const IN        = get(ENV, "IN",  joinpath(@__DIR__, "frontier.md.tsv"))
 const OUT       = get(ENV, "OUT", joinpath(@__DIR__, "certified.md"))
 const HITRIALS  = parse(Int, get(ENV, "HITRIALS", "300"))
 const HIMAXITER = parse(Int, get(ENV, "HIMAXITER", "120"))
-const SEEDS     = parse(Int, get(ENV, "SEEDS", "3"))
+const SEEDS     = parse(Int, get(ENV, "SEEDS", "1"))
+const ISD_ITERS = parse(Int, get(ENV, "ISD_ITERS", "1200"))   # Lee–Brickell info-set decoding iterations
+const ISD_PMAX  = parse(Int, get(ENV, "ISD_PMAX", "2"))
 const ENUM_NMAX = parse(Int, get(ENV, "ENUM_NMAX", "360"))
 const ENUM_MAXW = parse(Int, get(ENV, "ENUM_MAXW", "8"))
 const ENUM_BUDGET = parse(Float64, get(ENV, "ENUM_BUDGET", "5e7"))  # max C(n,1..w) before skipping enum
@@ -53,11 +55,15 @@ end
 # total combinations C(n,1)+...+C(n,w) — gate the (expensive) column enumeration to a tractable budget.
 _enum_combos(n::Int, w::Int) = sum(Float64(binomial(big(n), j)) for j in 1:w)
 
-# CSS: tighten with multi-seed BP-OSD, then try to certify EXACT (Brouwer–Zimmermann / enumeration).
+# CSS: tighten the UPPER bound (ISD + BP-OSD), then try to certify EXACT (Brouwer–Zimmermann / enum).
 function certify_css(c::Cand)
     code = BBCode(c.l, c.m, c.A, c.B)
     ub = c.d0
-    for s in 1:SEEDS
+    # Lee–Brickell ISD: finds low-weight logicals BP-OSD misses -> the strongest UPPER-bound tightener,
+    # and the only thing that meaningfully demotes large-n overestimates (where exact BZ is infeasible).
+    isd = min_distance_isd(code; iters=ISD_ITERS, pmax=ISD_PMAX, seed=99)
+    isd.d > 0 && (ub = min(ub, isd.d))
+    for s in 1:SEEDS                                       # BP-OSD cross-check
         r = bposd_distance(code; trials=HITRIALS, max_iter=min(code.n, HIMAXITER), seed=12345 + 1009 * s)
         r.d_bound === nothing || (ub = min(ub, r.d_bound))
     end
