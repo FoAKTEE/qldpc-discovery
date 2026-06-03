@@ -25,3 +25,16 @@ paper's specific high-FOM optima (weight-7 d=30, high-k d=8-14, PBB FOM-44) requ
 constructions that are effectively catalog-derived — beyond generic blind seeds. The genuinely open
 levers (structured PBB seeding; MILP large-n exact cert) are research efforts requiring either
 constraint relaxation (pure-Julia -> MILP) or catalog-informed seeding (relaxing blind discipline).
+
+## iter32: commute-by-construction (C=A,D=B) — solves efficiency but yields trivial d=2 codes
+Tested the documented "commute-by-construction" PBB lever: C=A, D=B makes A C^T + B D^T = A A^T + B B^T,
+which is ALWAYS symmetric -> guaranteed commuting non-CSS PBB. Result: 400/400 built (100% commute rate,
+vs 0.07% for random C,D) and all non-CSS — so it FULLY solves the commutation-efficiency problem. BUT all
+codes are d=2 (best EXACT [[48,8,2]]): the "doubled" structure is too symmetric to carry distance.
+
+CLOSING the PBB lever honestly: BOTH generic approaches yield trivial PBB — random (A,B,C,D) is too sparse
+(0.07% commute, d=2 survivors) and commute-by-construction (C=A,D=B) is efficient but d=2. Non-trivial
+commuting PBB (the paper's FOM-44 [[360,10,40]] etc.) requires solving the commutation symmetry condition
+A C^T + B D^T = sym FOR GOOD (C,D) — exactly the hard structural problem the paper's evolutionary search
+solved. Generic structured PBB seeding does not straightforwardly reach it. Consistent with the cross-axis
+conclusion: blind/generic recovers the family; the paper's specific optima need targeted construction.
