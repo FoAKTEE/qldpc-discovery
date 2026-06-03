@@ -62,14 +62,28 @@ const DISTEVALS = Threads.Atomic{Int}(0)
 
 polystr(terms) = isempty(terms) ? "" : join(["x^$a*y^$b" for (a, b) in terms], "+")
 
-# Univariate / CRT-family seed (A = 1 + y^a + y^2a, B = 1 + x^j + x^2j) with RANDOM a, j. A general
-# algebraic high-k family (lem:crt_k: k can be ~8l/3) — a structural prior, NOT the paper's catalog
-# (random parameters). These are high-rate, low-distance (UV pattern) — the high-k campaign's producer.
-function univariate_seed(l::Int, m::Int, rng)
+# High-k structural seed families (RANDOM params; general algebraic priors, NOT the paper's catalog).
+# univariate (UV) gives high k but d=2; factored / mixed lift the high-k distance to d~4-5 (verified).
+function univariate_seed(l::Int, m::Int, rng)          # A=1+y^a+y^2a, B=1+x^j+x^2j (lem:crt_k; d=2)
     a = rand(rng, 1:max(1, m - 1)); j = rand(rng, 1:max(1, l - 1))
-    A = [(0, 0), (0, mod(a, m)), (0, mod(2a, m))]
-    B = [(0, 0), (mod(j, l), 0), (mod(2j, l), 0)]
+    return [(0, 0), (0, mod(a, m)), (0, mod(2a, m))], [(0, 0), (mod(j, l), 0), (mod(2j, l), 0)]
+end
+function factored_seed(l::Int, m::Int, rng)            # A=(1+y^a)(1+x^j), B=(1+y^2a)(1+x^2j) (high k, d~5)
+    a = rand(rng, 1:max(1, m - 1)); j = rand(rng, 1:max(1, l - 1))
+    A = [(0, 0), (mod(j, l), 0), (0, mod(a, m)), (mod(j, l), mod(a, m))]
+    B = [(0, 0), (mod(2j, l), 0), (0, mod(2a, m)), (mod(2j, l), mod(2a, m))]
     return A, B
+end
+function mixed_seed(l::Int, m::Int, rng)               # univariate + a diagonal cross term (high k, d~4)
+    a = rand(rng, 1:max(1, m - 1)); j = rand(rng, 1:max(1, l - 1))
+    A = [(0, 0), (0, mod(a, m)), (mod(j, l), mod(a, m))]
+    B = [(0, 0), (mod(j, l), 0), (mod(j, l), mod(a, m))]
+    return A, B
+end
+# Pick a high-k family at random (univariate for raw k, factored/mixed for k with d>=4).
+function highk_seed(l::Int, m::Int, rng)
+    r = rand(rng)
+    return r < 0.34 ? univariate_seed(l, m, rng) : (r < 0.67 ? factored_seed(l, m, rng) : mixed_seed(l, m, rng))
 end
 
 # rate-aware d/sqrt(n) trust cap: BP-OSD overestimates d MORE at high rate (paper's signature
@@ -144,8 +158,8 @@ function worker(wid::Int, t0::Float64)
                 Dt = random_polynomial(l, m, rand(rng, 0:PBB_PERT_W), rng)
                 cell = eval_pbb(l, m, At, Bt, Ct, Dt)
             elseif UNIVAR > 0 && rand(rng) < UNIVAR
-                # univariate / CRT high-k seed (random params) — the high-k campaign's producer
-                At, Bt = univariate_seed(l, m, rng)
+                # high-k structural seed (univariate | factored | mixed; random params) — the campaign's producer
+                At, Bt = highk_seed(l, m, rng)
                 cell = eval_css(l, m, At, Bt, SCREENED[] * 131 + wid)
             elseif ANSATZ > 0 && rand(rng) < ANSATZ
                 # structured (generic-parameter) ansatz seed — encodes a STRUCTURAL prior, not catalog polys
