@@ -27,11 +27,32 @@ to the gross/Bravyi families is POST-HOC only.
   screen wall time (host-pack 325 ms >> GPU 10.5 ms), and the search's heavy cost is CPU BP-OSD distance.
   Screening cannot saturate 8 A100s. => to truly use the GPUs, move BP-OSD DISTANCE to GPU. [FUTURE]
 
-## Next tactics
-1. Land + validate the multi-GPU driver (GPU rank == CPU on all 8 devices; all 8 used).
-2. Run a substantial from-scratch blind search over BB codes n<=1000; record the frontier.
-3. Certify the best frontier codes (min_distance_bz exact where feasible; else honest BP-OSD bound).
-4. Post-hoc: compare the frontier to known BB codes (gross family etc.) — AFTER recording.
+- iter4: package CRASH (SIGSEGV/SIGABRT on high-nullity codes) root-caused to `_independent_mod` heap
+  corruption (per-candidate growing-matrix vcat + full rref rebuild churned ~1MB arrays). FIXED in
+  julia/src/distance/bposd.jl (single-pass incremental reduced basis) + tunable `max_iter` + regression
+  test julia/test/bposd_regression_tests.jl (5 captured crashers, 35/35). Per package_debug_policy:
+  root-caused IN the package, NOT worked around. [SOLID]
+- iter5: continuous frontier checkpointing — monitor on :interactive threadpool (`-t 200,2`) rewrites
+  frontier.md + frontier.md.tsv every CHECKPOINT s so intermediate results stream out. [SOLID]
+- iter6: rate-aware trust filter (blind_search.jl) — cap d/sqrt(n) by k/n (1.8/1.4/1.1) to suppress
+  BP-OSD high-rate overestimates (paper's signature); drops [[112,24,20]]. [SOLID]
+- iter7: source + scripts ported to `main` (90816c8); runtests green there, regression 35/35. [SOLID]
+
+## RESULTS — full scan + certification (DONE)
+- **Scan** (-t 200,2, NMAX=1000, WALL=600s): screened=183151, dist_evals=10913, **418 frontier cells**,
+  ~296 cand/s. Rate filter held: top frontier all low-rate (k/n<=0.06).
+- **Certify** (-t 200, HITRIALS=300, HIMAXITER=120, BZ_NMAX=200): **418 certified, 39 EXACT**
+  (min_distance_bz gap=0), 379 tightened-UB, 0 err. High-effort BP-OSD demoted scan overestimates
+  (e.g. [[336,20,32]]->[[336,20,26]], [[528,16,40]]->[[528,16,28]], [[780,16,50]]->[[780,16,42]]).
+- Top certified by FOM: [[840,16,46]] UB 40.30 · [[336,20,26]] UB 40.24 · [[600,16,38]] UB 38.51.
+- Top EXACT certificates: [[56,6,8]] · [[70,6,8]] · [[42,6,6]] · [[84,12,6]] · [[60,8,6]] · [[72,8,6]].
+- Files: progress/blind-search-8gpu/{frontier.md, frontier.md.tsv (all 418), certified.md (full table)}.
+
+## POST-HOC VALIDATION (after recording — blind discipline honored)
+**The blind search independently REDISCOVERED [[144,12,12]]** — the gross code's parameters — at (l,m)=(12,6)
+with a DIFFERENT polynomial pair (A=x+x^4y^5+x^10y, B=x^4y^5+x^5y^3+x^9y^4) than the canonical
+("y+y^2+x^3","y^3+x+x^2"); certifier tightened scan d0=14 -> d=12. Reached blind from naive random weight-3
+seeds, no catalog. This is the held-out paper landmark recovered independently => apparatus validated.
 
 ## Landmarks (post-hoc reference only; NOT used by the search)
 gross [[144,12,12]] (k=12,d=12) · [[72,12,6]] · [[288,24,12]]=gross+gross.
