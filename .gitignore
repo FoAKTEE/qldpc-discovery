@@ -29,3 +29,6 @@ results/
 # --- Local methodology repo (not part of this package; tracked in its own repo) ---
 phys-agentic-loop/
 progress/
+
+# Julia package: do not commit the resolved manifest
+Manifest.toml
