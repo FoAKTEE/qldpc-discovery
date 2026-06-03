@@ -40,13 +40,22 @@ qcode-discover = "qcode_discovery.cli:discover_cmd"
 qcode-validate = "qcode_discovery.cli:validate_cmd"
 qcode-audit = "qcode_discovery.cli:audit_cmd"
 
-[tool.setuptools.packages.find]
-where = ["src"]
+# The package lives directly in src/ (one source folder, mirroring julia/src/) and is imported
+# as `qcode_discovery` via this package_dir mapping.
+[tool.setuptools]
+package-dir = { qcode_discovery = "src" }
+packages = [
+    "qcode_discovery",
+    "qcode_discovery.algebra",
+    "qcode_discovery.codes",
+    "qcode_discovery.distance",
+    "qcode_discovery.structure",
+    "qcode_discovery.discovery",
+]
 
 [tool.setuptools.package-data]
 qcode_discovery = ["py.typed"]
 
 [tool.pytest.ini_options]
-pythonpath = ["src"]
 testpaths = ["tests"]
-addopts = "-q"
+addopts = "-q"   # conftest.py registers qcode_discovery -> src/ for in-tree test runs

@@ -47,7 +47,7 @@ See **[examples/quickstart.py](examples/quickstart.py)** and **[docs/usage.md](d
 ## Repository layout
 
 ```
-src/qcode_discovery/   library: algebra · codes · distance · structure · discovery (+ cli)
+src/                   the qcode_discovery package: algebra · codes · distance · structure · discovery (+ cli)
 tests/                 test suite (kernel · discovery · CLI)
 docs/                  index, usage, architecture, REPORT, EXTENDING
 examples/              runnable quickstart

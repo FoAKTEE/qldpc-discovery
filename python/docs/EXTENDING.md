@@ -1,12 +1,12 @@
 # Extending qcode-discovery
 
 How to add to the package. The one hard rule: keep discovery **catalog-blind** — only
-`src/qcode_discovery/discovery/validation.py` may read a paper catalog, and only *post-hoc*.
+`src/discovery/validation.py` may read a paper catalog, and only *post-hoc*.
 
 ## Package layout (one kind per subpackage)
 
 ```
-src/qcode_discovery/
+src/
   algebra/     gf2, polynomials            GF(2) linear algebra; the ring R=F2[x,y]/(xˡ−1,yᵐ−1)
   codes/       bb_codes, pbb_codes,        BB (CSS) & PBB (non-CSS) construction; k, logicals, FOM;
                metrics, theorems           thm:ab_d2 / lem:crt_k witnesses
@@ -22,10 +22,10 @@ tests/         test_kernel, test_discovery, test_cli
 
 ## Add a kernel component (module)
 
-1. Create `src/qcode_discovery/<subpackage>/<name>.py`. The module docstring carries a **paper anchor**
+1. Create `src/<subpackage>/<name>.py`. The module docstring carries a **paper anchor**
    (`arXiv:2606.02418 §X`) and a **risk tier** (R0–R4). A discovery-path module imports only the
    kernel — never the catalog.
-2. Re-export the public symbols from `src/qcode_discovery/__init__.py` (`__all__`).
+2. Re-export the public symbols from `src/__init__.py` (`__all__`).
 3. Add a closed-loop test in `tests/test_*.py` — assert against an **independent method** where
    possible (e.g. MILP ↔ enumeration agreement), not just a golden value.
 4. Gate before committing: `python -m pytest -q` green **and** `qcode-audit` PASS (0 CRITICAL/HIGH).

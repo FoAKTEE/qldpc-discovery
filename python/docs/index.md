@@ -17,7 +17,7 @@ kernel admits them; the paper catalog is consulted only **post-hoc** as a held-o
 
 ## At a glance
 
-- Library: `src/qcode_discovery/` — `algebra · codes · distance · structure · discovery`.
+- Library: `src/` — `algebra · codes · distance · structure · discovery`.
 - Public API: `from qcode_discovery import BBCode, css_distance_milp, blind_search_css, validate, ...`
 - Tests: `python -m pytest -q` (54 tests; 3 skip without the paper catalog). Audit: `qcode-audit`.
 - Optional deps `[decoders]` (`ldpc`, `python-igraph`) unlock BP-OSD distance + exact BLISS dedup.

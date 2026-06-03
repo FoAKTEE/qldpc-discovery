@@ -1,9 +1,23 @@
 #!/usr/bin/env python3
-"""qcode_discovery quickstart — run with:  PYTHONPATH=src python examples/quickstart.py
+"""qcode_discovery quickstart.
 
-Shows the kernel (construct + verify) and a tiny BLIND discovery. The catalog is NEVER read here;
-validation against the paper is a separate, post-hoc step (`qcode-validate`).
+Run after `pip install .` (or `pip install -e .`), or directly from a checkout — this script
+bootstraps the package from ../src if it is not installed. Shows the kernel (construct + verify)
+and a tiny BLIND discovery; the catalog is NEVER read here (validation is a separate post-hoc step).
 """
+import importlib.util
+import sys
+from pathlib import Path
+
+try:
+    import qcode_discovery  # noqa: F401  (installed)
+except ModuleNotFoundError:                       # run from a checkout: bootstrap from ../src
+    _src = Path(__file__).resolve().parent.parent / "src"
+    _spec = importlib.util.spec_from_file_location(
+        "qcode_discovery", _src / "__init__.py", submodule_search_locations=[str(_src)])
+    sys.modules["qcode_discovery"] = importlib.util.module_from_spec(_spec)
+    _spec.loader.exec_module(sys.modules["qcode_discovery"])
+
 from qcode_discovery import (BBCode, css_k, fom, css_distance_milp, verify_ab_d2,
                              blind_search_css)
 
