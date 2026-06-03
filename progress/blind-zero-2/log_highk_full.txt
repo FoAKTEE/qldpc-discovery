@@ -1,0 +1,91 @@
+BLIND search: threads=191  MODE=css  NMAX=1000  |lattices|=1317  WALL=900s  wt=3..6  ansatz=0.00  gens=2  dedup=true  fixlm=-
+LIVE frontier -> progress/blind-zero-2/frontier_highk.md
+[t=  58s] screened=1202 dist_evals=237 cells=185  topFOM=24300.0  top=[[384,288,180]]
+[t=  87s] screened=1586 dist_evals=377 cells=332  topFOM=24300.0  top=[[384,288,180]]
+[t= 111s] screened=1915 dist_evals=525 cells=447  topFOM=24300.0  top=[[384,288,180]]
+[t= 134s] screened=2347 dist_evals=692 cells=555  topFOM=24300.0  top=[[384,288,180]]
+[t= 159s] screened=2881 dist_evals=874 cells=677  topFOM=24300.0  top=[[384,288,180]]
+[t= 183s] screened=3358 dist_evals=1037 cells=777  topFOM=24300.0  top=[[384,288,180]]
+[t= 207s] screened=3816 dist_evals=1199 cells=877  topFOM=24300.0  top=[[384,288,180]]
+[t= 230s] screened=4186 dist_evals=1327 cells=944  topFOM=24300.0  top=[[384,288,180]]
+[t= 254s] screened=4630 dist_evals=1495 cells=1020  topFOM=24300.0  top=[[384,288,180]]
+[t= 279s] screened=5100 dist_evals=1663 cells=1092  topFOM=24300.0  top=[[384,288,180]]
+[t= 304s] screened=5556 dist_evals=1830 cells=1170  topFOM=24300.0  top=[[384,288,180]]
+[t= 327s] screened=6055 dist_evals=2007 cells=1248  topFOM=25252.2  top=[[828,300,264]]
+[t= 351s] screened=6603 dist_evals=2182 cells=1323  topFOM=25252.2  top=[[828,300,264]]
+[t= 375s] screened=7130 dist_evals=2364 cells=1382  topFOM=25252.2  top=[[828,300,264]]
+[t= 400s] screened=7471 dist_evals=2503 cells=1425  topFOM=25252.2  top=[[828,300,264]]
+[t= 424s] screened=7840 dist_evals=2640 cells=1474  topFOM=25252.2  top=[[828,300,264]]
+[t= 448s] screened=8336 dist_evals=2805 cells=1516  topFOM=25252.2  top=[[828,300,264]]
+[t= 472s] screened=8720 dist_evals=2942 cells=1553  topFOM=25252.2  top=[[828,300,264]]
+[t= 496s] screened=9212 dist_evals=3130 cells=1613  topFOM=25252.2  top=[[828,300,264]]
+[t= 520s] screened=9680 dist_evals=3312 cells=1657  topFOM=25252.2  top=[[828,300,264]]
+[t= 544s] screened=10095 dist_evals=3473 cells=1700  topFOM=25252.2  top=[[828,300,264]]
+[t= 568s] screened=10552 dist_evals=3633 cells=1738  topFOM=25252.2  top=[[828,300,264]]
+[t= 591s] screened=11089 dist_evals=3816 cells=1778  topFOM=25636.2  top=[[828,300,266]]
+[t= 614s] screened=11526 dist_evals=3979 cells=1810  topFOM=25636.2  top=[[828,300,266]]
+[t= 638s] screened=12042 dist_evals=4162 cells=1854  topFOM=25636.2  top=[[828,300,266]]
+[t= 662s] screened=12530 dist_evals=4327 cells=1887  topFOM=25636.2  top=[[828,300,266]]
+[t= 686s] screened=12961 dist_evals=4492 cells=1921  topFOM=25636.2  top=[[828,300,266]]
+[t= 710s] screened=13461 dist_evals=4683 cells=1962  topFOM=25636.2  top=[[828,300,266]]
+[t= 734s] screened=13841 dist_evals=4836 cells=1994  topFOM=25636.2  top=[[828,300,266]]
+[t= 757s] screened=14306 dist_evals=4999 cells=2018  topFOM=25636.2  top=[[828,300,266]]
+[t= 781s] screened=14753 dist_evals=5161 cells=2033  topFOM=25636.2  top=[[828,300,266]]
+[t= 804s] screened=15176 dist_evals=5305 cells=2060  topFOM=25636.2  top=[[828,300,266]]
+[t= 828s] screened=15691 dist_evals=5482 cells=2092  topFOM=25636.2  top=[[828,300,266]]
+[t= 852s] screened=16200 dist_evals=5641 cells=2118  topFOM=25636.2  top=[[828,300,266]]
+[t= 876s] screened=16668 dist_evals=5818 cells=2135  topFOM=25636.2  top=[[828,300,266]]
+[t= 900s] screened=17227 dist_evals=5990 cells=2152  topFOM=25636.2  top=[[828,300,266]]
+[t= 922s] screened=17249 dist_evals=6126 cells=2172  topFOM=25636.2  top=[[828,300,266]]
+[t= 943s] screened=17249 dist_evals=6194 cells=2182  topFOM=25636.2  top=[[828,300,266]]
+[t= 964s] screened=17249 dist_evals=6393 cells=2245  topFOM=25636.2  top=[[828,300,266]]
+[t= 984s] screened=17249 dist_evals=6546 cells=2286  topFOM=25636.2  top=[[828,300,266]]
+[t=1005s] screened=17249 dist_evals=6720 cells=2326  topFOM=25636.2  top=[[828,300,266]]
+[t=1026s] screened=17249 dist_evals=6885 cells=2365  topFOM=25636.2  top=[[828,300,266]]
+[t=1049s] screened=17249 dist_evals=7046 cells=2404  topFOM=25636.2  top=[[828,300,266]]
+[t=1069s] screened=17249 dist_evals=7215 cells=2444  topFOM=25636.2  top=[[828,300,266]]
+[t=1090s] screened=17249 dist_evals=7352 cells=2474  topFOM=25636.2  top=[[828,300,266]]
+[t=1111s] screened=17249 dist_evals=7492 cells=2506  topFOM=25636.2  top=[[828,300,266]]
+[t=1132s] screened=17249 dist_evals=7627 cells=2538  topFOM=25636.2  top=[[828,300,266]]
+[t=1153s] screened=17249 dist_evals=7777 cells=2576  topFOM=25636.2  top=[[828,300,266]]
+[t=1173s] screened=17249 dist_evals=7919 cells=2604  topFOM=25636.2  top=[[828,300,266]]
+[t=1193s] screened=17249 dist_evals=8065 cells=2637  topFOM=25636.2  top=[[828,300,266]]
+[t=1213s] screened=17249 dist_evals=8138 cells=2661  topFOM=25636.2  top=[[828,300,266]]
+[t=1233s] screened=17249 dist_evals=8150 cells=2665  topFOM=25636.2  top=[[828,300,266]]
+[GA gen 1/2] cells=2665
+[t=1255s] screened=17249 dist_evals=8239 cells=2673  topFOM=25636.2  top=[[828,300,266]]
+[t=1275s] screened=17249 dist_evals=8391 cells=2688  topFOM=25636.2  top=[[828,300,266]]
+[t=1297s] screened=17249 dist_evals=8544 cells=2709  topFOM=25636.2  top=[[828,300,266]]
+[t=1317s] screened=17249 dist_evals=8713 cells=2739  topFOM=25636.2  top=[[828,300,266]]
+[t=1349s] screened=17249 dist_evals=8966 cells=2764  topFOM=25636.2  top=[[828,300,266]]
+[t=1370s] screened=17249 dist_evals=9112 cells=2779  topFOM=25636.2  top=[[828,300,266]]
+[t=1391s] screened=17249 dist_evals=9272 cells=2797  topFOM=25636.2  top=[[828,300,266]]
+[t=1412s] screened=17249 dist_evals=9415 cells=2815  topFOM=25636.2  top=[[828,300,266]]
+[t=1433s] screened=17249 dist_evals=9569 cells=2827  topFOM=25636.2  top=[[828,300,266]]
+[t=1454s] screened=17249 dist_evals=9749 cells=2847  topFOM=25636.2  top=[[828,300,266]]
+[t=1474s] screened=17249 dist_evals=9927 cells=2867  topFOM=25636.2  top=[[828,300,266]]
+[t=1495s] screened=17249 dist_evals=10090 cells=2888  topFOM=25636.2  top=[[828,300,266]]
+[t=1515s] screened=17249 dist_evals=10276 cells=2921  topFOM=25636.2  top=[[828,300,266]]
+[t=1536s] screened=17249 dist_evals=10486 cells=2936  topFOM=25636.2  top=[[828,300,266]]
+[t=1556s] screened=17249 dist_evals=10595 cells=2950  topFOM=25636.2  top=[[828,300,266]]
+[t=1576s] screened=17249 dist_evals=10619 cells=2957  topFOM=25636.2  top=[[828,300,266]]
+[GA gen 2/2] cells=2958
+[t=1583s] screened=17249 dist_evals=10626 cells=2958  topFOM=25636.2  top=[[828,300,266]]
+DONE: screened=17249  dist_evals=10626  cells=2958  elapsed=1583s  throughput=11 cand/s
+top frontier (CSS = BP-OSD upper bounds uncertified; PBB = exact symplectic):
+  [[828,300,266]] css wt=8 FOM=25636.23 (l=23,m=18) d/sqrt(n)=9.24
+  [[580,300,201]] css wt=4 FOM=20897.07 (l=29,m=10) d/sqrt(n)=8.35
+  [[840,296,259]] css wt=8 FOM=23638.07 (l=12,m=35) d/sqrt(n)=8.94
+  [[798,294,264]] css wt=8 FOM=25677.47 (l=21,m=19) d/sqrt(n)=9.35
+  [[846,294,267]] css wt=8 FOM=24774.19 (l=47,m=9) d/sqrt(n)=9.18
+  [[810,290,257]] css wt=8 FOM=23647.17 (l=15,m=27) d/sqrt(n)=9.03
+  [[384,288,180]] css wt=4 FOM=24300.00 (l=8,m=24) d/sqrt(n)=9.19
+  [[936,288,279]] css wt=8 FOM=23951.08 (l=12,m=39) d/sqrt(n)=9.12
+  [[828,288,262]] css wt=8 FOM=23876.17 (l=46,m=9) d/sqrt(n)=9.11
+  [[672,288,230]] css wt=8 FOM=22671.43 (l=12,m=28) d/sqrt(n)=8.87
+  [[648,288,216]] css wt=8 FOM=20736.00 (l=54,m=6) d/sqrt(n)=8.49
+  [[576,288,202]] css wt=8 FOM=20402.00 (l=24,m=12) d/sqrt(n)=8.42
+  [[480,288,184]] css wt=4 FOM=20313.60 (l=8,m=30) d/sqrt(n)=8.40
+  [[528,288,191]] css wt=4 FOM=19898.73 (l=8,m=33) d/sqrt(n)=8.31
+  [[540,288,188]] css wt=4 FOM=18850.13 (l=18,m=15) d/sqrt(n)=8.09
+wrote progress/blind-zero-2/frontier_highk.md

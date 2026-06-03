@@ -1,0 +1,2 @@
+BLIND search: threads=191  MODE=pbb  NMAX=1000  |lattices|=1317  WALL=600s  wt=3..3  ansatz=0.00  gens=0  dedup=false  fixlm=-
+LIVE frontier -> progress/blind-zero-2/frontier_pbb.md

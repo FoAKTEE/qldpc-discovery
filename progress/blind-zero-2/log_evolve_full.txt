@@ -1,0 +1,28 @@
+EVOLUTIONARY ansatz search: threads=191  gens=10  pop=16  method=isd  isd_iters=300  |lattices|=10
+  gen0: best score=28.92 over 9 lattices
+  gen1: best score=35.52 over 9 lattices
+  gen2: best score=38.22 over 9 lattices
+  gen3: best score=49.5 over 9 lattices
+  gen4: best score=49.5 over 9 lattices
+  gen5: best score=63.99 over 9 lattices
+  gen6: best score=63.99 over 9 lattices
+  gen7: best score=69.05 over 9 lattices
+  gen8: best score=69.05 over 9 lattices
+  gen9: best score=77.02 over 9 lattices
+DONE: best score=77.0 over 9 lattices; 36 codes (ISD-trustworthy) -> progress/blind-zero-2/evolved.tsv
+top evolved codes:
+  [[108,38,4]] FOM=5.6 wt=12
+  [[162,50,4]] FOM=4.9 wt=12
+  [[144,44,4]] FOM=4.9 wt=12
+  [[180,54,4]] FOM=4.8 wt=12
+  [[216,62,4]] FOM=4.6 wt=12
+  [[168,48,4]] FOM=4.6 wt=12
+  [[216,56,4]] FOM=4.1 wt=12
+  [[216,56,4]] FOM=4.1 wt=12
+  [[216,56,4]] FOM=4.1 wt=12
+  [[216,4,12]] FOM=2.7 wt=5
+  [[216,4,12]] FOM=2.7 wt=5
+  [[216,4,12]] FOM=2.7 wt=5
+  [[162,4,9]] FOM=2.0 wt=5
+  [[72,8,4]] FOM=1.8 wt=6
+  [[72,32,2]] FOM=1.8 wt=12

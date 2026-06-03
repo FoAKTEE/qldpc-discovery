@@ -94,3 +94,23 @@ loop** (the paper used MILP); certification compute, not the scan, decides what 
 `COVERAGE_TARGET.md` · `frontier_css.md(.tsv)` (562) · `frontier_highk.md(.tsv)` (3142) ·
 `frontier_pbb.md(.tsv)` (6) · `CERTIFIED_FOM_HI.md` (ISD@3000, 55) · `CERTIFIED_HIGHK.md` (51) ·
 `BEST_CODES.md` · certify logs `log_cert_*.txt`, `log_recert.txt`, `log_spot2.txt`.
+
+---
+## Update — dense second run (full 4 phases) + final certification
+
+A second, denser run completed all four phases cleanly (P1 CSS 477 cells, P2 high-k 2958, P3 PBB 6,
+P4 evolve 36) and was fully re-certified. It did not change any conclusion; it strengthened the evidence:
+
+- **Confirmed + extended the robust high-distance family** (ISD@3000, spread 0): `[[336,8,32]]` FOM 24.4,
+  `[[384,8,32]]` / `[[216,8,24]]` FOM 21.3, `[[264,10,22]]` FOM 18.3.
+- **Richer EXACT-certified frontier (19 codes).** The evolutionary phase's high-rate d=4 codes are
+  exactly provable: `[[180,54,4]]`, `[[162,50,4]]`, `[[144,44,4]]`, `[[108,38,4]]` — EXACT, **k up to 54**.
+- **High-k refuted identically:** `[[504,224,171]]→d=3`, `[[480,224,154]]→d=3`; max-rate `[[384,288,1]]` is d=1.
+- **Cross-run artifact confirmation:** this run's top-4 raw-FOM hits (`[[360,16,28]]`=34.8, `[[330,14,28]]`,
+  `[[324,12,29]]`, `[[220,10,26]]`) all collapsed under ISD@3000 to FOM 1.6–4.4. The same `[[360,8,32]]`
+  label was genuine (d=32) in run 1 but an artifact (d=22) here — only the certified polynomial is real.
+
+**CPU honesty:** the run used the 191-thread budget but a single `blind_search` process saturates only
+~45 cores (cheap-screen / expensive-distance imbalance); true 80%-CPU use needs data-parallel sharding
+(declined for this run). See `SYNTHESIS.md` for the integrative conclusions and `BEST_CODES.md` for the
+per-regime certified table.

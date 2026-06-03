@@ -1,0 +1,9 @@
+[19:23:58] P1 CSS FOM wt3-8 all-lattices WALL=1500 (dense)
+[19:52:09] P1 done rc=0
+[19:52:09] P2 high-k WALL=900 (clean)
+[20:18:36] P2 done rc=0
+[20:18:36] P3 PBB WALL=600
+/tmp/bz2_full.sh: line 15: 2243351 Killed                  MODE=pbb WMIN=3 WMAX=3 PBB_PERT_W=2 PBB_EXACT_NMAX=200 NMAX=1000 WALL=600 OUT=$O/frontier_pbb.md julia --project=julia -t $T scripts/search/blind_search.jl > $O/log_pbb_full.txt 2>&1
+[20:18:47] P3 done rc=0
+[20:18:47] P4 evolve SMALL lattices n<=216 (sound ISD completes) gens=10 pop=16
+[20:21:13] P4 done rc=0 — FULL RUN COMPLETE

@@ -1,0 +1,93 @@
+BLIND search: threads=191  MODE=css  NMAX=1000  |lattices|=1317  WALL=1500s  wt=3..8  ansatz=0.30  gens=3  dedup=true  fixlm=-
+LIVE frontier -> progress/blind-zero-2/frontier_css.md
+[t=  35s] screened=1631 dist_evals=154 cells=44  topFOM=12.0  top=[[128,6,16]]
+[t=  67s] screened=2155 dist_evals=259 cells=61  topFOM=28.8  top=[[168,10,22]]
+[t=  91s] screened=2715 dist_evals=373 cells=76  topFOM=28.8  top=[[168,10,22]]
+[t= 115s] screened=3388 dist_evals=522 cells=94  topFOM=28.8  top=[[168,10,22]]
+[t= 140s] screened=3986 dist_evals=646 cells=111  topFOM=28.8  top=[[168,10,22]]
+[t= 164s] screened=4704 dist_evals=797 cells=127  topFOM=28.8  top=[[168,10,22]]
+[t= 189s] screened=5115 dist_evals=898 cells=137  topFOM=28.8  top=[[168,10,22]]
+[t= 214s] screened=5713 dist_evals=1030 cells=155  topFOM=28.8  top=[[168,10,22]]
+[t= 239s] screened=6369 dist_evals=1165 cells=173  topFOM=28.8  top=[[168,10,22]]
+[t= 263s] screened=7065 dist_evals=1303 cells=179  topFOM=28.8  top=[[168,10,22]]
+[t= 287s] screened=7714 dist_evals=1441 cells=191  topFOM=28.8  top=[[168,10,22]]
+[t= 312s] screened=8195 dist_evals=1557 cells=204  topFOM=28.8  top=[[168,10,22]]
+[t= 336s] screened=8869 dist_evals=1691 cells=209  topFOM=28.8  top=[[168,10,22]]
+[t= 361s] screened=9534 dist_evals=1831 cells=219  topFOM=28.8  top=[[168,10,22]]
+[t= 385s] screened=10234 dist_evals=1956 cells=224  topFOM=28.8  top=[[168,10,22]]
+[t= 409s] screened=10795 dist_evals=2069 cells=230  topFOM=28.8  top=[[168,10,22]]
+[t= 435s] screened=11417 dist_evals=2201 cells=236  topFOM=28.8  top=[[168,10,22]]
+[t= 459s] screened=12091 dist_evals=2337 cells=244  topFOM=28.8  top=[[168,10,22]]
+[t= 484s] screened=12678 dist_evals=2456 cells=252  topFOM=28.8  top=[[168,10,22]]
+[t= 508s] screened=13256 dist_evals=2576 cells=255  topFOM=28.8  top=[[168,10,22]]
+[t= 532s] screened=13859 dist_evals=2723 cells=264  topFOM=28.8  top=[[168,10,22]]
+[t= 557s] screened=14579 dist_evals=2859 cells=270  topFOM=28.8  top=[[168,10,22]]
+[t= 581s] screened=15158 dist_evals=2980 cells=277  topFOM=28.8  top=[[168,10,22]]
+[t= 605s] screened=15814 dist_evals=3109 cells=287  topFOM=33.3  top=[[330,14,28]]
+[t= 629s] screened=16379 dist_evals=3225 cells=290  topFOM=33.3  top=[[330,14,28]]
+[t= 654s] screened=17114 dist_evals=3351 cells=296  topFOM=33.3  top=[[330,14,28]]
+[t= 678s] screened=17611 dist_evals=3466 cells=298  topFOM=33.3  top=[[330,14,28]]
+[t= 703s] screened=18238 dist_evals=3597 cells=307  topFOM=33.3  top=[[330,14,28]]
+[t= 727s] screened=18916 dist_evals=3732 cells=315  topFOM=33.3  top=[[330,14,28]]
+[t= 752s] screened=19529 dist_evals=3856 cells=320  topFOM=33.3  top=[[330,14,28]]
+[t= 777s] screened=20014 dist_evals=3963 cells=327  topFOM=33.3  top=[[330,14,28]]
+[t= 801s] screened=20657 dist_evals=4098 cells=327  topFOM=33.3  top=[[330,14,28]]
+[t= 826s] screened=21324 dist_evals=4244 cells=334  topFOM=33.3  top=[[330,14,28]]
+[t= 851s] screened=21846 dist_evals=4341 cells=340  topFOM=33.3  top=[[330,14,28]]
+[t= 875s] screened=22529 dist_evals=4477 cells=345  topFOM=33.3  top=[[330,14,28]]
+[t= 900s] screened=23328 dist_evals=4642 cells=351  topFOM=33.3  top=[[330,14,28]]
+[t= 924s] screened=23782 dist_evals=4741 cells=356  topFOM=33.3  top=[[330,14,28]]
+[t= 949s] screened=24344 dist_evals=4877 cells=361  topFOM=33.3  top=[[330,14,28]]
+[t= 973s] screened=25029 dist_evals=5011 cells=367  topFOM=33.3  top=[[330,14,28]]
+[t= 998s] screened=25623 dist_evals=5132 cells=369  topFOM=33.3  top=[[330,14,28]]
+[t=1023s] screened=26260 dist_evals=5256 cells=376  topFOM=33.3  top=[[330,14,28]]
+[t=1048s] screened=26760 dist_evals=5374 cells=377  topFOM=33.3  top=[[330,14,28]]
+[t=1072s] screened=27412 dist_evals=5499 cells=380  topFOM=33.3  top=[[330,14,28]]
+[t=1097s] screened=27990 dist_evals=5627 cells=382  topFOM=33.3  top=[[330,14,28]]
+[t=1122s] screened=28593 dist_evals=5748 cells=388  topFOM=33.3  top=[[330,14,28]]
+[t=1147s] screened=29166 dist_evals=5870 cells=393  topFOM=33.3  top=[[330,14,28]]
+[t=1171s] screened=29655 dist_evals=5983 cells=398  topFOM=33.3  top=[[330,14,28]]
+[t=1196s] screened=30272 dist_evals=6106 cells=399  topFOM=33.3  top=[[330,14,28]]
+[t=1221s] screened=30953 dist_evals=6232 cells=400  topFOM=33.3  top=[[330,14,28]]
+[t=1245s] screened=31531 dist_evals=6358 cells=406  topFOM=33.3  top=[[330,14,28]]
+[t=1270s] screened=32061 dist_evals=6481 cells=409  topFOM=33.3  top=[[330,14,28]]
+[t=1295s] screened=32555 dist_evals=6600 cells=410  topFOM=33.3  top=[[330,14,28]]
+[t=1320s] screened=33060 dist_evals=6710 cells=412  topFOM=33.3  top=[[330,14,28]]
+[t=1344s] screened=33531 dist_evals=6827 cells=416  topFOM=33.3  top=[[330,14,28]]
+[t=1369s] screened=34267 dist_evals=6983 cells=420  topFOM=33.3  top=[[330,14,28]]
+[t=1394s] screened=34742 dist_evals=7095 cells=422  topFOM=33.3  top=[[330,14,28]]
+[t=1419s] screened=35332 dist_evals=7217 cells=425  topFOM=33.3  top=[[330,14,28]]
+[t=1443s] screened=35865 dist_evals=7334 cells=426  topFOM=33.3  top=[[330,14,28]]
+[t=1468s] screened=36528 dist_evals=7449 cells=428  topFOM=33.3  top=[[330,14,28]]
+[t=1494s] screened=36999 dist_evals=7566 cells=432  topFOM=33.3  top=[[330,14,28]]
+[t=1517s] screened=37136 dist_evals=7687 cells=435  topFOM=33.3  top=[[330,14,28]]
+[t=1539s] screened=37136 dist_evals=7804 cells=436  topFOM=33.3  top=[[330,14,28]]
+[t=1559s] screened=37136 dist_evals=8091 cells=448  topFOM=33.3  top=[[330,14,28]]
+[GA gen 1/3] cells=451
+[t=1580s] screened=37136 dist_evals=8280 cells=454  topFOM=33.3  top=[[330,14,28]]
+[t=1601s] screened=37136 dist_evals=8486 cells=464  topFOM=33.3  top=[[330,14,28]]
+[t=1621s] screened=37136 dist_evals=8506 cells=464  topFOM=33.3  top=[[330,14,28]]
+[GA gen 2/3] cells=464
+[t=1641s] screened=37136 dist_evals=8773 cells=473  topFOM=34.8  top=[[360,16,28]]
+[t=1662s] screened=37136 dist_evals=8890 cells=477  topFOM=34.8  top=[[360,16,28]]
+[t=1682s] screened=37136 dist_evals=8893 cells=477  topFOM=34.8  top=[[360,16,28]]
+[GA gen 3/3] cells=477
+[t=1687s] screened=37136 dist_evals=8894 cells=477  topFOM=34.8  top=[[360,16,28]]
+DONE: screened=37136  dist_evals=8894  cells=477  elapsed=1687s  throughput=22 cand/s
+top frontier (CSS = BP-OSD upper bounds uncertified; PBB = exact symplectic):
+  [[360,16,28]] css wt=6 FOM=34.84 (l=12,m=15) d/sqrt(n)=1.48
+  [[330,14,28]] css wt=10 FOM=33.26 (l=15,m=11) d/sqrt(n)=1.54
+  [[324,12,29]] css wt=8 FOM=31.15 (l=18,m=9) d/sqrt(n)=1.61
+  [[220,10,26]] css wt=8 FOM=30.73 (l=2,m=55) d/sqrt(n)=1.75
+  [[168,10,22]] css wt=8 FOM=28.81 (l=6,m=14) d/sqrt(n)=1.70
+  [[546,10,39]] css wt=9 FOM=27.86 (l=13,m=21) d/sqrt(n)=1.67
+  [[768,12,42]] css wt=10 FOM=27.56 (l=16,m=24) d/sqrt(n)=1.52
+  [[288,8,30]] css wt=9 FOM=25.00 (l=48,m=3) d/sqrt(n)=1.77
+  [[336,8,32]] css wt=10 FOM=24.38 (l=28,m=6) d/sqrt(n)=1.75
+  [[640,8,44]] css wt=8 FOM=24.20 (l=8,m=40) d/sqrt(n)=1.74
+  [[192,8,24]] css wt=16 FOM=24.00 (l=24,m=4) d/sqrt(n)=1.73
+  [[432,8,36]] css wt=11 FOM=24.00 (l=27,m=8) d/sqrt(n)=1.73
+  [[196,8,24]] css wt=8 FOM=23.51 (l=14,m=7) d/sqrt(n)=1.71
+  [[352,8,32]] css wt=8 FOM=23.27 (l=8,m=22) d/sqrt(n)=1.71
+  [[360,8,32]] css wt=6 FOM=22.76 (l=12,m=15) d/sqrt(n)=1.69
+wrote progress/blind-zero-2/frontier_css.md

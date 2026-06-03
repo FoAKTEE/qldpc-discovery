@@ -44,13 +44,17 @@ fake in another:** run 1's `[[360,8,32]]` held to d = 32 at ISD@10000, while run
 information; only the certified polynomial does. Two independent runs, identical lesson: **the raw FOM
 ranking is dominated by overestimate artifacts, and only sparse low-rate high-distance codes survive proof.**
 
-## What is actually trustworthy, by tier
-- **Proven (EXACT, Brouwer–Zimmermann/enum gap = 0):** small n only — `[[32,14,4]]` (FOM 7), `[[96,16,4]]`,
-  `[[16,14,2]]`, plus exact-symplectic PBB up to `[[24,4,4]]`. Modest, but *certain*.
-- **Robust upper bounds (survive ISD@10000, not exact-provable at n≈360):** `[[336,8,32]]`,
-  `[[360,8,32]]`, `[[384,8,32]]` (FOM ≈ 21–24), `[[360,10,30]]` (FOM ≈ 25). The credible discoveries.
-- **Refuted (do not exist as claimed):** the high-k frontier (→ d 1–3) and many mid-FOM codes (→ 2–3×
-  smaller). These are the cautionary tale.
+## What is actually trustworthy, by tier  *(refreshed after the dense second run + final certification)*
+- **Proven (EXACT, Brouwer–Zimmermann/enum gap = 0) — 19 codes.** The dense run's evolutionary phase
+  contributed *higher-rate* EXACT codes (low distance is exactly provable): `[[108,38,4]]` (FOM 5.6),
+  `[[162,50,4]]`, `[[144,44,4]]`, `[[180,54,4]]` — **k up to 54**, plus small exact-symplectic PBB up to
+  `[[24,4,4]]`. Modest distance, but *certain*, and a much richer trustworthy set than run 1's tiny `[[32,14,4]]`.
+- **Robust upper bounds (sparse high-distance family; survive ISD@10000 in run 1, reconfirmed spread-0 at
+  ISD@3000 here):** `[[336,8,32]]` (FOM 24.4), `[[384,8,32]]` / `[[216,8,24]]` (21.3), `[[264,10,22]]`
+  (18.3). The credible high-distance discoveries — robust, not exact-provable at these n.
+- **Refuted (do not exist as claimed):** the entire high-k frontier (d₀ 154–290 → **d = 1–3**; max-rate
+  `[[384,288,1]]` is d=1) and the flashiest mid-FOM hits (run 2's top-4, FOM 31–35 → FOM 1.6–4.4). The
+  cautionary tale, now confirmed across two independent runs.
 
 ## Coverage — the search did span the claimed space
 All 1,317 lattices with 2lm ≤ 1000; weights 3–8; both FOM and high-k objectives; CSS and PBB families;

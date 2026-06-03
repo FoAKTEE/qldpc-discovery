@@ -1,0 +1,18 @@
+certifying 40 frontier codes (SEEDS=1 HITRIALS=80 HIMAXITER=120 ENUM<=6@n<=240 BZ_NMAX=160) on 191 threads
+DONE: 40 certified (0 EXACT); wrote progress/blind-zero-2/CERTIFIED_FINAL_HIGHK.md
+top certified:
+  [[480,224,3]] UB css  (scan d0=154, spread=151)  FOM=4.20
+  [[504,224,3]] UB css  (scan d0=171, spread=168)  FOM=4.00
+  [[504,216,3]] UB css  (scan d0=166, spread=163)  FOM=3.86
+  [[512,224,2]] UB css  (scan d0=178, spread=176)  FOM=1.75
+  [[384,288,1]] UB css  (scan d0=180, spread=179)  FOM=0.75
+  [[336,252,1]] UB css  (scan d0=159, spread=158)  FOM=0.75
+  [[420,280,1]] UB css  (scan d0=174, spread=173)  FOM=0.67
+  [[408,272,1]] UB css  (scan d0=167, spread=166)  FOM=0.67
+  [[384,240,1]] UB css  (scan d0=147, spread=146)  FOM=0.62
+  [[480,288,1]] UB css  (scan d0=184, spread=183)  FOM=0.60
+  [[460,276,1]] UB css  (scan d0=172, spread=171)  FOM=0.60
+  [[440,264,1]] UB css  (scan d0=172, spread=171)  FOM=0.60
+  [[420,252,1]] UB css  (scan d0=152, spread=151)  FOM=0.60
+  [[400,240,1]] UB css  (scan d0=152, spread=151)  FOM=0.60
+  [[380,228,1]] UB css  (scan d0=143, spread=142)  FOM=0.60
