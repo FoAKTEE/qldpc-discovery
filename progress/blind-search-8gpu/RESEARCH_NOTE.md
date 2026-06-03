@@ -108,5 +108,20 @@ seeds, no catalog. This is the held-out paper landmark recovered independently =
   d=5<8). Honest: k-axis recovered + high-k d lifted 2->5; the paper's d=8-14 high-k codes use richer
   weight-8 cross-factored algebra beyond our generic seeds — documented open structural frontier. [SOLID]
 
+- iter17 (PBB family): MODE=pbb exercised — 12 EXACT non-CSS codes (n<=168, d<=4), but blind random
+  (A,B,C,D) seeding is too sparse (~0.07% commute+nontrivial) to reach the paper's 32 structured PBB
+  points (headline [[360,10,40]] FOM44). progress/audit-vs-paper/PBB_VS_PAPER.md. [SOLID]
+- iter18 (evolutionary method = paper's core): evolve_ansaetze exercised. UNIFYING FINDING — it functions
+  but its BP-OSD FITNESS chases OVERESTIMATES (evolved "best" [[144,32,22]] FOM107 is a BP-OSD artifact,
+  true d~2). This is precisely why the paper used MILP-exact distance IN THE LOOP. Concrete fix available:
+  ISD-based fitness (iter11 tool) + parallelize evolve_ansaetze. progress/audit-vs-paper/EVOLUTION_FINDING.md.
+  [SOLID]
+
+## CROSS-AXIS CONCLUSION (iter9-18)
+Blind generic/random search recovers the code families + the rate-distance frontier SHAPE; the paper's
+specific high-FOM optima need STRUCTURED/catalog constructions (high-k d=8-14, PBB FOM-44) or MILP-grade
+exact distance (large-n cert, AND trustworthy search fitness — the evolution finding). Open levers all
+cross a user-set constraint (pure-Julia -> MILP; blind -> catalog-seeded; or the ISD-fitness build).
+
 ## Landmarks (post-hoc reference only; NOT used by the search)
 gross [[144,12,12]] (k=12,d=12) · [[72,12,6]] · [[288,24,12]]=gross+gross.
