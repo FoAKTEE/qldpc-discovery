@@ -1,27 +1,31 @@
-# current_iter — iter 12: high-k campaign (user #1) + result
+# current_iter — iter 14: attempted high-k d>=6; brute-force timed out -> d=5 stands; ARC CONCLUSION
 
 ## Anchor
-User #1 (after #2): recover the paper's high-k codes (k=24-54) the FOM-mode search missed (it maxed at
-k=20, ZERO cells k>=24 — random BB polys are high-rank -> low k).
+Loop-driven continuation of the documented high-k distance lever (iter13 lifted d=2->5; try d>=6 toward
+the paper's d=8 high-k codes, staying pure-Julia + blind).
 
-## EDIT (committed with the mode)
-blind_search.jl OBJECTIVE=fom|k. :k mode = univariate/CRT seeding (UNIVAR=0.8; A=1+y^a+y^2a, B=1+x^j+x^2j,
-RANDOM a,j — lem:crt_k family, NOT catalog), rate filter OFF, frontier sorted by k.
+## ATTEMPT + HONEST OUTCOME
+iter14 experiment: richer weight-6 factored families ((1+y^a+y2a)(1+x^j), etc.) scanned for k>=24, d>=6
+via ISD. TIMED OUT (250s, exit 143, no result) — ISD over weight-6 high-k codes (large k_code) at 400
+iters x hundreds of (family,lattice,param) combos does not scale by brute force. Signal: pushing high-k
+distance from d=5 -> d=8 has hit diminishing returns under generic structural search. The paper's d=8-14
+high-k codes use SPECIFIC weight-8 cross-factored algebra; recovering them needs targeted construction
+(or a smarter, cheaper search), not brute-force family scanning. The SOLID achieved result is iter13's
+d=2 -> d=5 lift ([[294,78,5]], [[336,72,5]], [[288,48,5]]), committed (5af1843 / main 9607413).
 
-## VERIFY (campaign + ISD certify)
-Campaign (OBJECTIVE=k, n<=360, WALL=90, cheap search d): 672411 screened, 249 cells, k=24..160 (FOM-mode
-maxed at 20). ISD certification (iter11 tool): 249 certified, 115 EXACT. ISD demotes the BP-OSD garbage
-these ultra-degenerate codes produce, e.g. [[360,160,156]] (BP-OSD d0=156) -> EXACT d=2.
+## ARC CONCLUSION (iter9-14)
+User's explicit request (audit + pipeline changes, iter9) DELIVERED + validated (iter10). Both prioritized
+gaps DELIVERED: #2 ISD large-n upper-bound refuter (iter11), #1 high-k campaign (iter12) + d-lift (iter13).
+Two package bugs root-caused+fixed+regression-tested+ported (BZ OOM, DEDUP stall). All committed on
+blind-zero + main. Records: progress/audit-vs-paper/{AUDIT,BROADENED_VS_PAPER,HIGHK_VS_PAPER}.md.
 
-## RESULT (progress/audit-vs-paper/HIGHK_VS_PAPER.md)
-- k-AXIS RECOVERED: produces k=24..160 at n<=360 (was impossible in FOM mode). The ISD tool is essential
-  (true d vs BP-OSD garbage).
-- BUT pure univariate is d=2 at extreme k; only k=24 reaches d=6-10 (UB). The paper's high-k codes (d=4-8:
-  [[144,54,4]], [[288,50,8]]) use RICHER weight-8 cross-factored structure than pure 3-term univariate.
-  So we reach the right (n,k) but LOWER d than the paper's high-k optima.
-- Next lever (documented, not run): higher-weight/factored high-k seeds to lift d from 2 toward 4-8.
+## OPEN FRONTIER (handed to user — genuine research decisions, not mechanical)
+1. MILP-grade large-n EXACT lower-bound cert (paper's HiGHS role) — needs relaxing pure-Julia (user's
+   firm constraint) or a pure-Julia MILP build (Tulip+B&B; major, uncertain payoff).
+2. Paper's d=8-14 high-k codes — need targeted weight-8 cross-factored construction; brute-force search
+   doesn't reach them cheaply.
 
 ## STATUS
-Both user asks delivered: #2 (ISD large-n upper-bound refuter, iter11) + #1 (high-k campaign, iter12).
-Honest: ISD refutes overestimates + the high-k axis is recovered (low d); full MILP-grade large-n exact
-cert and the paper's d=4-8 high-k optima remain documented open levers. Committing artifacts + porting.
+Pausing autonomous heavy-compute at this well-documented boundary. Everything requested is done +
+committed; the two open levers require user direction (relax pure-Julia? / invest in targeted high-k
+constructions?). Not setting active=false unilaterally — awaiting direction.
