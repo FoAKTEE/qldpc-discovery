@@ -60,15 +60,19 @@ See [`examples/quickstart.jl`](examples/quickstart.jl) and the CLI [`bin/qcode-d
 
 ```
 julia/
-  Project.toml            package + [weakdeps]/[extensions] for optional CUDA
-  src/QCodeDiscovery.jl    module (flat includes below)
-    gf2 · polynomials · codes · distance · distance_exact · theorems
-    pbb · pbb_distance · tanner · dedup · clifford · bposd · gpu · gpu_cuda
-    evaluation · search · evolve · validation
-  ext/QCodeDiscoveryCUDAExt.jl   GPU kernel (loaded only when CUDA.jl is present)
-  test/runtests.jl         55 tests (kernel + parity vs the Python reference)
-  examples/quickstart.jl
-  bin/qcode-discover.jl    CLI
+  Project.toml                  package + [deps] + [weakdeps]/[extensions] for optional CUDA
+  src/QCodeDiscovery.jl         module (includes the subpackages below, in dependency order)
+    algebra/    gf2.jl · polynomials.jl
+    codes/      codes.jl · pbb.jl · theorems.jl
+    distance/   distance.jl · distance_exact.jl · bposd.jl · pbb_distance.jl
+    structure/  tanner.jl · dedup.jl · clifford.jl
+    discovery/  evaluation.jl · search.jl · evolve.jl · validation.jl
+    parallel/   gpu.jl · gpu_cuda.jl
+  ext/QCodeDiscoveryCUDAExt.jl  GPU kernel (loaded only when CUDA.jl is present)
+  test/runtests.jl              55 tests (kernel + parity vs the Python reference)
+  examples/quickstart.jl        runnable script
+  examples/demo.ipynb           Jupyter (Julia kernel) usage demonstration
+  bin/qcode-discover.jl         CLI
 ```
 
 ## Test

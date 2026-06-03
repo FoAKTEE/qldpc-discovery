@@ -9,26 +9,26 @@ minimum-weight-logical search; the scalable solver and the BP-OSD decoder are st
 """
 module QCodeDiscovery
 
-include("gf2.jl")
-include("polynomials.jl")
-include("codes.jl")
-include("distance.jl")
-include("distance_exact.jl")
-include("theorems.jl")
-# migrated subsystems (wave 1) — pure Julia, no C/C++ (cross-validated vs the Python package)
-include("pbb.jl")          # PBB (non-CSS) construction + symplectic structure
-include("tanner.jl")       # Tanner-graph decomposability (union-find)
-include("dedup.jl")        # BLISS dedup -> pure-Julia individualization-refinement canonical form
-include("clifford.jl")     # LC-CSS equivalence (Hadamard 2-coloring + rank condition)
-include("bposd.jl")        # ldpc BP-OSD -> pure-Julia belief propagation + OSD
-include("gpu.jl")          # data-parallel GF(2) (threads + CUDA.jl path, CPU fallback)
-include("gpu_cuda.jl")     # GPU batched GF(2) rank (real CUDA kernel via ext/, A100-tested)
-# wave 2 — discovery pipeline + validation + PBB symplectic distance (pure Julia, no C/C++)
-include("evaluation.jl")   # staged evaluation cascade (k -> distance -> FOM)
-include("search.jl")       # blind search + MAP-Elites archive + GA
-include("evolve.jl")       # generator-ansatz program evolution
-include("validation.jl")   # post-hoc validation vs built-in landmark codes
-include("pbb_distance.jl") # PBB (non-CSS) exact symplectic distance (BZ; replaces HiGHS)
+# Source is organized into logical subpackages (mirroring the Python layout); files are included
+# in dependency order (everything lives in one flat module scope).
+include("algebra/gf2.jl")           # GF(2) rank / RREF / null space
+include("algebra/polynomials.jl")   # ring F2[x,y]/(xˡ−1,yᵐ−1) + circulants
+include("codes/codes.jl")           # BB (CSS) construction, k, FOM
+include("distance/distance.jl")          # enumeration distance
+include("distance/distance_exact.jl")    # Brouwer–Zimmermann certified exact distance (HiGHS replacement)
+include("codes/theorems.jl")        # thm:ab_d2, lem:crt_k witnesses
+include("codes/pbb.jl")             # PBB (non-CSS) construction
+include("structure/tanner.jl")      # Tanner-graph decomposability (union-find)
+include("structure/dedup.jl")       # BLISS dedup -> pure-Julia individualization-refinement canonical form
+include("structure/clifford.jl")    # LC-CSS equivalence (Hadamard 2-coloring + rank condition)
+include("distance/bposd.jl")        # ldpc BP-OSD -> pure-Julia belief propagation + OSD
+include("parallel/gpu.jl")          # data-parallel GF(2) (threads + CUDA.jl path, CPU fallback)
+include("parallel/gpu_cuda.jl")     # GPU batched GF(2) rank (real CUDA kernel via ext/, A100-tested)
+include("discovery/evaluation.jl")  # staged evaluation cascade (k -> distance -> FOM)
+include("discovery/search.jl")      # blind search + MAP-Elites archive + GA
+include("discovery/evolve.jl")      # generator-ansatz program evolution
+include("discovery/validation.jl")  # post-hoc validation vs built-in landmark codes
+include("distance/pbb_distance.jl") # PBB exact symplectic distance (BZ; replaces HiGHS)
 
 # GF(2) algebra
 export as_f2, rref, gf2_rank, nullspace_gf2, in_rowspace

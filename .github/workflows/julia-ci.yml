@@ -15,5 +15,7 @@ jobs:
       - uses: julia-actions/cache@v2
       - name: Instantiate
         run: julia --project=julia -e 'using Pkg; Pkg.instantiate()'
+      - name: Load (precompile the package as a user would)
+        run: julia --project=julia -e 'using QCodeDiscovery'
       - name: Test (pure Julia, CPU; CUDA extension is optional)
         run: julia --project=julia -t auto julia/test/runtests.jl
