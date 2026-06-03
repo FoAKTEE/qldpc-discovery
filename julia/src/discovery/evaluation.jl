@@ -101,7 +101,12 @@ function evaluate_css(l::Int, m::Int, A, B; distance_method::Symbol=:milp, time_
             # Lee–Brickell ISD: TIGHT upper bound that REFUTES BP-OSD overestimates -> a trustworthy
             # search fitness (BP-OSD fitness chases artifacts; see EVOLUTION_FINDING.md / the paper's
             # MILP-in-loop). Not a lower-bound certificate (exact=false).
-            dres = min_distance_isd(code; iters=isd_iters, pmax=2)
+            # SCALE iters with k: at FIXED iters, ISD UNDERTRAINS for high-k codes (large codeword space)
+            # and overestimates d, which an FOM-maximizing search EXPLOITS (iter26: [[360,80,8]] FOM=14.2
+            # was a fixed-300-iter artifact, retracted to d=2 by enough iters). Scaling ~linearly in k
+            # keeps the fitness trustworthy across the rate range.
+            eff_iters = isd_iters * max(1, cld(k, 8))
+            dres = min_distance_isd(code; iters=eff_iters, pmax=2)
             d = dres.d > 0 ? dres.d : nothing
             exact = false
         else   # :milp or :exact  -> pure-Julia exact certifier (replaces HiGHS C++ MILP)
