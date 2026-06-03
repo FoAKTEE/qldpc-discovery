@@ -49,6 +49,10 @@ function _emit(strategy::Dict{Symbol,Any}, l::Int, m::Int)
         j == 0 && (j = 1)
         A = [(0, 0), (0, mod(1, m)), (0, mod(2, m))]
         B = [(0, 0), (j, 0), (mod(2 * j, l), 0)]
+    elseif k === :factored                 # A=(1+y^a+..)(1+x^j): high-k, weight=2*yt (VARYING via yt)
+        yt = get(p, :yt, 2)                 # #y-powers in the first factor; product weight up to 2*yt
+        A = [(mod(xt * p[:j], l), mod(t * p[:a], m)) for t in 0:yt-1 for xt in 0:1]
+        B = [(mod(xt * p[:c], l), mod(t * p[:b], m)) for t in 0:yt-1 for xt in 0:1]
     elseif k === :custom                   # A,B as monomials with exponents expr(l,m)
         A = [(mod(_safe_expr(a, l, m), l), mod(_safe_expr(b, l, m), m)) for (a, b) in p[:A]]
         B = [(mod(_safe_expr(a, l, m), l), mod(_safe_expr(b, l, m), m)) for (a, b) in p[:B]]
@@ -84,6 +88,11 @@ function random_ansatz(rng::Random.AbstractRNG)
         push!(strategies, Dict{Symbol,Any}(:kind => :univariate,
                                            :params => Dict{Symbol,Any}(:j_num => rand(rng, 1:2), :j_den => 3)))
     end
+    if rand(rng) < 0.5                      # factored (high-k, varying weight via yt) — structural prior, blind
+        push!(strategies, Dict{Symbol,Any}(:kind => :factored,
+            :params => Dict{Symbol,Any}(:a => rand(rng, 1:6), :b => rand(rng, 1:6),
+                                        :j => rand(rng, 1:6), :c => rand(rng, 1:6), :yt => rand(rng, 2:3))))
+    end
     return GeneratorAnsatz(strategies)
 end
 
@@ -100,8 +109,9 @@ function mutate_ansatz(ansatz::GeneratorAnsatz, rng::Random.AbstractRNG)
         keys_list = collect(keys(s[:params]))
         key = rand(rng, keys_list)
         s[:params][key] = max(1, s[:params][key] + rand(rng, (-1, 1)))
-    elseif roll < 0.85                                     # add a strategy
-        push!(strat, random_ansatz(rng).strategies[1])
+    elseif roll < 0.85                                     # add a strategy (any kind: xyswap/univariate/factored)
+        na = random_ansatz(rng).strategies
+        push!(strat, na[rand(rng, 1:length(na))])
     elseif length(strat) > 1                               # remove a strategy
         deleteat!(strat, rand(rng, 1:length(strat)))
     end
