@@ -1,0 +1,1 @@
+EVOLUTIONARY ansatz search: threads=191  gens=12  pop=18  method=isd  isd_iters=300  |lattices|=12

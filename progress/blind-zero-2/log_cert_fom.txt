@@ -1,0 +1,18 @@
+certifying 108 frontier codes (SEEDS=1 HITRIALS=100 HIMAXITER=80 ENUM<=6@n<=288 BZ_NMAX=160) on 191 threads
+DONE: 108 certified (4 EXACT); wrote progress/blind-zero-2/CERTIFIED_FOM.md
+top certified:
+  [[588,14,42]] UB css  (scan d0=42, spread=0)  FOM=42.00
+  [[360,10,34]] UB css  (scan d0=34, spread=0)  FOM=32.11
+  [[616,10,44]] UB css  (scan d0=44, spread=0)  FOM=31.43
+  [[336,8,32]] UB css  (scan d0=32, spread=0)  FOM=24.38
+  [[432,8,36]] UB css  (scan d0=36, spread=0)  FOM=24.00
+  [[360,8,32]] UB css  (scan d0=32, spread=0)  FOM=22.76
+  [[384,8,32]] UB css  (scan d0=32, spread=0)  FOM=21.33
+  [[192,8,22]] UB css  (scan d0=24, spread=2)  FOM=20.17
+  [[456,6,38]] UB css  (scan d0=38, spread=0)  FOM=19.00
+  [[700,6,46]] UB css  (scan d0=46, spread=0)  FOM=18.14
+  [[432,6,36]] UB css  (scan d0=36, spread=0)  FOM=18.00
+  [[560,6,40]] UB css  (scan d0=40, spread=0)  FOM=17.14
+  [[408,6,34]] UB css  (scan d0=34, spread=0)  FOM=17.00
+  [[704,6,44]] UB css  (scan d0=44, spread=0)  FOM=16.50
+  [[180,8,19]] UB css  (scan d0=20, spread=1)  FOM=16.04

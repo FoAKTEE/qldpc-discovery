@@ -1,0 +1,2 @@
+[19:00:46] HONEST re-cert: ISD@3000 + BZ<=160 + enum<=288 (n<=400) -t 191
+[19:02:27] re-cert done rc=0 — HONEST DISTANCES READY

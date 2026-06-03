@@ -1,0 +1,27 @@
+BLIND search: threads=191  MODE=pbb  NMAX=1000  |lattices|=1317  WALL=420s  wt=3..3  ansatz=0.00  gens=0  dedup=false  fixlm=-
+LIVE frontier -> progress/blind-zero-2/frontier_pbb.md
+[t=  34s] screened=16825 dist_evals=2 cells=1  topFOM=1.3  top=[[12,4,2]]
+[t= 104s] screened=26957 dist_evals=4 cells=2  topFOM=2.7  top=[[24,4,4]]
+[t= 128s] screened=33476 dist_evals=5 cells=3  topFOM=2.7  top=[[24,4,4]]
+[t= 152s] screened=40146 dist_evals=7 cells=4  topFOM=2.7  top=[[24,4,4]]
+[t= 175s] screened=47196 dist_evals=8 cells=4  topFOM=2.7  top=[[24,4,4]]
+[t= 199s] screened=54504 dist_evals=8 cells=4  topFOM=2.7  top=[[24,4,4]]
+[t= 223s] screened=61910 dist_evals=11 cells=4  topFOM=2.7  top=[[24,4,4]]
+[t= 246s] screened=68496 dist_evals=14 cells=5  topFOM=2.7  top=[[24,4,4]]
+[t= 270s] screened=75506 dist_evals=15 cells=5  topFOM=2.7  top=[[24,4,4]]
+[t= 294s] screened=82547 dist_evals=18 cells=6  topFOM=2.7  top=[[24,4,4]]
+[t= 319s] screened=89856 dist_evals=21 cells=6  topFOM=2.7  top=[[24,4,4]]
+[t= 343s] screened=96981 dist_evals=25 cells=6  topFOM=2.7  top=[[24,4,4]]
+[t= 367s] screened=104584 dist_evals=25 cells=6  topFOM=2.7  top=[[24,4,4]]
+[t= 391s] screened=111694 dist_evals=26 cells=6  topFOM=2.7  top=[[24,4,4]]
+[t= 415s] screened=119075 dist_evals=26 cells=6  topFOM=2.7  top=[[24,4,4]]
+[t= 421s] screened=120644 dist_evals=27 cells=6  topFOM=2.7  top=[[24,4,4]]
+DONE: screened=120644  dist_evals=27  cells=6  elapsed=421s  throughput=287 cand/s
+top frontier (CSS = BP-OSD upper bounds uncertified; PBB = exact symplectic):
+  [[24,4,4]] pbb wt=8 FOM=2.67 (l=2,m=6) d/sqrt(n)=0.82
+  [[12,4,2]] pbb wt=8 FOM=1.33 (l=2,m=3) d/sqrt(n)=0.58
+  [[24,8,2]] pbb wt=7 FOM=1.33 (l=2,m=6) d/sqrt(n)=0.41
+  [[12,2,2]] pbb wt=9 FOM=0.67 (l=2,m=3) d/sqrt(n)=0.58
+  [[36,4,2]] pbb wt=8 FOM=0.44 (l=6,m=3) d/sqrt(n)=0.33
+  [[18,2,2]] pbb wt=8 FOM=0.44 (l=3,m=3) d/sqrt(n)=0.47
+wrote progress/blind-zero-2/frontier_pbb.md
