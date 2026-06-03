@@ -7,8 +7,9 @@ pip install .                    # from a clone — core (numpy, scipy)
 pip install ".[decoders]"        # + ldpc (BP-OSD) + python-igraph (exact BLISS dedup)
 pip install -e ".[dev,decoders]" # editable + pytest, for development
 ```
-Requires Python ≥ 3.10. After install, `import qcode_discovery` and the `qcode-*` commands work
-with no `PYTHONPATH`. To run from a checkout without installing, prefix commands with `PYTHONPATH=src`.
+Requires Python ≥ 3.10. The package source lives in `src/` (imported as `qcode_discovery` via
+`pyproject`'s `package_dir`). After install, `import qcode_discovery` and the `qcode-*` commands work
+anywhere; to work from a checkout without installing, use an editable install (`pip install -e .`).
 
 ## Library (public API)
 

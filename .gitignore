@@ -14,6 +14,9 @@ dist/
 venv/
 env/
 
+# --- Runtime output (created by qcode-discover / qcode-validate) ---
+results/
+
 # --- Editor / OS ---
 .DS_Store
 *.swp
@@ -25,3 +28,4 @@ env/
 
 # --- Local methodology repo (not part of this package; tracked in its own repo) ---
 phys-agentic-loop/
+progress/

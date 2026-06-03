@@ -14,7 +14,7 @@ ansatz G(l,m) ─▶ Stage 1: k via GF(2) rank ─▶ Stage 2: BP-OSD distance +
         ▼ results/runs/*.json   ──(post-hoc)──▶  validation vs landmarks / paper catalog
 ```
 
-## Subpackages (`src/qcode_discovery/`)
+## Subpackages (`src/`)
 
 | Subpackage | Modules | Role |
 |---|---|---|

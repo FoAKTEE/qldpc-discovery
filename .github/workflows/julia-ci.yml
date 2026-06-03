@@ -1,0 +1,21 @@
+name: julia-ci
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        julia-version: ["1.9", "1.10", "1"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: julia-actions/setup-julia@v2
+        with:
+          version: ${{ matrix.julia-version }}
+      - uses: julia-actions/cache@v2
+      - name: Instantiate
+        run: julia --project=julia -e 'using Pkg; Pkg.instantiate()'
+      - name: Load (precompile the package as a user would)
+        run: julia --project=julia -e 'using QCodeDiscovery'
+      - name: Test (pure Julia, CPU; CUDA extension is optional)
+        run: julia --project=julia -t auto julia/test/runtests.jl
