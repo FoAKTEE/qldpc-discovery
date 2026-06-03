@@ -77,7 +77,7 @@ end
 `time_limit` mirrors Python: for :bposd it sets trials = round(time_limit*100) (min 100), matching
 Python `trials=int(time_limit*100) or 100`. No paper knowledge used; (A,B) is the only input."""
 function evaluate_css(l::Int, m::Int, A, B; distance_method::Symbol=:milp, time_limit::Real=3.0,
-                      enum_max_weight::Int=6, cap::Int=50_000_000)
+                      enum_max_weight::Int=6, cap::Int=50_000_000, isd_iters::Int=800)
     code = _to_bbcode(l, m, A, B)
     k = css_k(code)
     d = nothing
@@ -96,6 +96,13 @@ function evaluate_css(l::Int, m::Int, A, B; distance_method::Symbol=:milp, time_
             trials = max(round(Int, time_limit * 100), 100)
             dres = bposd_distance(code; trials=trials)
             d = dres.d_bound
+            exact = false
+        elseif distance_method === :isd
+            # Lee–Brickell ISD: TIGHT upper bound that REFUTES BP-OSD overestimates -> a trustworthy
+            # search fitness (BP-OSD fitness chases artifacts; see EVOLUTION_FINDING.md / the paper's
+            # MILP-in-loop). Not a lower-bound certificate (exact=false).
+            dres = min_distance_isd(code; iters=isd_iters, pmax=2)
+            d = dres.d > 0 ? dres.d : nothing
             exact = false
         else   # :milp or :exact  -> pure-Julia exact certifier (replaces HiGHS C++ MILP)
             dres = min_distance_bz(code; cap=cap)
