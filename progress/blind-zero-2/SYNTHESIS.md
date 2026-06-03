@@ -35,6 +35,15 @@ So the blind frontier cleanly separates, *under certification*, into **artifacts
 **genuine high-distance family that survives**. Without the certification step the two are indistinguishable
 — and an FOM-ranking scan would have crowned the artifacts.
 
+**A second independent blind run sharpened this to its strongest form.** Its top-4 raw candidates by FOM
+— `[[360,16,28]]` (FOM 34.8), `[[330,14,28]]` (33.3), `[[324,12,29]]` (31.1), `[[220,10,26]]` (30.7) — *all
+collapsed* under ISD@3000 to d = 6, 10, 12, 11 (real FOM 1.6–4.4). The single survivor was again the sparse
+`[[336,8,32]]` (d = 32, spread 0). And, decisively, **the same parameter label can be genuine in one run and
+fake in another:** run 1's `[[360,8,32]]` held to d = 32 at ISD@10000, while run 2's `[[360,8,32]]` — same
+(n,k,d), different polynomials — certified to d = 22. The triple `[[n,k,d]]` reported by a scan carries no
+information; only the certified polynomial does. Two independent runs, identical lesson: **the raw FOM
+ranking is dominated by overestimate artifacts, and only sparse low-rate high-distance codes survive proof.**
+
 ## What is actually trustworthy, by tier
 - **Proven (EXACT, Brouwer–Zimmermann/enum gap = 0):** small n only — `[[32,14,4]]` (FOM 7), `[[96,16,4]]`,
   `[[16,14,2]]`, plus exact-symplectic PBB up to `[[24,4,4]]`. Modest, but *certain*.
