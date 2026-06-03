@@ -1,0 +1,44 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/inject_infra.sh"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/inject_alignment.sh"
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "printf '<alignment-reminder>Before returning, verify: (1) closed-loop evidence pasted (TRF-R), (2) no unverified failure attribution (fact-driven), (3) no untyped scientific claims, (4) no stall-loops (L3+ 揪头条 if 3+ same-idea cycles). If any rule was violated, name it and correct before finishing.</alignment-reminder>\\n'"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/ralph_stop_guard.sh"
+          }
+        ]
+      }
+    ]
+  }
+}
