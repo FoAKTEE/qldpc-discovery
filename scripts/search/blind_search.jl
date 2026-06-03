@@ -44,11 +44,18 @@ function write_frontier(elapsed::Float64)
         println(io, "Catalog-blind; d = BP-OSD UPPER bound (NOT certified — high-d entries need MILP/BZ).")
         @printf(io, "screened=%d  dist_evals=%d  cells=%d  elapsed=%.0fs  (run wall budget=%.0fs)\n\n",
                 SCREENED[], DISTEVALS[], length(elites), elapsed, WALL)
-        println(io, "| [[n,k,d]] | FOM | (l,m) | d/sqrt(n) | A | B |")
-        println(io, "|---|---|---|---|---|---|")
+        println(io, "| [[n,k,d]] | FOM | k/n | d/sqrt(n) | (l,m) | A | B |")
+        println(io, "|---|---|---|---|---|---|---|")
         for e in elites[1:min(40, length(elites))]
-            @printf(io, "| [[%d,%d,%d]] | %.2f | (%d,%d) | %.2f | %s | %s |\n",
-                    e.n, e.k, e.d, e.fom, e.l, e.m, e.dsn, e.A, e.B)
+            @printf(io, "| [[%d,%d,%d]] | %.2f | %.3f | %.2f | (%d,%d) | %s | %s |\n",
+                    e.n, e.k, e.d, e.fom, e.k / e.n, e.dsn, e.l, e.m, e.A, e.B)
+        end
+    end
+    # machine-readable sidecar (ALL cells) for the certifier
+    open(OUT * ".tsv", "w") do io
+        println(io, "n\tk\td_bposd\tfom\tl\tm\tA\tB")
+        for e in elites
+            @printf(io, "%d\t%d\t%d\t%.4f\t%d\t%d\t%s\t%s\n", e.n, e.k, e.d, e.fom, e.l, e.m, e.A, e.B)
         end
     end
     return elites
@@ -71,7 +78,13 @@ function worker(wid::Int, t0::Float64)
             Threads.atomic_add!(DISTEVALS, 1)
             d <= 0 && continue
             dsn = d / sqrt(c.n)
-            dsn >= 2.0 && continue                      # trust filter: drop BP-OSD overestimates
+            # RATE-AWARE trust filter: BP-OSD OVERESTIMATES d more at high rate (paper's signature
+            # finding, up to ~12x for k/n>0.1). Real high-rate codes obey the rate-distance tradeoff
+            # (low d/sqrt(n)); a high d/sqrt(n) at high rate is almost surely an overestimate. So cap
+            # d/sqrt(n) tighter as k/n rises. (Heuristic SCREEN only — the certifier is authoritative.)
+            rate = k / c.n
+            cap = rate <= 0.06 ? 1.8 : (rate <= 0.12 ? 1.4 : 1.1)
+            dsn >= cap && continue
             f = fom(c.n, k, d)
             key = (c.n, k)
             lock(GLOCK)
