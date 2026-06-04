@@ -23,7 +23,7 @@ ansatz G(l,m) ─▶ Stage 1: k via GF(2) rank ─▶ Stage 2: BP-OSD distance +
 | `distance` | `distance_milp`, `distance_enum`, `distance_bposd` | CSS + symplectic MILP (HiGHS); exhaustive enumeration; BP-OSD upper bound (ldpc) |
 | `structure` | `tanner`, `dedup`, `clifford_equiv` | decomposability (direct-sum); lattice-symmetry + exact BLISS dedup (igraph); LC-CSS (Hadamard 2-coloring + rank cond.) |
 | `discovery` | `evaluation`, `search`, `evolve`, `validation` | catalog-blind cascade; GA search; generator-ansatz program evolution; post-hoc catalog validation |
-| `cli` | `cli` | `qcode-discover` / `qcode-validate` / `qcode-audit` entry points |
+| `cli` *(top-level module `cli.py`, not a subpackage)* | `main`, `discover_cmd`, `validate_cmd`, `audit_cmd` | `qcode-discovery` / `qcode-discover` / `qcode-validate` / `qcode-audit` entry points |
 
 ## The 13 reproduced pipeline components (arXiv:2606.02418)
 

@@ -17,7 +17,7 @@ to the paper; the catalog is consulted only post-hoc, as a held-out test set.
 | BP-OSD decoder | `ldpc` (C++) | native belief-propagation + OSD |
 | Graph dedup | `igraph` BLISS (C) | individualization-refinement canonical form |
 | Parallel / GPU | — | `Threads` + a CUDA kernel (A100-verified) |
-| Tests | 54 (pytest) | 55 (`Pkg.test`) |
+| Tests | 54 (pytest) | 76 (`Pkg.test`) |
 
 Both implement the same pipeline — construction, `k`, exact/BP-OSD distance, FOM, Tanner
 decomposability, dedup, local-Clifford equivalence, the staged blind-discovery cascade, and post-hoc

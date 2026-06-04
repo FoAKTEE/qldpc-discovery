@@ -5,7 +5,7 @@
 > reproduction of *"Evolutionary Discovery of Bivariate Bicycle Codes with LLM-Guided Search"*
 > ([arXiv:2606.02418](https://arxiv.org/abs/2606.02418)).
 
-`julia ≥ 1.9` · **no C/C++ dependencies** · optional `CUDA.jl` (GPU) · **55 tests passing**
+`julia ≥ 1.9` · **no C/C++ dependencies** · optional `CUDA.jl` (GPU) · **76 tests passing**
 
 The LLM/search proposes generator ansätze; a scientific kernel **admits** them. Discovery runs **blind**
 to the paper; the catalog is consulted only post-hoc, as a held-out test set. Every result is
@@ -64,7 +64,7 @@ julia/
   src/QCodeDiscovery.jl         module (includes the subpackages below, in dependency order)
     algebra/    gf2.jl · polynomials.jl
     codes/      codes.jl · pbb.jl · theorems.jl
-    distance/   distance.jl · distance_exact.jl · bposd.jl · pbb_distance.jl
+    distance/   distance.jl · distance_exact.jl · isd.jl · bposd.jl · pbb_distance.jl
     structure/  tanner.jl · dedup.jl · clifford.jl
     discovery/  evaluation.jl · search.jl · evolve.jl · validation.jl
     parallel/   gpu.jl · gpu_cuda.jl

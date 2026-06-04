@@ -13,7 +13,7 @@ from __future__ import annotations
 import numpy as np
 
 from ..algebra import gf2
-from ..algebra.polynomials import Poly, parse_poly, poly_matrix
+from ..algebra.polynomials import parse_poly, poly_matrix
 
 
 class PBBCode:
